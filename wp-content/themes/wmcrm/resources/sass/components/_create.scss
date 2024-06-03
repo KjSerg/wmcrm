@@ -1,0 +1,26 @@
+.create {
+  &-section {
+    padding: 2rem 0;
+
+    .title {
+      margin-bottom: 2rem;
+    }
+
+    &-container {
+      width: 100%;
+      max-width: 66rem;
+      margin: 0 auto;
+    }
+
+    .ql-toolbar.ql-snow {
+      border-radius: 2rem 2rem 0px 0px;
+      border: 1px solid #E2E3EE;
+      border-bottom: none;
+      background: #F2F3F9;
+    }
+
+    .ql-toolbar.ql-snow + .ql-container.ql-snow {
+      border-radius: 0px 0px 2rem 2rem;
+    }
+  }
+}
