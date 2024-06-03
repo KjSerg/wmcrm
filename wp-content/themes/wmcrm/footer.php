@@ -223,7 +223,7 @@ $statuses       = array(
                     <span class="form-group__title"> День народження</span>
                     <input name="birthday"
                            class="date-input"
-                           value="<?php echo '01-01-2000'; ?>"
+                           value="<?php echo '01-01-1995'; ?>"
                            placeholder="День народження">
                 </label>
             </div>

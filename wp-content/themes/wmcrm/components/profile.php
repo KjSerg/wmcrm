@@ -108,7 +108,7 @@ function the_profile() {
                         <input type="text" name="birthday"
                                class="date-input"
                                readonly
-                               value="<?php echo $birthday ?: '01-01-2000'; ?>"
+                               value="<?php echo $birthday ?: '01-01-1995'; ?>"
                                placeholder="День народження">
                     </label>
                 </div>

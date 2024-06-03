@@ -21,6 +21,7 @@ export default class Stopwatch {
         this.finishTimestamp = 0;
         this.sum = 0;
         this.interval = null;
+        this.timersInterval = null;
         this.status = 0;
         this.$doc = $(document);
         this.listenEvents();
@@ -41,10 +42,9 @@ export default class Stopwatch {
         _this.$doc.find('.timer').removeClass('play').removeClass('pause');
     }
 
-    getTimers(){
+    getTimers() {
         const _this = this;
         const _stopwatches = _this.stopwatches;
-        showPreloader();
         $.ajax({
             type: 'POST',
             url: adminAjax,
@@ -54,7 +54,6 @@ export default class Stopwatch {
         }).done(function (r) {
             if (r) {
                 _this.$doc.find('.timer-control').html(r);
-                hidePreloader();
             }
         });
     }
@@ -110,8 +109,12 @@ export default class Stopwatch {
                 $timer.removeClass('open-controls');
                 $('body').removeClass('open-timer');
             }
-            if($t.hasClass('admin-timers')){
+            if ($t.hasClass('admin-timers')) {
                 _this.getTimers();
+                clearInterval(_this.timersInterval);
+                _this.timersInterval = setInterval(function () {
+                    _this.getTimers();
+                }, 60000);
             }
         });
         _this.$doc.on('click', '.report-button-trigger', function (e) {
@@ -126,6 +129,8 @@ export default class Stopwatch {
                 && div.has(e.target).length === 0) {
                 div.removeClass('open-controls');
                 $('body').removeClass('open-timer');
+                clearInterval(_this.timersInterval);
+                console.log(_this.timersInterval)
             }
         });
     }

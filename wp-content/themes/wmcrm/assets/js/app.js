@@ -9075,6 +9075,7 @@ var Stopwatch = /*#__PURE__*/function () {
     this.finishTimestamp = 0;
     this.sum = 0;
     this.interval = null;
+    this.timersInterval = null;
     this.status = 0;
     this.$doc = $(document);
     this.listenEvents();
@@ -9100,7 +9101,6 @@ var Stopwatch = /*#__PURE__*/function () {
     value: function getTimers() {
       var _this = this;
       var _stopwatches = _this.stopwatches;
-      (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showPreloader)();
       $.ajax({
         type: 'POST',
         url: adminAjax,
@@ -9110,7 +9110,6 @@ var Stopwatch = /*#__PURE__*/function () {
       }).done(function (r) {
         if (r) {
           _this.$doc.find('.timer-control').html(r);
-          (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.hidePreloader)();
         }
       });
     }
@@ -9169,6 +9168,10 @@ var Stopwatch = /*#__PURE__*/function () {
         }
         if ($t.hasClass('admin-timers')) {
           _this.getTimers();
+          clearInterval(_this.timersInterval);
+          _this.timersInterval = setInterval(function () {
+            _this.getTimers();
+          }, 60000);
         }
       });
       _this.$doc.on('click', '.report-button-trigger', function (e) {
@@ -9182,6 +9185,8 @@ var Stopwatch = /*#__PURE__*/function () {
         if (!div.is(e.target) && div.has(e.target).length === 0) {
           div.removeClass('open-controls');
           $('body').removeClass('open-timer');
+          clearInterval(_this.timersInterval);
+          console.log(_this.timersInterval);
         }
       });
     }
@@ -10485,7 +10490,7 @@ $(document).ready(function () {
   $doc.mouseup(function (e) {
     var div = $(".window-main.active, .modal-window.active, .dialog-window.active");
     if (!div.is(e.target) && div.has(e.target).length === 0) {
-      div.find('.close-window').trigger('click');
+      if (!$doc.find('.ui-datepicker').is(':visible')) div.find('.close-window').trigger('click');
     }
   });
   var invite = new _Invite__WEBPACK_IMPORTED_MODULE_4__["default"]();

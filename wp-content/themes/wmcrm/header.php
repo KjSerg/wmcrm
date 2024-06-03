@@ -13,7 +13,7 @@ $is_admin        = is_current_user_admin();
 $projects_url    = get_post_type_archive_link( 'projects' );
 $discussion_url  = get_post_type_archive_link( 'discussion' );
 $is_admin        = is_current_user_admin();
-$s               = $_GET['search'] ?? '';
+$s               = $_GET['s'] ?? '';
 $route           = $_GET['route'] ?? '';
 if ( ! $avatar ) {
 	$avatar = get_avatar_url( $user_id );
@@ -106,7 +106,7 @@ if ( ! $avatar ) {
                                           fill="#9B9EBE"/>
                                 </svg>
                             </div>
-                            <input type="text" name="search" placeholder="Пошук..." class="header-form__input"
+                            <input type="text" name="s" placeholder="Пошук..." class="header-form__input"
                                    value="<?php echo $s ?>">
                         </form>
                     </div>

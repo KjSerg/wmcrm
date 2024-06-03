@@ -19,6 +19,8 @@
   }
   &-table {
     &-head {
+      display: flex;
+      align-items: center;
       padding: 2rem 0;
       background: #F2F3F9;
       color: #202554;
@@ -34,6 +36,15 @@
       &:not(:last-child){
         border-right: 2px solid #E2E3EE;
       }
+    }
+    &__title {
+      width: 100%;
+      color: #202554;
+      font-family: Montserrat;
+      font-size: 1.6rem;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 150%;
     }
   }
 }

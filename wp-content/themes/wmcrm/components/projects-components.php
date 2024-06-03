@@ -219,7 +219,7 @@ function the_projects_page() {
 	$user_id = get_current_user_id();
 	if ( $_GET && $user_id ) {
 		foreach ( $_GET as $key => $val ) {
-			if ( $key != 'type' && $key != 'search' ) {
+			if ( $key != 'type' && $key != 's' && $val != '' ) {
 				$arr[ $key ] = $val;
 			}
 		}

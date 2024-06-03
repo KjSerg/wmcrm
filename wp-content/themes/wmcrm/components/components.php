@@ -24,6 +24,7 @@ function the_timer_list() {
 				$status = $obj['status'];
 				$current_project = $obj['current_project'];
 				$u = get_user_by( 'id', $user_ID );
+				$sum_hour = $obj['sum_hour'];;
 				?>
                 <li class="timer-list-item" data-user-id="<?php echo $user_ID ?>">
                     <a href="<?php echo get_author_posts_url( $user_ID ) ?>"
@@ -36,7 +37,13 @@ function the_timer_list() {
                                 class="cover" src="<?php echo $obj['avatar'] ?>" alt="">
                     </a>
                     <div class="timer-list-item__value">
-						<?php echo $obj['sum_hour']; ?>
+						<?php
+						if ( $sum_hour_arr = explode( ':', $sum_hour ) ) {
+							echo $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
+						} else {
+							echo $obj['sum_hour'];
+						}
+						?>
                     </div>
 					<?php if ( $current_project && get_post( $current_project ) ): ?>
                         <a class="timer-list-item__project link-js open-in-modal"
@@ -45,7 +52,7 @@ function the_timer_list() {
                         </a>
 					<?php else: ?>
                         <div class="timer-list-item__project not-active">
-                            <?php echo $u->display_name; ?> проєкт в роботі не вибрав(ла)!
+							<?php echo $u->display_name; ?> проєкт не вибрав(ла)!
                         </div>
 					<?php endif; ?>
                 </li>

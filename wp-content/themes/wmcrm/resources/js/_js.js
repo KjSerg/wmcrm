@@ -283,7 +283,7 @@ $(document).ready(function () {
         let div = $(".window-main.active, .modal-window.active, .dialog-window.active");
         if (!div.is(e.target)
             && div.has(e.target).length === 0) {
-            div.find('.close-window').trigger('click');
+            if(!$doc.find('.ui-datepicker').is(':visible')) div.find('.close-window').trigger('click');
         }
     });
     const invite = new Invite();

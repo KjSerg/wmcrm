@@ -1115,6 +1115,7 @@ button {
 
 .autocomplete {
   position: relative;
+
   &-wrapper {
     position: absolute;
     z-index: 1;
@@ -1128,11 +1129,13 @@ button {
     background-color: #fff;
     border-radius: 1rem;
   }
+
   &-item {
     padding: 1rem;
     display: block;
     color: #666;
     cursor: pointer;
+
     &:hover {
       background: rgba(242, 243, 249, 0.26);
       color: #444;
@@ -1153,7 +1156,26 @@ button {
   border: 1px solid #5F638D;
   background-color: #F9FAFF;
   transition: 0.5s ease;
+
   &:hover {
     background-color: #E6E8F4;
+  }
+}
+
+.ui-datepicker {
+  pointer-events: auto;
+}
+
+.text-align {
+  &-right {
+    text-align: right;
+  }
+
+  &-left {
+    text-align: left;
+  }
+
+  &-center {
+    text-align: center;
   }
 }

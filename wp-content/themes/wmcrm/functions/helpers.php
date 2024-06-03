@@ -620,7 +620,7 @@ function set_query_data() {
 	$performer = $_GET['performer'] ?? ( $worksection_id ?: '' );
 	$user      = $_GET['user'] ?? "";
 	$_user_id  = $_GET['user_id'] ?? "";
-	$search    = $_GET['search'] ?? '';
+	$search    = $_GET['s'] ?? '';
 	$tag       = $_GET['project-tag'] ?? '';
 	$status    = $_GET['project-status'] ?? '';
 	$order     = $_GET['order'] ?? '';
@@ -629,7 +629,7 @@ function set_query_data() {
 		$args['orderby'] = 'modified';
 	}
 	if ( $search ) {
-		$args['s'] = $search;
+		$args['post_status'] = array( 'publish', 'pending', 'archive' );
 	} else {
 		if ( $_user_id ) {
 			$_worksection_id = carbon_get_user_meta( $_user_id, 'worksection_id' );
@@ -672,9 +672,6 @@ function set_query_data() {
 		}
 	}
 	if ( ! empty( $args ) ) {
-		if ( isset( $args['s'] ) ) {
-			$args['post_status'] = array( 'publish', 'pending', 'archive' );
-		}
 		$query = array_merge( $wp_query->query, $args );
 		query_posts( $query );
 	}
@@ -720,7 +717,7 @@ function set_sub_query_data() {
 }
 
 function is_empty_query() {
-	$search         = $_GET['search'] ?? '';
+	$search         = $_GET['s'] ?? '';
 	$tag            = $_GET['project-tag'] ?? '';
 	$status         = $_GET['project-status'] ?? '';
 	$orderby        = $_GET['orderby'] ?? '';

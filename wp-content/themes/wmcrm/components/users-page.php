@@ -23,11 +23,12 @@ function the_users_page() {
                 </div>
                 <div class="users-table">
                     <div class="users-table-head">
-                        <div class="users-table-column"></div>
-                        <div class="users-table-column"></div>
-                        <div class="users-table-column"></div>
-                        <div class="users-table-column"></div>
+                        <div class="users-table-column"><div class="users-table__title">Працівник</div></div>
+                        <div class="users-table-column"><div class="users-table__title">Посада</div></div>
+                        <div class="users-table-column"><div class="users-table__title">Контакти</div></div>
+                        <div class="users-table-column"><div class="users-table__title text-align-right">Дія</div></div>
                     </div>
+
                 </div>
             </div>
         </div>

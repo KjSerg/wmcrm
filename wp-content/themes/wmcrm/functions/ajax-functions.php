@@ -147,8 +147,6 @@ function new_comment() {
 					}
 					if ( $arr ) {
 						carbon_set_post_meta( $comment_id, 'discussion_files', $arr );
-					} else {
-						$res['msg'] = 'Помилка завантаження файлів. Дані формати не підтримуються із міркувань безпеки!';
 					}
 
 				}

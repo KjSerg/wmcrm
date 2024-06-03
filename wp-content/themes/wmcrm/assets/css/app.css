@@ -2014,7 +2014,7 @@ input {
   display: flex;
   flex-direction: column;
   max-height: 40rem;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 .timer-list-date {
   display: inline-flex;
@@ -3421,6 +3421,8 @@ input {
   line-height: normal;
 }
 .users-table-head {
+  display: flex;
+  align-items: center;
   padding: 2rem 0;
   background: #F2F3F9;
   color: #202554;
@@ -3436,6 +3438,15 @@ input {
 }
 .users-table-column:not(:last-child) {
   border-right: 2px solid #E2E3EE;
+}
+.users-table__title {
+  width: 100%;
+  color: #202554;
+  font-family: Montserrat;
+  font-size: 1.6rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 150%;
 }
 
 .add-user {
@@ -4510,4 +4521,18 @@ button {
 }
 .copy-link:hover {
   background-color: #E6E8F4;
+}
+
+.ui-datepicker {
+  pointer-events: auto;
+}
+
+.text-align-right {
+  text-align: right;
+}
+.text-align-left {
+  text-align: left;
+}
+.text-align-center {
+  text-align: center;
 }

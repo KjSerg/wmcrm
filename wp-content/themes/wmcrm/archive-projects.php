@@ -16,10 +16,10 @@ if ( $route == 'create' ) {
 	the_create_project_page();
 	die();
 }
+get_header();
 global $wp_query;
 set_query_data();
 the_projects_page();
-get_header();
 $worksection_id = carbon_get_user_meta( $user_id, 'worksection_id' );
 $id             = get_the_ID();
 $isLighthouse   = isLighthouse();
