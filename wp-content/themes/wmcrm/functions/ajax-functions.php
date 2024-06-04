@@ -1256,9 +1256,36 @@ function dismiss_user() {
 	$res = array();
 	if ( is_current_user_admin() ) {
 		$user_id = $_POST['userID'] ?? '';
-		if ( $user_id ) {
+		if ( $user_id && ! carbon_get_user_meta( $user_id, 'super_admin' ) ) {
 			if ( $user = get_user_by( 'id', $user_id ) ) {
 				carbon_set_user_meta( $user_id, 'fired', true );
+				$res['type']    = 'success';
+				$res['user_id'] = $user_id;
+			} else {
+				$res['type'] = 'error';
+				$res['msg']  = 'Користувача не знайдено';
+			}
+		} else {
+			$res['type'] = 'error';
+			$res['msg']  = 'Помилка';
+		}
+	} else {
+		$res['type'] = 'error';
+		$res['msg']  = 'Помилка доступу';
+	}
+	echo json_encode( $res );
+	die();
+}
+
+add_action( 'wp_ajax_nopriv_return_user', 'return_user' );
+add_action( 'wp_ajax_return_user', 'return_user' );
+function return_user() {
+	$res = array();
+	if ( is_current_user_admin() ) {
+		$user_id = $_POST['userID'] ?? '';
+		if ( $user_id  ) {
+			if ( $user = get_user_by( 'id', $user_id ) ) {
+				carbon_set_user_meta( $user_id, 'fired', false );
 				$res['type']    = 'success';
 				$res['user_id'] = $user_id;
 			} else {

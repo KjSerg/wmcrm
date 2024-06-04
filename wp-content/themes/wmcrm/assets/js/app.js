@@ -10365,6 +10365,35 @@ $(document).ready(function () {
       };
       (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.sendRequest)(adminAjax, data, 'POST').then(function (res) {
         if (res) {
+          if (res.msg !== '' && res.msg !== undefined) {
+            (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showMassage)(res.msg);
+          }
+          if (res.type === 'success' && res.user_id !== undefined) {
+            (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.closeWindow)();
+            $doc.find('.users-table-body-row[data-user="' + res.user_id + '"]').remove();
+            $doc.find('#change-user-' + res.user_id).remove();
+            $doc.find('#dismiss-user-' + res.user_id).remove();
+          }
+        } else {
+          (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showMassage)('Error');
+        }
+      });
+    }
+  });
+  $doc.on('click', '.return-user__button', function (e) {
+    e.preventDefault();
+    var $t = $(this);
+    var userID = $t.attr('data-user-id');
+    if (userID !== undefined) {
+      var data = {
+        action: 'return_user',
+        userID: userID
+      };
+      (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.sendRequest)(adminAjax, data, 'POST').then(function (res) {
+        if (res) {
+          if (res.msg !== '' && res.msg !== undefined) {
+            (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showMassage)(res.msg);
+          }
           if (res.type === 'success' && res.user_id !== undefined) {
             (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.closeWindow)();
             $doc.find('.users-table-body-row[data-user="' + res.user_id + '"]').remove();

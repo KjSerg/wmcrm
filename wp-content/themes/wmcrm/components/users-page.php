@@ -16,6 +16,12 @@ function the_users_page() {
 	$avatar     = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $user_id );
 	$user_tel   = carbon_get_user_meta( $user_id, 'user_tel' );
 	$user_email = $user->user_email;
+	$section    = $_GET['section'] ?? '';
+	$route      = $_GET['route'] ?? '';
+	$users      = get_active_users();
+	if ( $section == 'dismissed' ) {
+		$users = get_users();
+	}
 	?>
     <section class="section users-section" id="users-section">
         <div class="container">
@@ -24,6 +30,11 @@ function the_users_page() {
                     <div class="users-title">
                         Люди (<?php echo count_all_users(); ?>)
                         <a href="#new-user" class="button-add add-user modal-open">+</a>
+                    </div>
+                    <div class="users-head-controls">
+						<?php if ( $section == '' ): ?>
+                            <a href="<?php echo $url . '?route=' . $route . '&section=dismissed'; ?>" class="button">Звільнені</a>
+						<?php endif; ?>
                     </div>
                 </div>
                 <div class="users-table">
@@ -42,7 +53,7 @@ function the_users_page() {
                         </div>
                     </div>
                     <div class="users-table-body">
-						<?php if ( $user ): ?>
+						<?php if ( $user && $section != 'dismissed' ): ?>
                             <div class="users-table-body-row">
                                 <div class="users-table-column">
                                     <div class="users-table-item">
@@ -69,7 +80,15 @@ function the_users_page() {
                             </div>
 						<?php endif; ?>
 						<?php if ( $users = get_active_users() ): foreach ( $users as $_user ):
-							the_user_row( $_user );
+
+							if ( $section == 'dismissed' ) {
+								$__id = $_user->ID;
+								if ( carbon_get_user_meta( $__id, 'fired' ) ) {
+									the_user_row( $_user );
+								}
+							} else {
+								the_user_row( $_user );
+							}
 						endforeach; endif; ?>
                     </div>
                 </div>

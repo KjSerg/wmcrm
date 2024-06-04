@@ -18,11 +18,13 @@ function the_user_status( $user_id ) {
 }
 
 function the_user_row( $_user ) {
-	$_user_id    = $_user->ID;
-	$user_id     = get_current_user_id();
+	$_user_id           = $_user->ID;
+	$user_id            = get_current_user_id();
 	if ( $_user_id != $user_id ):
 		$_avatar = carbon_get_user_meta( $_user_id, 'avatar' );
-		$_avatar = $_avatar ? _u( $_avatar, 1 ) : get_avatar_url( $_user_id );
+		$_avatar        = $_avatar ? _u( $_avatar, 1 ) : get_avatar_url( $_user_id );
+		$is_fired       = carbon_get_user_meta( $_user_id, 'fired' );
+		$is_super_admin = carbon_get_user_meta( $_user_id, 'super_admin' );
 		?>
         <div class="users-table-body-row" data-user="<?php echo $_user_id; ?>">
             <div class="users-table-column">
@@ -52,9 +54,17 @@ function the_user_row( $_user ) {
                        class="users-table-control modal-open">
 						<?php _s( _i( 'icon1' ) ) ?>
                     </a>
-                    <a href="#dismiss-user-<?php echo $_user_id; ?>" class="users-table-control modal-open">
-						<?php _s( _i( 'icon2' ) ) ?>
-                    </a>
+					<?php if ( ! $is_super_admin ): ?>
+                        <a href="#dismiss-user-<?php echo $_user_id; ?>" class="users-table-control modal-open">
+							<?php
+							if ( $is_fired ) {
+								_s( _i( 'check' ) );
+							} else {
+								_s( _i( 'icon2' ) );
+							}
+							?>
+                        </a>
+					<?php endif; ?>
                 </div>
             </div>
         </div>
@@ -123,15 +133,30 @@ function the_user_row( $_user ) {
                 </div>
             </form>
         </div>
+
         <div class="dismiss-user-window modal-window" id="dismiss-user-<?php echo $_user_id; ?>">
-            <div class="modal-window__title">Звільнити <?php echo $_user->display_name; ?>?</div>
-            <div class="modal-window__subtitle">Буде переміщенно в розділ звільниних</div>
-            <div class="form-buttons">
-                <a class="form-button button dismiss-user__button" href="#" data-user-id="<?php echo $_user_id; ?>">
-                    Звільнити
-                </a>
-            </div>
+			<?php if ( $is_fired ): ?>
+                <div class="modal-window__title">Повернути в команду <?php echo $_user->display_name; ?>?</div>
+                <div class="modal-window__subtitle">
+                    Буде переміщено із розділ звільнених та буде надано доступ до CRM
+                </div>
+                <div class="form-buttons">
+                    <a class="form-button button return-user__button" href="#" data-user-id="<?php echo $_user_id; ?>">
+                        Повернути користувача
+                    </a>
+                </div>
+			<?php else: if ( ! $is_super_admin ): ?>
+                <div class="modal-window__title">Звільнити <?php echo $_user->display_name; ?>?</div>
+                <div class="modal-window__subtitle">Буде переміщено в розділ звільнених та видалиться доступ CRM</div>
+                <div class="form-buttons">
+                    <a class="form-button button dismiss-user__button" href="#" data-user-id="<?php echo $_user_id; ?>">
+                        Звільнити користувача
+                    </a>
+                </div>
+			<?php endif; ?>
+			<?php endif; ?>
         </div>
+
 	<?php endif;
 }
 

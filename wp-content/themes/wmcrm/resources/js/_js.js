@@ -137,6 +137,36 @@ $(document).ready(function () {
             }
             sendRequest(adminAjax, data, 'POST').then(res => {
                 if (res) {
+                    if (res.msg !== '' && res.msg !== undefined) {
+                        showMassage(res.msg);
+                    }
+                    if (res.type === 'success' && res.user_id !== undefined) {
+                        closeWindow();
+                        $doc.find('.users-table-body-row[data-user="' + res.user_id + '"]').remove();
+                        $doc.find('#change-user-' + res.user_id).remove();
+                        $doc.find('#dismiss-user-' + res.user_id).remove();
+                    }
+                } else {
+                    showMassage('Error');
+                }
+            });
+        }
+
+    });
+    $doc.on('click', '.return-user__button', function (e) {
+        e.preventDefault();
+        let $t = $(this);
+        let userID = $t.attr('data-user-id');
+        if (userID !== undefined) {
+            const data = {
+                action: 'return_user',
+                userID
+            }
+            sendRequest(adminAjax, data, 'POST').then(res => {
+                if (res) {
+                    if (res.msg !== '' && res.msg !== undefined) {
+                        showMassage(res.msg);
+                    }
                     if (res.type === 'success' && res.user_id !== undefined) {
                         closeWindow();
                         $doc.find('.users-table-body-row[data-user="' + res.user_id + '"]').remove();
