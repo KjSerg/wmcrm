@@ -19,11 +19,12 @@ $statuses       = array(
 	'archive' => 'Завершена',
 	'pending' => 'В черзі'
 );
+//test
 ?>
 
 </main>
 
-<div class="users-cards"></div>
+
 
 <div class="sounds" style="display:none;">
     <audio id="new-message-sound" autoplay type="audio/mp3" muted
