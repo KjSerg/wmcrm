@@ -227,13 +227,11 @@ $statuses       = array(
                            placeholder="День народження">
                 </label>
             </div>
-            <div class="form-row">
-                <label class="form-group ">
-                    <span class="form-group__title"> Worksection id</span>
-                    <input type="text" name="worksection_id"
-                           value="" placeholder="Введіть worksection_id">
-                </label>
-            </div>
+            <label class="form-group ">
+                <span class="form-group__title"> Worksection id</span>
+                <input type="text" name="worksection_id"
+                       value="" placeholder="Введіть worksection_id">
+            </label>
             <div class="form-buttons">
                 <button class="form-button button">
                     Створити нового працівника

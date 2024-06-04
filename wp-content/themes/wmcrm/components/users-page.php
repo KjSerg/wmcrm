@@ -96,7 +96,11 @@ function the_users_page() {
                                     <div class="users-table-column">
 										<?php the_user_contacts( $_user_id ); ?>
                                     </div>
-                                    <div class="users-table-column"></div>
+                                    <div class="users-table-column">
+                                        <div class="users-table-controls">
+
+                                        </div>
+                                    </div>
                                 </div>
 							<?php endif; endforeach; endif; ?>
                     </div>
