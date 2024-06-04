@@ -3442,7 +3442,7 @@ input {
   line-height: 150%;
 }
 .users-table-column {
-  padding-left: 4rem;
+  padding-left: 2rem;
   padding-right: 2rem;
 }
 .users-table-column:not(:last-child) {
@@ -3452,13 +3452,26 @@ input {
   width: 35rem;
 }
 .users-table-column:nth-child(2) {
-  width: 29rem;
+  width: 25rem;
 }
 .users-table-column:nth-child(3) {
   width: 57rem;
 }
 .users-table-column .profile-head-contacts {
   padding: 0;
+}
+.users-table-column .profile-head-contacts__item {
+  width: 50%;
+  margin-right: 1rem;
+  color: #333;
+  font-family: Montserrat;
+  font-size: 1.4rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 140%;
+}
+.users-table-column .profile-head-contacts__item:not(:last-child) {
+  margin-right: 0;
 }
 .users-table__title {
   width: 100%;
@@ -3494,6 +3507,14 @@ input {
 }
 .users-table-item .user-status-label {
   margin-left: auto;
+}
+.users-table__position {
+  color: #333;
+  font-family: Montserrat;
+  font-size: 1.4rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 140%; /* 2.24rem */
 }
 
 .add-user {

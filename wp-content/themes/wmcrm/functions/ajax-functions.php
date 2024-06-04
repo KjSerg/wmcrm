@@ -890,16 +890,16 @@ function change_user_data() {
 				$change_data['name']       = $user->display_name;
 			}
 			$first_name = get_user_meta( $user->ID, 'first_name', true );
-			$last_name = get_user_meta( $user->ID, 'last_name', true );
-			$full_name = trim( $last_name . ' ' . $first_name );
+			$last_name  = get_user_meta( $user->ID, 'last_name', true );
+			$full_name  = trim( $last_name . ' ' . $first_name );
 			if ( ! empty( $full_name ) && ( $user->data->display_name != $full_name ) ) {
 				$userdata = array(
-					'ID' => $user_id,
+					'ID'           => $user_id,
 					'display_name' => $full_name,
 				);
 
 				wp_update_user( $userdata );
-				$change_data['name']       = $user->display_name;
+				$change_data['name'] = $user->display_name;
 			}
 			if ( $email != $_user_email && $email != '' ) {
 				if ( email_exists( $email ) ) {
@@ -1083,13 +1083,14 @@ function get_timers_html() {
 add_action( 'wp_ajax_nopriv_create_new_user', 'create_new_user' );
 add_action( 'wp_ajax_create_new_user', 'create_new_user' );
 function create_new_user() {
-	$res        = array();
-	$last_name  = $_POST['last_name'] ?? '';
-	$first_name = $_POST['first_name'] ?? '';
-	$email      = $_POST['email'] ?? '';
-	$tel        = $_POST['tel'] ?? '';
-	$position   = $_POST['position'] ?? '';
-	$birthday   = $_POST['birthday'] ?? '';
+	$res            = array();
+	$last_name      = $_POST['last_name'] ?? '';
+	$first_name     = $_POST['first_name'] ?? '';
+	$email          = $_POST['email'] ?? '';
+	$tel            = $_POST['tel'] ?? '';
+	$position       = $_POST['position'] ?? '';
+	$birthday       = $_POST['birthday'] ?? '';
+	$worksection_id = $_POST['worksection_id'] ?? '';
 	if ( is_current_user_admin() ) {
 		$test = $first_name && $last_name && $email;
 		if ( $test ) {
@@ -1118,7 +1119,8 @@ function create_new_user() {
 						carbon_set_user_meta( $user_id, 'birthday', $birthday );
 						create_cron_birthday( $user_id );
 					}
-					carbon_set_user_meta($user_id, 'worksection_user_to_id', $user_id);
+					carbon_set_user_meta( $user_id, 'worksection_user_to_id', $user_id );
+					carbon_set_user_meta( $user_id, 'worksection_id', $worksection_id );
 					$url            = site_url();
 					$res['type']    = 'success';
 					$res['user_id'] = $user_id;
