@@ -297,3 +297,7 @@ export function copyToClipboard(text) {
     console.log('Скопійовано в буфер обміну: ' + text);
     showMassage('Copied 🖇️');
 }
+
+export function isImageUrl(string){
+    return /(jpg|gif|png|JPG|GIF|PNG|JPEG|jpeg|HEIF|heif)$/.test(string);
+}

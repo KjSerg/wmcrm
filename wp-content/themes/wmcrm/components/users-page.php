@@ -69,40 +69,8 @@ function the_users_page() {
                             </div>
 						<?php endif; ?>
 						<?php if ( $users = get_active_users() ): foreach ( $users as $_user ):
-							$_user_id = $_user->ID;
-							if ( $_user_id != $user_id ):
-								$_avatar = carbon_get_user_meta( $_user_id, 'avatar' );
-								$_avatar = $_avatar ? _u( $_avatar, 1 ) : get_avatar_url( $_user_id );
-								?>
-                                <div class="users-table-body-row">
-                                    <div class="users-table-column">
-                                        <div class="users-table-item">
-                                            <a href="<?php echo $_avatar; ?>"
-                                               class="users-table-item__avatar modal-open">
-                                                <img class="cover" src="<?php echo $_avatar; ?>" alt="">
-                                            </a>
-                                            <a href="<?php echo get_author_posts_url( $_user_id ) ?>"
-                                               class="users-table-item__name link-js">
-												<?php echo $_user->display_name; ?>
-                                            </a>
-											<?php the_user_status( $_user_id ); ?>
-                                        </div>
-                                    </div>
-                                    <div class="users-table-column">
-                                        <div class="users-table__position">
-											<?php echo carbon_get_user_meta( $_user_id, 'position' ) ?: "Посада відсутня" ?>
-                                        </div>
-                                    </div>
-                                    <div class="users-table-column">
-										<?php the_user_contacts( $_user_id ); ?>
-                                    </div>
-                                    <div class="users-table-column">
-                                        <div class="users-table-controls">
-
-                                        </div>
-                                    </div>
-                                </div>
-							<?php endif; endforeach; endif; ?>
+							the_user_row( $_user );
+						endforeach; endif; ?>
                     </div>
                 </div>
             </div>

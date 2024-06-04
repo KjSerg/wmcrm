@@ -8,7 +8,7 @@ import {
     showMassage,
     isJsonString,
     hidePreloader,
-    changeProjectStatus, renderMainInModal, sendRequest, bytesToMB, bytesToKB, copyToClipboard
+    changeProjectStatus, renderMainInModal, sendRequest, bytesToMB, bytesToKB, copyToClipboard, isImageUrl
 } from "./_helpers";
 import {setQiullText} from './_quill-init';
 import Invite from "./Invite";
@@ -39,10 +39,14 @@ export function initTriggers() {
     });
     $doc.on('click', '.modal-open', function (e) {
         e.preventDefault();
-        console.log(e)
         let $t = $(this);
         let href = $t.attr('href');
         if (href === undefined) return;
+        if(isImageUrl(href)){
+            $doc.find('.window-main').html('<div class="window-main-image"><img src="' + href + '"  alt=""></div>');
+            openWindow($doc.find('.window-main'));
+            return;
+        }
         let $el = $doc.find(href);
         if ($el.length === 0) return;
         openWindow($el);
@@ -121,6 +125,30 @@ $(document).ready(function () {
             url: url,
             addToHistory: true
         });
+    });
+    $doc.on('click', '.dismiss-user__button', function (e) {
+        e.preventDefault();
+        let $t = $(this);
+        let userID = $t.attr('data-user-id');
+        if (userID !== undefined) {
+            const data = {
+                action: 'dismiss_user',
+                userID
+            }
+            sendRequest(adminAjax, data, 'POST').then(res => {
+                if (res) {
+                    if (res.type === 'success' && res.user_id !== undefined) {
+                        closeWindow();
+                        $doc.find('.users-table-body-row[data-user="' + res.user_id + '"]').remove();
+                        $doc.find('#change-user-' + res.user_id).remove();
+                        $doc.find('#dismiss-user-' + res.user_id).remove();
+                    }
+                } else {
+                    showMassage('Error');
+                }
+            });
+        }
+
     });
     $doc.on('click', '.discussion-item', function (e) {
         e.preventDefault();
@@ -283,7 +311,7 @@ $(document).ready(function () {
         let div = $(".window-main.active, .modal-window.active, .dialog-window.active");
         if (!div.is(e.target)
             && div.has(e.target).length === 0) {
-            if(!$doc.find('.ui-datepicker').is(':visible')) div.find('.close-window').trigger('click');
+            if (!$doc.find('.ui-datepicker').is(':visible')) div.find('.close-window').trigger('click');
         }
     });
     const invite = new Invite();

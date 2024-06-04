@@ -941,6 +941,107 @@ function change_user_data() {
 	die();
 }
 
+add_action( 'wp_ajax_nopriv_change_user', 'change_user' );
+add_action( 'wp_ajax_change_user', 'change_user' );
+function change_user() {
+	$res         = array();
+	$result      = array();
+	$change_data = array();
+	$user_admin  = is_current_user_admin();
+	$user_id     = $_POST['user_id'] ?? '';
+	if ( $user_admin && $user_id ) {
+		$firstname              = $_POST['first_name'] ?? '';
+		$lastname               = $_POST['last_name'] ?? '';
+		$phone                  = $_POST['tel'] ?? '';
+		$email                  = $_POST['email'] ?? '';
+		$birthday               = $_POST['birthday'] ?? '';
+		$position               = $_POST['position'] ?? '';
+		$worksection_id         = $_POST['worksection_id'] ?? '';
+		$user                   = get_user_by( 'id', $user_id );
+		$change_data['user_id'] = $user_id;
+		if ( $user ) {
+			$_name           = $user->display_name;
+			$_user_email     = $user->user_email;
+			$_user_name      = $user->user_firstname;
+			$_user_lastname  = $user->user_lastname;
+			$_position       = carbon_get_user_meta( $user_id, 'position' );
+			$_user_tel       = carbon_get_user_meta( $user_id, 'user_tel' );
+			$_birthday       = carbon_get_user_meta( $user_id, 'birthday' );
+			$_worksection_id = carbon_get_user_meta( $user_id, 'worksection_id' );
+			$args            = array(
+				'ID' => $user_id,
+			);
+			if ( $firstname != $_user_name && $firstname != '' ) {
+				$args['first_name'] = $firstname;
+				wp_update_user( $args );
+				$result[]                      = 'Імя змінено';
+				$change_data['user_firstname'] = $firstname;
+				$change_data['name']           = $user->display_name;
+			}
+			if ( $lastname != $_user_lastname && $lastname != '' ) {
+				$args['last_name'] = $lastname;
+				wp_update_user( $args );
+				$result[]                  = 'Прізвище змінено';
+				$change_data['first_name'] = $firstname;
+				$change_data['name']       = $user->display_name;
+			}
+			$first_name = get_user_meta( $user->ID, 'first_name', true );
+			$last_name  = get_user_meta( $user->ID, 'last_name', true );
+			$full_name  = trim( $last_name . ' ' . $first_name );
+			if ( ! empty( $full_name ) && ( $user->data->display_name != $full_name ) ) {
+				$userdata = array(
+					'ID'           => $user_id,
+					'display_name' => $full_name,
+				);
+
+				wp_update_user( $userdata );
+				$change_data['name'] = $user->display_name;
+			}
+			if ( $email != $_user_email && $email != '' ) {
+				if ( email_exists( $email ) ) {
+					$result[] = 'Email вже занятий';
+				} else {
+					$result[]           = 'Email змінений';
+					$args['user_email'] = $email;
+					wp_update_user( $args );
+					$change_data['email'] = $email;
+				}
+			}
+			if ( $phone != $_user_tel && $phone != '' ) {
+				carbon_set_user_meta( $user_id, 'user_tel', $phone );
+				$result[]                = 'Телефон змінений';
+				$change_data['user_tel'] = $phone;
+			}
+			if ( $birthday != $_birthday && $birthday != '' ) {
+				carbon_set_user_meta( $user_id, 'birthday', $birthday );
+				$result[]                = 'День народження змінено';
+				$change_data['birthday'] = $birthday;
+				create_cron_birthday( $user_id );
+			}
+			if ( $position != $_position && $position != '' ) {
+				carbon_set_user_meta( $user_id, 'position', $position );
+				$result[]                = 'Посаду змінено';
+				$change_data['position'] = $position;
+			}
+			if ( $worksection_id != $_worksection_id && $worksection_id != '' ) {
+				carbon_set_user_meta( $user_id, 'worksection_id', $worksection_id );
+				$result[]                      = 'Worksection_id змінено';
+				$change_data['worksection_id'] = $worksection_id;
+			}
+		} else {
+			$res['type'] = 'error';
+			$res['msg']  = 'Помилка';
+		}
+	} else {
+		$res['type'] = 'error';
+		$res['msg']  = 'Помилка';
+	}
+	$res['msg']         = $res['msg'] . '' . implode( ', ', $result );
+	$res['change_data'] = $change_data;
+	echo json_encode( $res );
+	die();
+}
+
 add_action( 'wp_ajax_nopriv_change_user_notifications', 'change_user_notifications' );
 add_action( 'wp_ajax_change_user_notifications', 'change_user_notifications' );
 function change_user_notifications() {
@@ -1140,6 +1241,33 @@ function create_new_user() {
 		} else {
 			$res['type'] = 'error';
 			$res['msg']  = 'Необхідно заповнити обовязкові поля';
+		}
+	} else {
+		$res['type'] = 'error';
+		$res['msg']  = 'Помилка доступу';
+	}
+	echo json_encode( $res );
+	die();
+}
+
+add_action( 'wp_ajax_nopriv_dismiss_user', 'dismiss_user' );
+add_action( 'wp_ajax_dismiss_user', 'dismiss_user' );
+function dismiss_user() {
+	$res = array();
+	if ( is_current_user_admin() ) {
+		$user_id = $_POST['userID'] ?? '';
+		if ( $user_id ) {
+			if ( $user = get_user_by( 'id', $user_id ) ) {
+				carbon_set_user_meta( $user_id, 'fired', true );
+				$res['type']    = 'success';
+				$res['user_id'] = $user_id;
+			} else {
+				$res['type'] = 'error';
+				$res['msg']  = 'Користувача не знайдено';
+			}
+		} else {
+			$res['type'] = 'error';
+			$res['msg']  = 'Помилка';
 		}
 	} else {
 		$res['type'] = 'error';

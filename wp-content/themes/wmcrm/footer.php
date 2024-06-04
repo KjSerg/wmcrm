@@ -19,7 +19,6 @@ $statuses       = array(
 	'archive' => 'Завершена',
 	'pending' => 'В черзі'
 );
-//test
 ?>
 
 </main>

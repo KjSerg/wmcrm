@@ -17,6 +17,124 @@ function the_user_status( $user_id ) {
 	}
 }
 
+function the_user_row( $_user ) {
+	$_user_id    = $_user->ID;
+	$user_id     = get_current_user_id();
+	if ( $_user_id != $user_id ):
+		$_avatar = carbon_get_user_meta( $_user_id, 'avatar' );
+		$_avatar = $_avatar ? _u( $_avatar, 1 ) : get_avatar_url( $_user_id );
+		?>
+        <div class="users-table-body-row" data-user="<?php echo $_user_id; ?>">
+            <div class="users-table-column">
+                <div class="users-table-item">
+                    <a href="<?php echo $_avatar; ?>"
+                       class="users-table-item__avatar modal-open">
+                        <img class="cover" src="<?php echo $_avatar; ?>" alt="">
+                    </a>
+                    <a href="<?php echo get_author_posts_url( $_user_id ) ?>"
+                       class="users-table-item__name link-js">
+						<?php echo $_user->display_name; ?>
+                    </a>
+					<?php the_user_status( $_user_id ); ?>
+                </div>
+            </div>
+            <div class="users-table-column">
+                <div class="users-table__position">
+					<?php echo carbon_get_user_meta( $_user_id, 'position' ) ?: "Посада відсутня" ?>
+                </div>
+            </div>
+            <div class="users-table-column">
+				<?php the_user_contacts( $_user_id ); ?>
+            </div>
+            <div class="users-table-column">
+                <div class="users-table-controls">
+                    <a href="#change-user-<?php echo $_user_id; ?>"
+                       class="users-table-control modal-open">
+						<?php _s( _i( 'icon1' ) ) ?>
+                    </a>
+                    <a href="#dismiss-user-<?php echo $_user_id; ?>" class="users-table-control modal-open">
+						<?php _s( _i( 'icon2' ) ) ?>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="create-window modal-window" id="change-user-<?php echo $_user_id; ?>">
+            <div class="title">
+                Редагувати особисту інформацію
+            </div>
+            <form class="form form-js change-user-form" id="change-user-form-<?php echo $_user_id; ?>" method="post">
+                <input type="hidden" name="action" value="change_user">
+                <input type="hidden" name="user_id" value="<?php echo $_user_id; ?>">
+                <div class="form-row">
+                    <label class="form-group half">
+                        <span class="form-group__title"> Прізвище</span>
+                        <input type="text" name="last_name" required
+                               value="<?php echo $_user->last_name; ?>"
+                               placeholder="Введіть  прізвище">
+                    </label>
+                    <label class="form-group half">
+                        <span class="form-group__title"> Імя</span>
+                        <input type="text" name="first_name" required
+                               value="<?php echo $_user->first_name; ?>"
+                               placeholder="Введіть  імя">
+                    </label>
+                </div>
+                <div class="form-row">
+                    <label class="form-group half">
+                        <span class="form-group__title"> Email</span>
+                        <input type="email" name="email" required
+                               value="<?php echo $_user->user_email; ?>"
+                               data-reg="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])"
+                               placeholder="Введіть  email">
+                    </label>
+                    <label class="form-group half">
+                        <span class="form-group__title"> Телефон</span>
+                        <input type="tel" name="tel"
+                               value="<?php echo carbon_get_user_meta( $_user_id, 'user_tel' ) ?>"
+                               placeholder="Введіть номер телефону">
+                    </label>
+                </div>
+                <div class="form-row">
+                    <label class="form-group half">
+                        <span class="form-group__title"> Посада</span>
+                        <input type="text" name="position"
+                               value="<?php echo carbon_get_user_meta( $_user_id, 'position' ) ?>"
+                               placeholder="Введіть посаду">
+                    </label>
+                    <label class="form-group half">
+                        <span class="form-group__title"> День народження</span>
+                        <input name="birthday"
+                               readonly
+                               class="date-input"
+                               value="<?php echo carbon_get_user_meta( $_user_id, 'birthday' ) ?: '01-01-1995'; ?>"
+                               placeholder="День народження">
+                    </label>
+                </div>
+                <label class="form-group ">
+                    <span class="form-group__title"> Worksection id</span>
+                    <input type="text" name="worksection_id"
+                           value="<?php echo carbon_get_user_meta( $_user_id, 'worksection_id' ) ?>"
+                           placeholder="Введіть worksection_id">
+                </label>
+                <div class="form-buttons">
+                    <button class="form-button button">
+                        Змінити
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="dismiss-user-window modal-window" id="dismiss-user-<?php echo $_user_id; ?>">
+            <div class="modal-window__title">Звільнити <?php echo $_user->display_name; ?>?</div>
+            <div class="modal-window__subtitle">Буде переміщенно в розділ звільниних</div>
+            <div class="form-buttons">
+                <a class="form-button button dismiss-user__button" href="#" data-user-id="<?php echo $_user_id; ?>">
+                    Звільнити
+                </a>
+            </div>
+        </div>
+	<?php endif;
+}
+
 function the_user_contacts( $user_id ) {
 	$user_id = $user_id ?: get_current_user_id();
 	if ( $user_id ) {

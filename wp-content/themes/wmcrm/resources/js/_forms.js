@@ -162,7 +162,8 @@ $doc.ready(function () {
                 contentType: false,
                 data: formData,
             }).done(function (r) {
-                if (!$form.hasClass('profile-form') && !$form.hasClass('profile-notifications')) $form.trigger('reset');
+                const resetTriggerTest = !$form.hasClass('profile-form') && !$form.hasClass('profile-notifications') && !$form.hasClass('change-user-form');
+                if (resetTriggerTest) $form.trigger('reset');
                 $form.find('.form-files-result').html('');
                 if (r) {
                     if (isJsonString(r)) {
@@ -181,18 +182,35 @@ $doc.ready(function () {
                         }
                         if (res.change_data !== undefined) {
                             const changedData = res.change_data;
-                            if (changedData.name) {
-                                $doc.find('.profile-head-user__name').text(changedData.name);
+                            if(changedData.user_id === undefined){
+                                if (changedData.name) {
+                                    $doc.find('.profile-head-user__name').text(changedData.name);
+                                }
+                                if (changedData.email) {
+                                    $doc.find('.profile-email').text(changedData.email);
+                                }
+                                if (changedData.user_tel) {
+                                    $doc.find('.profile-tel').text(changedData.user_tel);
+                                }
+                                if (changedData.position) {
+                                    $doc.find('.profile-head-position').text(changedData.position);
+                                }
+                            }else {
+                                const $row = $doc.find('.users-table-body-row[data-id="'+changedData.user_id+'"]');
+                                if (changedData.name) {
+                                    $row.find('.users-table-item__name').text(changedData.name);
+                                }
+                                if (changedData.email) {
+                                    $row.find('.profile-email').text(changedData.email);
+                                }
+                                if (changedData.user_tel) {
+                                    $row.find('.profile-tel').text(changedData.user_tel);
+                                }
+                                if (changedData.position) {
+                                    $row.find('.users-table__position').text(changedData.position);
+                                }
                             }
-                            if (changedData.email) {
-                                $doc.find('.profile-email').text(changedData.email);
-                            }
-                            if (changedData.user_tel) {
-                                $doc.find('.profile-tel').text(changedData.user_tel);
-                            }
-                            if (changedData.position) {
-                                $doc.find('.profile-head-position').text(changedData.position);
-                            }
+
                         }
                         if (res.msg !== '' && res.msg !== undefined) {
                             if ($form.hasClass('report-footer-form')) {

@@ -9743,7 +9743,8 @@ $doc.ready(function () {
         contentType: false,
         data: formData
       }).done(function (r) {
-        if (!$form.hasClass('profile-form') && !$form.hasClass('profile-notifications')) $form.trigger('reset');
+        var resetTriggerTest = !$form.hasClass('profile-form') && !$form.hasClass('profile-notifications') && !$form.hasClass('change-user-form');
+        if (resetTriggerTest) $form.trigger('reset');
         $form.find('.form-files-result').html('');
         if (r) {
           if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(r)) {
@@ -9762,17 +9763,33 @@ $doc.ready(function () {
             }
             if (res.change_data !== undefined) {
               var changedData = res.change_data;
-              if (changedData.name) {
-                $doc.find('.profile-head-user__name').text(changedData.name);
-              }
-              if (changedData.email) {
-                $doc.find('.profile-email').text(changedData.email);
-              }
-              if (changedData.user_tel) {
-                $doc.find('.profile-tel').text(changedData.user_tel);
-              }
-              if (changedData.position) {
-                $doc.find('.profile-head-position').text(changedData.position);
+              if (changedData.user_id === undefined) {
+                if (changedData.name) {
+                  $doc.find('.profile-head-user__name').text(changedData.name);
+                }
+                if (changedData.email) {
+                  $doc.find('.profile-email').text(changedData.email);
+                }
+                if (changedData.user_tel) {
+                  $doc.find('.profile-tel').text(changedData.user_tel);
+                }
+                if (changedData.position) {
+                  $doc.find('.profile-head-position').text(changedData.position);
+                }
+              } else {
+                var $row = $doc.find('.users-table-body-row[data-id="' + changedData.user_id + '"]');
+                if (changedData.name) {
+                  $row.find('.users-table-item__name').text(changedData.name);
+                }
+                if (changedData.email) {
+                  $row.find('.profile-email').text(changedData.email);
+                }
+                if (changedData.user_tel) {
+                  $row.find('.profile-tel').text(changedData.user_tel);
+                }
+                if (changedData.position) {
+                  $row.find('.users-table__position').text(changedData.position);
+                }
               }
             }
             if (res.msg !== '' && res.msg !== undefined) {
@@ -9897,6 +9914,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   getCurrentDate: () => (/* binding */ getCurrentDate),
 /* harmony export */   hidePreloader: () => (/* binding */ hidePreloader),
 /* harmony export */   isElementInViewport: () => (/* binding */ isElementInViewport),
+/* harmony export */   isImageUrl: () => (/* binding */ isImageUrl),
 /* harmony export */   isJsonString: () => (/* binding */ isJsonString),
 /* harmony export */   isObjectEmpty: () => (/* binding */ isObjectEmpty),
 /* harmony export */   openWindow: () => (/* binding */ openWindow),
@@ -10187,6 +10205,9 @@ function copyToClipboard(text) {
   console.log('Скопійовано в буфер обміну: ' + text);
   showMassage('Copied 🖇️');
 }
+function isImageUrl(string) {
+  return /(jpg|gif|png|JPG|GIF|PNG|JPEG|jpeg|HEIF|heif)$/.test(string);
+}
 
 /***/ }),
 
@@ -10248,10 +10269,14 @@ function initTriggers() {
   });
   $doc.on('click', '.modal-open', function (e) {
     e.preventDefault();
-    console.log(e);
     var $t = $(this);
     var href = $t.attr('href');
     if (href === undefined) return;
+    if ((0,_helpers__WEBPACK_IMPORTED_MODULE_2__.isImageUrl)(href)) {
+      $doc.find('.window-main').html('<div class="window-main-image"><img src="' + href + '"  alt=""></div>');
+      (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.openWindow)($doc.find('.window-main'));
+      return;
+    }
     var $el = $doc.find(href);
     if ($el.length === 0) return;
     (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.openWindow)($el);
@@ -10328,6 +10353,29 @@ $(document).ready(function () {
       url: url,
       addToHistory: true
     });
+  });
+  $doc.on('click', '.dismiss-user__button', function (e) {
+    e.preventDefault();
+    var $t = $(this);
+    var userID = $t.attr('data-user-id');
+    if (userID !== undefined) {
+      var data = {
+        action: 'dismiss_user',
+        userID: userID
+      };
+      (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.sendRequest)(adminAjax, data, 'POST').then(function (res) {
+        if (res) {
+          if (res.type === 'success' && res.user_id !== undefined) {
+            (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.closeWindow)();
+            $doc.find('.users-table-body-row[data-user="' + res.user_id + '"]').remove();
+            $doc.find('#change-user-' + res.user_id).remove();
+            $doc.find('#dismiss-user-' + res.user_id).remove();
+          }
+        } else {
+          (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showMassage)('Error');
+        }
+      });
+    }
   });
   $doc.on('click', '.discussion-item', function (e) {
     e.preventDefault();
