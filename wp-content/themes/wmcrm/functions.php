@@ -57,10 +57,17 @@ function custom_logout_and_redirect() {
 
 add_action( 'init', 'custom_logout_and_redirect' );
 
-add_action('init', 'disable_smilies');
+add_action( 'init', 'disable_smilies' );
 
 function disable_smilies() {
-	update_option('use_smilies', 0);
+	update_option( 'use_smilies', 0 );
+}
+
+add_action( 'init', 'set_current_user_status' );
+function set_current_user_status() {
+	if ( $user_id = get_current_user_id() ) {
+		carbon_set_user_meta( $user_id, 'last_time_online', time() );
+	}
 }
 
 add_filter( 'auth_cookie_expiration', 'cookie_expiration_new', 20, 3 );
@@ -72,10 +79,12 @@ function cookie_expiration_new( $expiration, $user_id, $remember ) {
 	return 365 * DAY_IN_SECONDS;
 }
 
-function custom_mime_types($mimes) {
-	$mimes['doc'] = 'application/msword';
+function custom_mime_types( $mimes ) {
+	$mimes['doc']  = 'application/msword';
 	$mimes['docx'] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
 	return $mimes;
 }
-add_filter('upload_mimes', 'custom_mime_types');
+
+add_filter( 'upload_mimes', 'custom_mime_types' );
 

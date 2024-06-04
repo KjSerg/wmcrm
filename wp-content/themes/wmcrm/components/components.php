@@ -1,5 +1,46 @@
 <?php
 
+function the_user_status( $user_id ) {
+	$time    = time();
+	$user_id = $user_id ?: get_current_user_id();
+	if ( $user_id ) {
+		$last_time_online = carbon_get_user_meta( $user_id, 'last_time_online' ) ?: 0;
+		$last_time_online = (int) $last_time_online;
+		if ( $last_time_online ) {
+			$time_diff = $time - $last_time_online;
+			$diff      = $time_diff <= 60 ? 'Онлайн' : human_time_diff( $last_time_online );
+			$diff_cls  = $time_diff <= 60 ? 'online-status' : '';
+			if ( $diff ) {
+				echo '<div class="user-status-label ' . $diff_cls . '">' . $diff . '</div>';
+			}
+		}
+	}
+}
+
+function the_user_contacts( $user_id ) {
+	$user_id = $user_id ?: get_current_user_id();
+	if ( $user_id ) {
+		$user       = get_user_by( 'id', $user_id );
+		$user_tel   = carbon_get_user_meta( $user_id, 'user_tel' );
+		$user_email = $user->user_email;
+		?>
+        <div class="profile-head-contacts">
+            <div class="profile-head-contacts__item">
+                <div class="icon"><?php _s( _i( 'tel' ) ) ?></div>
+                <div class="profile-tel">
+					<?php echo $user_tel ?: 'Телефон відсутній'; ?>
+                </div>
+            </div>
+            <div class="profile-head-contacts__item">
+                <div class="icon"><?php _s( _i( 'email' ) ) ?></div>
+                <div class="profile-email">
+					<?php echo $user_email ?: 'Пошта відсутня'; ?>
+                </div>
+            </div>
+        </div>
+		<?php
+	}
+}
 
 function the_user_select_list() {
 	$users = get_users();

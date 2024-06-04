@@ -9186,7 +9186,6 @@ var Stopwatch = /*#__PURE__*/function () {
           div.removeClass('open-controls');
           $('body').removeClass('open-timer');
           clearInterval(_this.timersInterval);
-          console.log(_this.timersInterval);
         }
       });
     }

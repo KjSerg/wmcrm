@@ -130,7 +130,6 @@ export default class Stopwatch {
                 div.removeClass('open-controls');
                 $('body').removeClass('open-timer');
                 clearInterval(_this.timersInterval);
-                console.log(_this.timersInterval)
             }
         });
     }

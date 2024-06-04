@@ -3420,9 +3420,18 @@ input {
   font-weight: 700;
   line-height: normal;
 }
+.users-table-body-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem 0;
+  border-bottom: 1px solid #E2E3EE;
+  background: rgba(242, 243, 249, 0.26);
+}
 .users-table-head {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   padding: 2rem 0;
   background: #F2F3F9;
   color: #202554;
@@ -3439,6 +3448,18 @@ input {
 .users-table-column:not(:last-child) {
   border-right: 2px solid #E2E3EE;
 }
+.users-table-column:nth-child(1) {
+  width: 35rem;
+}
+.users-table-column:nth-child(2) {
+  width: 29rem;
+}
+.users-table-column:nth-child(3) {
+  width: 57rem;
+}
+.users-table-column .profile-head-contacts {
+  padding: 0;
+}
 .users-table__title {
   width: 100%;
   color: #202554;
@@ -3448,9 +3469,55 @@ input {
   font-weight: 600;
   line-height: 150%;
 }
+.users-table-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.users-table-item__avatar {
+  margin-right: 1rem;
+  width: 4rem;
+  height: 4rem;
+  flex-shrink: 0;
+  flex-grow: 0;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.users-table-item__name {
+  padding-right: 1rem;
+  color: #333;
+  font-family: Montserrat;
+  font-size: 1.4rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 140%;
+}
+.users-table-item .user-status-label {
+  margin-left: auto;
+}
 
 .add-user {
   margin-left: 2rem;
+}
+
+.user-status-label {
+  display: inline-flex;
+  padding: 0.6rem 1.2rem;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 0.8rem;
+  background: #9B9EBE;
+  color: #FFF;
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 1.2rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+.user-status-label.online-status {
+  background: #7BB500;
 }
 
 html {

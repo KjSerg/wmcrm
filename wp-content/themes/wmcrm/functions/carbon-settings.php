@@ -263,6 +263,7 @@ function crb_attach_in_user() {
 			         Field::make( "text", "user_tel", "Телефон користувача" ),
 			         Field::make( "date", "birthday", "День народження" )->set_storage_format( 'd-m-Y' ),
 			         Field::make( "text", "current_project", "Проєкт користувача" ),
+			         Field::make( "text", "last_time_online", "Останній раз в мережі" ),
 			         Field::make( "hidden", "user_project_filter", " " ),
 		         )
 	         );
