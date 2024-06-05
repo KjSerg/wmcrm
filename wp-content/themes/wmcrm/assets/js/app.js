@@ -8848,13 +8848,14 @@ var CommentObserver = /*#__PURE__*/function () {
       var res = (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.sendRequest)(adminAjax, {
         action: 'reading_discussion',
         id: id
-      }, 'POST', false);
+      }, 'POST', false).then(function () {
+        _this.$doc.find("[data-reading-id=\"".concat(id, "\"]")).removeClass('unread');
+        _this.$doc.find("[data-reading-id=\"".concat(id, "\"]")).addClass('read');
+        _this.$doc.find("[data-reading-id=\"".concat(id, "\"] .discussion-item__check.unread")).removeClass('unread');
+        _this.$doc.find("[data-reading-id=\"".concat(id, "\"] .discussion-item__check")).addClass('read');
+        _this.$doc.find("[data-reading-id=\"".concat(id, "\"]")).removeAttr('data-reading-id');
+      });
       console.log(res);
-      _this.$doc.find("[data-reading-id=\"".concat(id, "\"]")).removeClass('unread');
-      _this.$doc.find("[data-reading-id=\"".concat(id, "\"]")).addClass('read');
-      _this.$doc.find("[data-reading-id=\"".concat(id, "\"] .discussion-item__check.unread")).removeClass('unread');
-      _this.$doc.find("[data-reading-id=\"".concat(id, "\"] .discussion-item__check")).addClass('read');
-      _this.$doc.find("[data-reading-id=\"".concat(id, "\"]")).removeAttr('data-reading-id');
     }
   }, {
     key: "obsever",

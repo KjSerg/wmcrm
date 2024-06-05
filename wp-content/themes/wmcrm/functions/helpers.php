@@ -1340,3 +1340,29 @@ function get_url_avatar( $user_id = false ) {
 
 	return $avatar;
 }
+
+function get_dates_of_week($year, $weekNumber) {
+	$dates = [];
+	$date = new DateTime();
+	$date->setISODate($year, $weekNumber);
+	for ($i = 0; $i < 7; $i++) {
+		$dates[] = $date->format('d-m-Y');
+		$date->modify('+1 day');
+	}
+
+	return $dates;
+}
+function get_localized_month_name($monthNumber, $locale = 'uk_UA') {
+	$formatter = new IntlDateFormatter(
+		$locale,
+		IntlDateFormatter::NONE,
+		IntlDateFormatter::NONE,
+		null,
+		null,
+		'MMMM'
+	);
+	$timestamp = mktime(0, 0, 0, $monthNumber, 1, 2000);
+	$monthName = $formatter->format($timestamp);
+
+	return $monthName;
+}

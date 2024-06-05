@@ -14,13 +14,15 @@ export default class CommentObserver {
         const res = sendRequest(adminAjax, {
             action: 'reading_discussion',
             id
-        }, 'POST', false);
+        }, 'POST', false).then(function () {
+            _this.$doc.find(`[data-reading-id="${id}"]`).removeClass('unread');
+            _this.$doc.find(`[data-reading-id="${id}"]`).addClass('read');
+            _this.$doc.find(`[data-reading-id="${id}"] .discussion-item__check.unread`).removeClass('unread');
+            _this.$doc.find(`[data-reading-id="${id}"] .discussion-item__check`).addClass('read');
+            _this.$doc.find(`[data-reading-id="${id}"]`).removeAttr('data-reading-id');
+        });
         console.log(res);
-        _this.$doc.find(`[data-reading-id="${id}"]`).removeClass('unread');
-        _this.$doc.find(`[data-reading-id="${id}"]`).addClass('read');
-        _this.$doc.find(`[data-reading-id="${id}"] .discussion-item__check.unread`).removeClass('unread');
-        _this.$doc.find(`[data-reading-id="${id}"] .discussion-item__check`).addClass('read');
-        _this.$doc.find(`[data-reading-id="${id}"]`).removeAttr('data-reading-id');
+
     }
 
     obsever() {
