@@ -2,6 +2,8 @@
 function the_users_page() {
 	$user_id  = get_current_user_id();
 	$is_admin = is_current_user_admin();
+	$section    = $_GET['section'] ?? '';
+	$route      = $_GET['route'] ?? '';
 	if ( ! $is_admin ) {
 		die();
 	}
@@ -16,8 +18,6 @@ function the_users_page() {
 	$avatar     = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $user_id );
 	$user_tel   = carbon_get_user_meta( $user_id, 'user_tel' );
 	$user_email = $user->user_email;
-	$section    = $_GET['section'] ?? '';
-	$route      = $_GET['route'] ?? '';
 	$users      = get_active_users();
 	if ( $section == 'dismissed' ) {
 		$users = get_users();
@@ -33,8 +33,13 @@ function the_users_page() {
                     </div>
                     <div class="users-head-controls">
 						<?php if ( $section == '' ): ?>
-                            <a href="<?php echo $url . '?route=' . $route . '&section=dismissed'; ?>" class="button">Звільнені</a>
+                            <a href="<?php echo $url . '?route=' . $route . '&section=dismissed'; ?>" class="button link-js">Звільнені</a>
+						<?php elseif ($section == 'dismissed'): ?>
+                            <a href="<?php echo $url . '?route=' . $route ; ?>" class="button link-js">Працівники</a>
 						<?php endif; ?>
+                        <a href="<?php echo $url . '?route=work_days' ; ?>" class="button button--bordered link-js">
+                            Робочий день
+                        </a>
                     </div>
                 </div>
                 <div class="users-table">
@@ -79,8 +84,7 @@ function the_users_page() {
                                 <div class="users-table-column"></div>
                             </div>
 						<?php endif; ?>
-						<?php if ( $users = get_active_users() ): foreach ( $users as $_user ):
-
+						<?php foreach ( $users as $_user ):
 							if ( $section == 'dismissed' ) {
 								$__id = $_user->ID;
 								if ( carbon_get_user_meta( $__id, 'fired' ) ) {
@@ -89,7 +93,7 @@ function the_users_page() {
 							} else {
 								the_user_row( $_user );
 							}
-						endforeach; endif; ?>
+						endforeach; ?>
                     </div>
                 </div>
             </div>

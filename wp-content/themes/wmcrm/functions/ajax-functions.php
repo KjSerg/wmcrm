@@ -495,6 +495,7 @@ function save_user_time() {
 		}
 		$id = $cost_id ? wp_update_post( $post_data, true ) : wp_insert_post( $post_data, true );
 		if ( $id && ! is_wp_error( $id ) ) {
+			$old_status = carbon_get_post_meta( $id, 'costs_status' ) ?: 0;
 			$costs_list = array();
 			$time_test  = 0;
 			foreach ( $work_times as $stopwatch ) {
@@ -527,13 +528,45 @@ function save_user_time() {
 			carbon_set_post_meta( $id, 'costs_status', $status );
 			carbon_set_post_meta( $id, 'costs_list', $costs_list );
 			carbon_set_post_meta( $id, 'costs_data', json_encode( $work_times ) );
-			$pd   = carbon_get_post_meta( $id, 'post_data' );
-			$time = time();
-			$pd   .= PHP_EOL .
-			         '____________________________________________________________________________________________________________________________________________________________________________________' .
-			         date( 'd-m-Y H:i:s', $time ) .
-			         '____________________________________________________________________________________________________________________________________________________________________________________' .
-			         json_encode( $_POST );
+			$pd               = carbon_get_post_meta( $id, 'post_data' );
+			$time             = time();
+			$costs_work_list  = carbon_get_post_meta( $id, 'costs_work_list' ) ?: array();
+			$costs_pause_list = carbon_get_post_meta( $id, 'costs_pause_list' ) ?: array();
+			$status           = (int) $status;
+			$old_status       = (int) $old_status;
+			if ( $status != $old_status ) {
+				if ( $status == 1 ) {
+					$costs_work_list[] = array(
+						'start'  => $time,
+						'finish' => $time
+					);
+					if ( $costs_pause_list && isset( $costs_pause_list[ array_key_last( $costs_pause_list ) ] ) ) {
+						$costs_pause_list[ array_key_last( $costs_pause_list ) ]['finish'] = $time;
+					}
+				} elseif ( $status == - 1 ) {
+					if ( isset( $costs_work_list[ array_key_last( $costs_work_list ) ] ) ) {
+						$costs_work_list[ array_key_last( $costs_work_list ) ]['finish'] = $time;
+					}
+					$costs_pause_list[] = array(
+						'start'  => $time,
+						'finish' => $time
+					);
+				} elseif ( $status == 0 ) {
+					if ( isset( $costs_work_list[ array_key_last( $costs_work_list ) ] ) ) {
+						$costs_work_list[ array_key_last( $costs_work_list ) ]['finish'] = $time;
+					}
+					if ( isset( $costs_pause_list[ array_key_last( $costs_pause_list ) ] ) ) {
+						$costs_pause_list[ array_key_last( $costs_pause_list ) ]['finish'] = $time;
+					}
+				}
+			}
+			carbon_set_post_meta( $id, 'costs_work_list', $costs_work_list );
+			carbon_set_post_meta( $id, 'costs_pause_list', $costs_pause_list );
+			$pd .= PHP_EOL .
+			       '____________________________________________________________________________________________________________________________________________________________________________________' .
+			       date( 'd-m-Y H:i:s', $time ) .
+			       '____________________________________________________________________________________________________________________________________________________________________________________' .
+			       json_encode( $_POST );
 			carbon_set_post_meta( $id, 'post_data', $pd );
 			if ( $stopwatches ) {
 				carbon_set_post_meta( $id, 'pauses', json_encode( $stopwatches ) );
@@ -1283,7 +1316,7 @@ function return_user() {
 	$res = array();
 	if ( is_current_user_admin() ) {
 		$user_id = $_POST['userID'] ?? '';
-		if ( $user_id  ) {
+		if ( $user_id ) {
 			if ( $user = get_user_by( 'id', $user_id ) ) {
 				carbon_set_user_meta( $user_id, 'fired', false );
 				$res['type']    = 'success';

@@ -2059,6 +2059,12 @@ input {
   line-height: 150%;
   text-align: center;
 }
+.timer-list-item__value.pause {
+  background: #B67CB6;
+}
+.timer-list-item__value.stop {
+  background: #C9085F;
+}
 .timer-list-item__project {
   color: #000;
   font-family: Montserrat;
@@ -3428,6 +3434,17 @@ input {
   border-bottom: 1px solid #E2E3EE;
   background: rgba(242, 243, 249, 0.26);
 }
+@media (max-width: 1200px) {
+  .users-table-body-row {
+    padding: 1.5rem 0;
+  }
+}
+@media (max-width: 1100px) {
+  .users-table-body-row {
+    align-items: normal;
+    padding: 0.5rem 0;
+  }
+}
 .users-table-head {
   display: flex;
   align-items: center;
@@ -3445,20 +3462,104 @@ input {
   padding-left: 2rem;
   padding-right: 2rem;
 }
+@media (max-width: 1200px) {
+  .users-table-column {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
 .users-table-column:not(:last-child) {
   border-right: 2px solid #E2E3EE;
 }
 .users-table-column:nth-child(1) {
   width: 35rem;
 }
+@media (max-width: 960px) {
+  .users-table-column:nth-child(1) {
+    width: 45%;
+  }
+}
+@media (max-width: 650px) {
+  .users-table-column:nth-child(1) {
+    width: 40%;
+  }
+}
+@media (max-width: 590px) {
+  .users-table-column:nth-child(1) {
+    width: 30%;
+  }
+}
+@media (max-width: 560px) {
+  .users-table-column:nth-child(1) {
+    width: 60%;
+  }
+}
 .users-table-column:nth-child(2) {
   width: 25rem;
+}
+@media (max-width: 1200px) {
+  .users-table-column:nth-child(2) {
+    width: 20rem;
+  }
+}
+@media (max-width: 1125px) {
+  .users-table-column:nth-child(2) {
+    width: 18rem;
+  }
+}
+@media (max-width: 960px) {
+  .users-table-column:nth-child(2) {
+    display: none;
+  }
 }
 .users-table-column:nth-child(3) {
   width: 57rem;
 }
+@media (max-width: 1100px) {
+  .users-table-column:nth-child(3) {
+    width: 40%;
+  }
+}
+@media (max-width: 970px) {
+  .users-table-column:nth-child(3) {
+    width: 40%;
+  }
+}
+@media (max-width: 650px) {
+  .users-table-column:nth-child(3) {
+    width: 45%;
+  }
+}
+@media (max-width: 560px) {
+  .users-table-column:nth-child(3) {
+    display: none;
+  }
+}
+@media (max-width: 960px) {
+  .users-table-column:nth-child(4) {
+    width: 15%;
+  }
+}
+@media (max-width: 590px) {
+  .users-table-column:nth-child(4) {
+    width: 20%;
+  }
+}
+@media (max-width: 560px) {
+  .users-table-column:nth-child(4) {
+    width: 40%;
+  }
+}
 .users-table-column .profile-head-contacts {
   padding: 0;
+}
+@media (max-width: 1100px) {
+  .users-table-column .profile-head-contacts {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
 }
 .users-table-column .profile-head-contacts__item {
   width: 50%;
@@ -3470,8 +3571,18 @@ input {
   font-weight: 500;
   line-height: 140%;
 }
+@media (max-width: 1100px) {
+  .users-table-column .profile-head-contacts__item {
+    width: 100%;
+  }
+}
 .users-table-column .profile-head-contacts__item:not(:last-child) {
   margin-right: 0;
+}
+@media (max-width: 1100px) {
+  .users-table-column .profile-head-contacts__item:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
 }
 .users-table__title {
   width: 100%;
@@ -3487,6 +3598,12 @@ input {
   display: flex;
   align-items: center;
 }
+@media (max-width: 650px) {
+  .users-table-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 .users-table-item__avatar {
   margin-right: 1rem;
   width: 4rem;
@@ -3495,6 +3612,11 @@ input {
   flex-grow: 0;
   border-radius: 50%;
   overflow: hidden;
+}
+@media (max-width: 650px) {
+  .users-table-item__avatar {
+    display: none;
+  }
 }
 .users-table-item__name {
   padding-right: 1rem;
@@ -3505,16 +3627,24 @@ input {
   font-weight: 500;
   line-height: 140%;
 }
+@media (max-width: 650px) {
+  .users-table-item__name {
+    margin-bottom: 1rem;
+  }
+}
 .users-table-item .user-status-label {
   margin-left: auto;
 }
 .users-table__position {
+  display: flex;
+  align-items: center;
+  min-height: 3.6rem;
   color: #333;
   font-family: Montserrat;
   font-size: 1.4rem;
   font-style: normal;
   font-weight: 500;
-  line-height: 140%; /* 2.24rem */
+  line-height: 140%;
 }
 .users-table-controls {
   display: flex;
@@ -3534,6 +3664,9 @@ input {
   border-radius: 50%;
   border: 1px solid #E2E3EE;
   transition: 0.5s ease;
+}
+.users-table-control svg path {
+  fill: #686D86 !important;
 }
 .users-table-control:hover {
   background-color: rgb(255, 255, 255);

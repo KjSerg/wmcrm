@@ -193,7 +193,7 @@ function crb_attach_in_costs() {
 	);
 	Container::make( 'post_meta', 'День' )
 	         ->show_on_post_type( 'costs' )
-	         ->add_tab('Інформація',
+	         ->add_tab( 'Інформація',
 		         array(
 			         Field::make( "text", "costs_date", "Дата" ),
 			         Field::make( "select", "costs_status", "Статус робочого дня" )
@@ -208,7 +208,6 @@ function crb_attach_in_costs() {
 			         Field::make( "text", "costs_sum", "Сума часу в мілісикундах за день" )->set_width( 50 ),
 			         Field::make( "text", "costs_sum_hour_pause", "Сума паузи" )->set_width( 50 ),
 			         Field::make( "text", "costs_sum_pause", "Сума паузи в мілісикундах за день" )->set_width( 50 ),
-
 			         Field::make( "text", "costs_sum_hour_change", "Сума часу [змінено]" )->set_width( 50 ),
 			         Field::make( "text", "costs_confirmed", "Підтвердженно" )->set_width( 50 ),
 			         Field::make( "text", "costs_change_text", "Коментар" ),
@@ -219,16 +218,33 @@ function crb_attach_in_costs() {
 				              Field::make( "date_time", "time_start", "Початок" )->set_width( 50 )->set_storage_format( 'U' ),
 				              Field::make( "date_time", "time_finish", "Кінець" )->set_width( 50 )->set_storage_format( 'U' ),
 			              ) ),
+
 		         )
 	         )
-		->add_tab('Службові поля',
-			array(
+	         ->add_tab( 'Службові поля',
+		         array(
 
-				Field::make( "textarea", "costs_data" ),
-				Field::make( "textarea", "pauses" ),
-				Field::make( "textarea", "post_data" ),
-				Field::make( "textarea", "res_data" ),
-			));
+			         Field::make( "textarea", "costs_data" ),
+			         Field::make( "textarea", "pauses" ),
+			         Field::make( "textarea", "post_data" ),
+			         Field::make( "textarea", "res_data" ),
+		         ) )
+	         ->add_tab( 'Списки',
+		         array(
+			         Field::make( "complex", "costs_work_list", "Список відпрацювань" )
+			              ->setup_labels( $labels )->set_width( 50 )
+			              ->add_fields( array(
+				              Field::make( "date_time", "start", "Початок" )->set_width( 50 )->set_storage_format( 'U' ),
+				              Field::make( "date_time", "finish", "Кінець" )->set_width( 50 )->set_storage_format( 'U' ),
+			              ) ),
+			         Field::make( "complex", "costs_pause_list", "Список перерв" )
+			              ->setup_labels( $labels )->set_width( 50 )
+			              ->add_fields( array(
+				              Field::make( "date_time", "start", "Початок" )->set_width( 50 )->set_storage_format( 'U' ),
+				              Field::make( "date_time", "finish", "Кінець" )->set_width( 50 )->set_storage_format( 'U' ),
+			              ) ),
+		         )
+	         );
 }
 
 add_action( 'carbon_fields_register_fields', 'crb_attach_in_tags' );

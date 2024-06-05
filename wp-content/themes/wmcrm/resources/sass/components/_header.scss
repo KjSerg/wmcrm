@@ -607,6 +607,12 @@
         font-weight: 600;
         line-height: 150%;
         text-align: center;
+        &.pause {
+          background:#B67CB6;
+        }
+        &.stop {
+          background:#C9085F;
+        }
       }
       &__project {
         color: #000;

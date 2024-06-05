@@ -7,6 +7,8 @@ if ( $user_id ) {
 	$route = $_GET['route'] ?? '';
 	if ( $route == 'profile' ) {
 		the_profile();
+	} elseif ( $route == 'work_days' && $is_admin ) {
+		the_days_page();
 	} elseif ( $route == 'users' && $is_admin ) {
 		the_users_page();
 	} else {

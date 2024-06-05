@@ -9194,16 +9194,16 @@ var Stopwatch = /*#__PURE__*/function () {
     value: function runTick() {
       var _this = this;
       var _status = _this.status;
+      console.log(_status);
       if (_status === 0) {
         if (_this.interval !== null) {
           clearInterval(_this.interval);
         }
       } else {
-        if (_this.interval === null) {
-          _this.interval = setInterval(function () {
-            _this.renderResults();
-          }, 1000);
-        }
+        console.log(_this.interval);
+        _this.interval = setInterval(function () {
+          _this.renderResults();
+        }, 1000);
       }
     }
   }, {
@@ -9288,7 +9288,6 @@ var Stopwatch = /*#__PURE__*/function () {
       _this.workTimes = _workTimes;
       if (_this.startTimestamp === 0) {
         _this.startTimestamp = unix;
-        _this.runTick();
       } else {
         var lastIndex = _stopwatches.length - 1;
         if (lastIndex >= 0) {
@@ -9300,9 +9299,9 @@ var Stopwatch = /*#__PURE__*/function () {
         }
         if (_finishTimestamp > 0) {
           _this.finishTimestamp = 0;
-          _this.runTick();
         }
       }
+      _this.runTick();
       _this.saveData();
     }
   }, {
@@ -9441,6 +9440,7 @@ var Stopwatch = /*#__PURE__*/function () {
         date: date
       };
       (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.sendRequest)(adminAjax, data, 'POST', false).then(function (res) {
+        console.log(res);
         if (res) {
           var pauses = res.pauses || [];
           var costs_data = res.costs_data || [];

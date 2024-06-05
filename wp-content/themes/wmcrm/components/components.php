@@ -8,8 +8,8 @@ function the_user_status( $user_id ) {
 		$last_time_online = (int) $last_time_online;
 		if ( $last_time_online ) {
 			$time_diff = $time - $last_time_online;
-			$diff      = $time_diff <= 60 ? 'Онлайн' : human_time_diff( $last_time_online );
-			$diff_cls  = $time_diff <= 60 ? 'online-status' : '';
+			$diff      = $time_diff <= 90 ? 'Онлайн' : human_time_diff( $last_time_online );
+			$diff_cls  = $time_diff <= 90 ? 'online-status' : '';
 			if ( $diff ) {
 				echo '<div class="user-status-label ' . $diff_cls . '">' . $diff . '</div>';
 			}
@@ -133,12 +133,11 @@ function the_user_row( $_user ) {
                 </div>
             </form>
         </div>
-
         <div class="dismiss-user-window modal-window" id="dismiss-user-<?php echo $_user_id; ?>">
 			<?php if ( $is_fired ): ?>
                 <div class="modal-window__title">Повернути в команду <?php echo $_user->display_name; ?>?</div>
                 <div class="modal-window__subtitle">
-                    Буде переміщено із розділ звільнених та буде надано доступ до CRM
+                    Буде переміщено із розділу звільнених та буде надано доступ до CRM
                 </div>
                 <div class="form-buttons">
                     <a class="form-button button return-user__button" href="#" data-user-id="<?php echo $_user_id; ?>">
@@ -156,7 +155,6 @@ function the_user_row( $_user ) {
 			<?php endif; ?>
 			<?php endif; ?>
         </div>
-
 	<?php endif;
 }
 
@@ -208,7 +206,14 @@ function the_timer_list() {
 				$status = $obj['status'];
 				$current_project = $obj['current_project'];
 				$u = get_user_by( 'id', $user_ID );
-				$sum_hour = $obj['sum_hour'];;
+				$sum_hour = $obj['sum_hour'];
+				$status = $obj['status'];
+				$cls = '';
+				if ( $status == '-1' ) {
+					$cls = ' pause';
+				} elseif ( $status == '0' ) {
+					$cls = ' stop';
+				}
 				?>
                 <li class="timer-list-item" data-user-id="<?php echo $user_ID ?>">
                     <a href="<?php echo get_author_posts_url( $user_ID ) ?>"
@@ -220,7 +225,7 @@ function the_timer_list() {
                                 title="<?php echo $u->display_name; ?>"
                                 class="cover" src="<?php echo $obj['avatar'] ?>" alt="">
                     </a>
-                    <div class="timer-list-item__value">
+                    <div class="timer-list-item__value <?php echo $cls; ?>">
 						<?php
 						if ( $sum_hour_arr = explode( ':', $sum_hour ) ) {
 							echo $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
@@ -247,9 +252,8 @@ function the_timer_list() {
 }
 
 function the_timer_html() {
-	$is_user_admin = is_current_user_admin();
+	$is_user_admin                = is_current_user_admin();
 	if ( $is_user_admin ):
-
 		?>
         <div class="timer">
             <div class="timer-result admin-timers">
@@ -261,16 +265,32 @@ function the_timer_html() {
         </div>
 	<?php
 	else:
-		?>
-        <div class="timer">
-            <div class="timer-result">
-                Розпочати
-            </div>
-            <div class="timer-control">
-                <div class="timer-control-buttons">
-                    <a href="#" class="timer-button timer-button-start">
-                        Розпочати робочий день
-                        <span class="icon">
+		$user_ID = get_current_user_id();
+		$today                    = date( 'd-m-Y', time() );
+		$cost_id                  = get_cost_id( array(
+			'user_id' => $user_ID,
+			'date'    => $today,
+		) );
+		if ( $cost_id ):
+			$costs_sum_hour = carbon_get_post_meta( $cost_id, 'costs_sum_hour' ) ?: '00:00:00';
+			$costs_sum_pause_hour = carbon_get_post_meta( $cost_id, 'costs_sum_hour_pause' ) ?: '00:00:00';
+			$costs_status         = carbon_get_post_meta( $cost_id, 'costs_status' );
+			$cls                  = '';
+			if ( $costs_status == -1 ) {
+				$cls = ' pause';
+			} elseif ( $costs_status == 1 ) {
+				$cls = ' play';
+			}
+			?>
+            <div class="timer <?php echo $cls ?>">
+                <div class="timer-result">
+					<?php echo $costs_sum_hour ?>
+                </div>
+                <div class="timer-control">
+                    <div class="timer-control-buttons">
+                        <a href="#" class="timer-button timer-button-start">
+                            Розпочати робочий день
+                            <span class="icon">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20"
                                                  viewBox="0 0 21 20" fill="none">
   <g clip-path="url(#clip0_314_7791)">
@@ -284,10 +304,10 @@ function the_timer_html() {
   </defs>
 </svg>
                                         </span>
-                    </a>
-                    <a href="#" class="timer-button timer-button-finish">
-                        Закінчити робочий день
-                        <span class="icon">
+                        </a>
+                        <a href="#" class="timer-button timer-button-finish">
+                            Закінчити робочий день
+                            <span class="icon">
                                           <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20"
                                                viewBox="0 0 21 20" fill="none">
   <g clip-path="url(#clip0_314_7772)">
@@ -301,10 +321,10 @@ function the_timer_html() {
   </defs>
 </svg>
                                         </span>
-                    </a>
-                    <a href="#" class="timer-button timer-button-pause">
-                        Перерва <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="20"
-                                                        height="20" viewBox="0 0 20 20" fill="none">
+                        </a>
+                        <a href="#" class="timer-button timer-button-pause">
+                            Перерва <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                            height="20" viewBox="0 0 20 20" fill="none">
   <g clip-path="url(#clip0_314_7776)">
     <path d="M10 0C4.475 0 0 4.475 0 10C0 15.525 4.475 20 10 20C15.525 20 20 15.525 20 10C20 4.475 15.525 0 10 0ZM8.9 12.5C8.9 13.125 8.4 13.6 7.8 13.6C7.175 13.6 6.7 13.1 6.7 12.5V7.5C6.675 6.9 7.175 6.4 7.775 6.4C8.4 6.4 8.9 6.9 8.9 7.5V12.5ZM13.325 12.5C13.325 13.125 12.825 13.6 12.225 13.6C11.6 13.6 11.125 13.1 11.125 12.5V7.5C11.1 6.9 11.6 6.4 12.2 6.4C12.825 6.4 13.325 6.9 13.325 7.5V12.5Z"
           fill="white"/>
@@ -315,10 +335,10 @@ function the_timer_html() {
     </clipPath>
   </defs>
 </svg></span>
-                    </a>
-                    <a href="#" class="timer-button timer-button-play-pause">
-                        Продовжити <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="21"
-                                                           height="20" viewBox="0 0 21 20" fill="none">
+                        </a>
+                        <a href="#" class="timer-button timer-button-play-pause">
+                            Продовжити <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="21"
+                                                               height="20" viewBox="0 0 21 20" fill="none">
   <g clip-path="url(#clip0_314_7757)">
     <path d="M10.5 0C4.96341 0 0.5 4.46341 0.5 10C0.5 15.5366 4.96341 20 10.5 20C16.0366 20 20.5 15.5366 20.5 10C20.5 4.46341 16.0366 0 10.5 0ZM14.939 10.4634L8.28049 14.3659C8.20732 14.4146 8.08537 14.439 8.0122 14.439C7.93902 14.439 7.81707 14.4146 7.7439 14.3659C7.57317 14.2439 7.47561 14.0976 7.47561 13.9024V6.12195H7.45122C7.45122 5.92683 7.57317 5.73171 7.71951 5.65854C7.86585 5.58537 8.10976 5.53659 8.28049 5.65854L14.939 9.53658C15.1098 9.65854 15.2073 9.80488 15.2073 10C15.2073 10.1951 15.0854 10.3902 14.939 10.4634Z"
           fill="white"/>
@@ -329,19 +349,102 @@ function the_timer_html() {
     </clipPath>
   </defs>
 </svg></span>
-                    </a>
-                </div>
-                <div class="timer-control-results">
-                    <div class="timer-work-time">
-                        Тривалість робочого дня: <span>00:00:00</span>
+                        </a>
                     </div>
-                    <div class="timer-pause-time">
-                        Тривалість перерви: <span>00:00:00</span>
+                    <div class="timer-control-results">
+                        <div class="timer-work-time">
+                            Тривалість робочого дня: <span><?php echo $costs_sum_hour ?></span>
+                        </div>
+                        <div class="timer-pause-time">
+                            Тривалість перерви: <span><?php echo $costs_sum_pause_hour ?></span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-	<?php
+		<?php
+		else:
+			?>
+            <div class="timer">
+                <div class="timer-result">
+                    Розпочати
+                </div>
+                <div class="timer-control">
+                    <div class="timer-control-buttons">
+                        <a href="#" class="timer-button timer-button-start">
+                            Розпочати робочий день
+                            <span class="icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20"
+                                                 viewBox="0 0 21 20" fill="none">
+  <g clip-path="url(#clip0_314_7791)">
+    <path d="M10.5 0C4.96341 0 0.5 4.46341 0.5 10C0.5 15.5366 4.96341 20 10.5 20C16.0366 20 20.5 15.5366 20.5 10C20.5 4.46341 16.0366 0 10.5 0ZM14.939 10.4634L8.28049 14.3659C8.20732 14.4146 8.08537 14.439 8.0122 14.439C7.93902 14.439 7.81707 14.4146 7.7439 14.3659C7.57317 14.2439 7.47561 14.0976 7.47561 13.9024V6.12195H7.45122C7.45122 5.92683 7.57317 5.73171 7.71951 5.65854C7.86585 5.58537 8.10976 5.53659 8.28049 5.65854L14.939 9.53658C15.1098 9.65854 15.2073 9.80488 15.2073 10C15.2073 10.1951 15.0854 10.3902 14.939 10.4634Z"
+          fill="white"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_314_7791">
+      <rect width="20" height="20" fill="white" transform="matrix(-1 0 0 1 20.5 0)"/>
+    </clipPath>
+  </defs>
+</svg>
+                                        </span>
+                        </a>
+                        <a href="#" class="timer-button timer-button-finish">
+                            Закінчити робочий день
+                            <span class="icon">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20"
+                                               viewBox="0 0 21 20" fill="none">
+  <g clip-path="url(#clip0_314_7772)">
+    <path d="M10.5 0C5 0 0.5 4.5 0.5 10C0.5 15.5 5 20 10.5 20C16 20 20.5 15.5 20.5 10C20.5 4.5 16 0 10.5 0ZM14.0714 12.1429C14.0714 12.9286 13.4286 13.5714 12.6429 13.5714H8.35714C7.57143 13.5714 6.92857 12.9286 6.92857 12.1429V7.85714C6.92857 7.07143 7.57143 6.42857 8.35714 6.42857H12.6429C13.4286 6.42857 14.0714 7.07143 14.0714 7.85714V12.1429Z"
+          fill="white"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_314_7772">
+      <rect width="20" height="20" fill="white" transform="matrix(-1 0 0 1 20.5 0)"/>
+    </clipPath>
+  </defs>
+</svg>
+                                        </span>
+                        </a>
+                        <a href="#" class="timer-button timer-button-pause">
+                            Перерва <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                            height="20" viewBox="0 0 20 20" fill="none">
+  <g clip-path="url(#clip0_314_7776)">
+    <path d="M10 0C4.475 0 0 4.475 0 10C0 15.525 4.475 20 10 20C15.525 20 20 15.525 20 10C20 4.475 15.525 0 10 0ZM8.9 12.5C8.9 13.125 8.4 13.6 7.8 13.6C7.175 13.6 6.7 13.1 6.7 12.5V7.5C6.675 6.9 7.175 6.4 7.775 6.4C8.4 6.4 8.9 6.9 8.9 7.5V12.5ZM13.325 12.5C13.325 13.125 12.825 13.6 12.225 13.6C11.6 13.6 11.125 13.1 11.125 12.5V7.5C11.1 6.9 11.6 6.4 12.2 6.4C12.825 6.4 13.325 6.9 13.325 7.5V12.5Z"
+          fill="white"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_314_7776">
+      <rect width="20" height="20" fill="white" transform="matrix(-1 0 0 1 20 0)"/>
+    </clipPath>
+  </defs>
+</svg></span>
+                        </a>
+                        <a href="#" class="timer-button timer-button-play-pause">
+                            Продовжити <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="21"
+                                                               height="20" viewBox="0 0 21 20" fill="none">
+  <g clip-path="url(#clip0_314_7757)">
+    <path d="M10.5 0C4.96341 0 0.5 4.46341 0.5 10C0.5 15.5366 4.96341 20 10.5 20C16.0366 20 20.5 15.5366 20.5 10C20.5 4.46341 16.0366 0 10.5 0ZM14.939 10.4634L8.28049 14.3659C8.20732 14.4146 8.08537 14.439 8.0122 14.439C7.93902 14.439 7.81707 14.4146 7.7439 14.3659C7.57317 14.2439 7.47561 14.0976 7.47561 13.9024V6.12195H7.45122C7.45122 5.92683 7.57317 5.73171 7.71951 5.65854C7.86585 5.58537 8.10976 5.53659 8.28049 5.65854L14.939 9.53658C15.1098 9.65854 15.2073 9.80488 15.2073 10C15.2073 10.1951 15.0854 10.3902 14.939 10.4634Z"
+          fill="white"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_314_7757">
+      <rect width="20" height="20" fill="white" transform="matrix(-1 0 0 1 20.5 0)"/>
+    </clipPath>
+  </defs>
+</svg></span>
+                        </a>
+                    </div>
+                    <div class="timer-control-results">
+                        <div class="timer-work-time">
+                            Тривалість робочого дня: <span>00:00:00</span>
+                        </div>
+                        <div class="timer-pause-time">
+                            Тривалість перерви: <span>00:00:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+		<?php
+		endif;
 	endif;
 }
 

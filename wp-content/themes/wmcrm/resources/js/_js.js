@@ -178,7 +178,6 @@ $(document).ready(function () {
                 }
             });
         }
-
     });
     $doc.on('click', '.discussion-item', function (e) {
         e.preventDefault();
