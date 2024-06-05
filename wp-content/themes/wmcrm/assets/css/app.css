@@ -3416,6 +3416,12 @@ input {
   justify-content: space-between;
   margin-bottom: 3.5rem;
 }
+.users-head-controls {
+  display: flex;
+}
+.users-head-controls > *:not(:last-child) {
+  margin-right: 1rem;
+}
 .users-title {
   display: flex;
   align-items: center;
@@ -3960,6 +3966,23 @@ img.cover {
 .button-add:hover {
   color: #C9085F;
   background: rgba(255, 255, 255, 0);
+}
+.button--bordered {
+  border-radius: 5rem;
+  border: 1px solid #5C6DF9;
+  background: #FFF;
+  color: #333;
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 1.4rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 150%;
+}
+.button--bordered:hover {
+  background: #5C6DF9;
+  color: #fff;
+  opacity: 1;
 }
 
 .text, .ql-snow .ql-editor {
