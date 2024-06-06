@@ -234,14 +234,28 @@ function crb_attach_in_costs() {
 			         Field::make( "complex", "costs_work_list", "Список відпрацювань" )
 			              ->setup_labels( $labels )->set_width( 50 )
 			              ->add_fields( array(
-				              Field::make( "date_time", "start", "Початок" )->set_width( 50 )->set_storage_format( 'U' ),
-				              Field::make( "date_time", "finish", "Кінець" )->set_width( 50 )->set_storage_format( 'U' ),
+				              Field::make( "text", "start", "Початок" )->set_width( 50 ),
+				              Field::make( "text", "finish", "Кінець" )->set_width( 50 ),
 			              ) ),
 			         Field::make( "complex", "costs_pause_list", "Список перерв" )
 			              ->setup_labels( $labels )->set_width( 50 )
 			              ->add_fields( array(
-				              Field::make( "date_time", "start", "Початок" )->set_width( 50 )->set_storage_format( 'U' ),
-				              Field::make( "date_time", "finish", "Кінець" )->set_width( 50 )->set_storage_format( 'U' ),
+				              Field::make( "text", "start", "Початок" )->set_width( 50 ),
+				              Field::make( "text", "finish", "Кінець" )->set_width( 50 ),
+			              ) ),
+		         )
+	         )
+	         ->add_tab( 'Розшифровки',
+		         array(
+			         Field::make( "complex", "costs_text_list", "Список" )
+			              ->setup_labels( $labels )
+			              ->add_fields( array(
+				              Field::make( "text", "text", "Розшифровка текстом" ),
+				              Field::make( "text", "user_agent"  )->set_width(50),
+				              Field::make( "text", "user_ip"  )->set_width(50),
+				              Field::make( "text", "unix"  )->set_width(33),
+				              Field::make( "text", "status"  )->set_width(33),
+				              Field::make( "text", "old_status"  )->set_width(33),
 			              ) ),
 		         )
 	         );

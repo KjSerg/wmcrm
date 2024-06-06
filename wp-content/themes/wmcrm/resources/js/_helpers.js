@@ -232,11 +232,14 @@ export function sendRequest(url, args = {}, method = 'POST', isShowPreloader = t
                     } else {
                         resolve(r);
                     }
+                }else {
+                    alert('Error');
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 hidePreloader();
                 console.log(jqXHR, textStatus, errorThrown);
+                alert(errorThrown);
                 reject(errorThrown);
             }
         };

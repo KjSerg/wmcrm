@@ -9302,8 +9302,7 @@ var Stopwatch = /*#__PURE__*/function () {
           _this.finishTimestamp = 0;
         }
       }
-      _this.runTick();
-      _this.saveData();
+      _this.saveData(false, true);
     }
   }, {
     key: "pauseEvent",
@@ -9323,7 +9322,7 @@ var Stopwatch = /*#__PURE__*/function () {
         _workTimes[workTimesLastIndex].finish = unix;
         _this.workTimes = _workTimes;
       }
-      _this.saveData();
+      _this.saveData(false, true);
     }
   }, {
     key: "finish",
@@ -9347,7 +9346,7 @@ var Stopwatch = /*#__PURE__*/function () {
       }
       clearInterval(_this.interval);
       _this.renderResults();
-      _this.saveData(true);
+      _this.saveData(true, true);
     }
   }, {
     key: "getCurrentTimestamp",
@@ -9390,6 +9389,7 @@ var Stopwatch = /*#__PURE__*/function () {
     key: "saveData",
     value: function saveData() {
       var getResultModal = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      var showLoader = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var _this = this;
       if (_this.date === false) _this.date = (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)();
       if (_this.date !== (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)()) _this.clearStorage();
@@ -9417,8 +9417,9 @@ var Stopwatch = /*#__PURE__*/function () {
         pause_time: sumPauses,
         pause_time_hour: _this.convertMillisecondsToTime(sumPauses)
       };
-      (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.sendRequest)(adminAjax, data, 'POST', false).then(function (res) {
+      (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.sendRequest)(adminAjax, data, 'POST', showLoader).then(function (res) {
         console.log(res);
+        _this.runTick();
         var html = res.timer_modal_html;
         _this.loading = false;
         if (html !== undefined && html !== '') {
@@ -9428,6 +9429,8 @@ var Stopwatch = /*#__PURE__*/function () {
             (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.openWindow)(_this.$doc.find('#report-window'));
           }, 500);
         }
+      })["catch"](function (e) {
+        alert(e);
       });
     }
   }, {
@@ -9443,6 +9446,7 @@ var Stopwatch = /*#__PURE__*/function () {
       (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.sendRequest)(adminAjax, data, 'POST', false).then(function (res) {
         console.log(res);
         if (res) {
+          _this.$doc.find('.timer').removeClass('not-active');
           var pauses = res.pauses || [];
           var costs_data = res.costs_data || [];
           var costs_status = res.costs_status;
@@ -10149,11 +10153,14 @@ function sendRequest(url) {
           } else {
             resolve(r);
           }
+        } else {
+          alert('Error');
         }
       },
       error: function error(jqXHR, textStatus, errorThrown) {
         hidePreloader();
         console.log(jqXHR, textStatus, errorThrown);
+        alert(errorThrown);
         reject(errorThrown);
       }
     };

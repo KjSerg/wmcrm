@@ -104,7 +104,6 @@ function new_comment() {
 			} else {
 				$comment_id = wp_insert_post( $post_data, true );
 			}
-
 			if ( ! is_wp_error( $comment_id ) ) {
 				carbon_set_post_meta( $comment_id, 'discussion_project_id', $project_id );
 				wp_update_post( array(
@@ -477,8 +476,12 @@ function save_user_time() {
 	$pause_time_hour  = $_POST['pause_time_hour'] ?? '';
 	$date             = $_POST['date'] ?? '';
 	$get_result_modal = $_POST['get_result_modal'] ?? '0';
+	$user_agent       = get_user_agent();
 	$user_id          = get_current_user_id();
+	$user_ip          = get_the_user_ip();
 	if ( $user_id && $date && $work_times ) {
+		$user = get_user_by( 'id', $user_id );
+		date_default_timezone_set( "Europe/Kiev" );
 		$cost_id   = get_cost_id( array(
 			'user_id' => $user_id,
 			'date'    => $date,
@@ -532,9 +535,28 @@ function save_user_time() {
 			$time             = time();
 			$costs_work_list  = carbon_get_post_meta( $id, 'costs_work_list' ) ?: array();
 			$costs_pause_list = carbon_get_post_meta( $id, 'costs_pause_list' ) ?: array();
+			$costs_text_list  = carbon_get_post_meta( $id, 'costs_text_list' ) ?: array();
 			$status           = (int) $status;
 			$old_status       = (int) $old_status;
+			$txt              = $user->display_name;
+			$current_date     = date( 'd-m-Y H:i:s', $time );
 			if ( $status != $old_status ) {
+				if ( $old_status == 0 && $status == 1 ) {
+					$txt .= ' розпочав(ла) робочий день о ' . $current_date;
+				} elseif ( $old_status == 1 && $status == 0 ) {
+					$txt .= ' завершив(ла) робочий день о ' . $current_date;
+				} else {
+					$txt .= ' змінив(ла) робочий статус з "' . get_text_user_status( $old_status ) . '" на "' . get_text_user_status( $status ) . '" о ' . $current_date;
+				}
+				$_temp = array(
+					'text'       => $txt,
+					'user_agent' => $user_agent,
+					'unix'       => $time,
+					'status'     => $status,
+					'old_status' => $old_status,
+					'user_ip'    => $user_ip,
+				);
+				array_unshift( $costs_text_list, $_temp );
 				if ( $status == 1 ) {
 					$costs_work_list[] = array(
 						'start'  => $time,
@@ -562,11 +584,12 @@ function save_user_time() {
 			}
 			carbon_set_post_meta( $id, 'costs_work_list', $costs_work_list );
 			carbon_set_post_meta( $id, 'costs_pause_list', $costs_pause_list );
-			$pd .= PHP_EOL .
+			carbon_set_post_meta( $id, 'costs_text_list', $costs_text_list );
+			$pd .= PHP_EOL . PHP_EOL .
 			       '____________________________________________________________________________________________________________________________________________________________________________________' .
-			       date( 'd-m-Y H:i:s', $time ) .
+			       date( 'd-m-Y H:i:s', $time ) . PHP_EOL .
 			       '____________________________________________________________________________________________________________________________________________________________________________________' .
-			       json_encode( $_POST );
+			       json_encode( $_POST ) . PHP_EOL . "[$user_agent]";
 			carbon_set_post_meta( $id, 'post_data', $pd );
 			if ( $stopwatches ) {
 				carbon_set_post_meta( $id, 'pauses', json_encode( $stopwatches ) );

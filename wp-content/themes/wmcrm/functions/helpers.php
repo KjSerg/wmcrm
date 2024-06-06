@@ -1366,3 +1366,14 @@ function get_localized_month_name($monthNumber, $locale = 'uk_UA') {
 
 	return $monthName;
 }
+
+function get_text_user_status($status) {
+	if($status == -1){
+        return 'пауза';
+    }elseif ($status == 1){
+		return 'старт/розпочато';
+    }elseif ($status == 0){
+		return 'закінчено/непочато';
+	}
+    return '_';
+}

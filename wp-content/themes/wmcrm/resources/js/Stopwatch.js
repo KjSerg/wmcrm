@@ -240,8 +240,7 @@ export default class Stopwatch {
                 _this.finishTimestamp = 0;
             }
         }
-        _this.runTick();
-        _this.saveData();
+        _this.saveData(false, true);
     }
 
     pauseEvent() {
@@ -260,7 +259,7 @@ export default class Stopwatch {
             _workTimes[workTimesLastIndex].finish = unix;
             _this.workTimes = _workTimes;
         }
-        _this.saveData();
+        _this.saveData(false, true);
     }
 
     finish() {
@@ -283,7 +282,7 @@ export default class Stopwatch {
         }
         clearInterval(_this.interval);
         _this.renderResults();
-        _this.saveData(true);
+        _this.saveData(true, true);
     }
 
     getCurrentTimestamp() {
@@ -319,7 +318,7 @@ export default class Stopwatch {
         return day + "-" + month + "-" + year;
     }
 
-    saveData(getResultModal = false) {
+    saveData(getResultModal = false, showLoader = false) {
         const _this = this;
         if (_this.date === false) _this.date = getCurrentDate();
         if (_this.date !== getCurrentDate()) _this.clearStorage();
@@ -347,8 +346,9 @@ export default class Stopwatch {
             pause_time: sumPauses,
             pause_time_hour: _this.convertMillisecondsToTime(sumPauses),
         };
-        sendRequest(adminAjax, data, 'POST', false).then((res) => {
+        sendRequest(adminAjax, data, 'POST', showLoader).then((res) => {
             console.log(res);
+            _this.runTick();
             const html = res.timer_modal_html;
             _this.loading = false;
             if (html !== undefined && html !== '') {
@@ -357,8 +357,9 @@ export default class Stopwatch {
                 setTimeout(function () {
                     openWindow(_this.$doc.find('#report-window'));
                 }, 500);
-
             }
+        }).catch(function (e) {
+            alert(e);
         });
     }
 
@@ -373,6 +374,7 @@ export default class Stopwatch {
         sendRequest(adminAjax, data, 'POST', false).then((res) => {
             console.log(res)
             if (res) {
+                _this.$doc.find('.timer').removeClass('not-active');
                 let pauses = res.pauses || [];
                 let costs_data = res.costs_data || [];
                 const costs_status = res.costs_status;

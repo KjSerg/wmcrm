@@ -282,7 +282,7 @@ function the_timer_html() {
 				$cls = ' play';
 			}
 			?>
-            <div class="timer <?php echo $cls ?>">
+            <div class="timer not-active <?php echo $cls ?>">
                 <div class="timer-result">
 					<?php echo $costs_sum_hour ?>
                 </div>
