@@ -848,6 +848,17 @@ function is_current_user_admin() {
 	return false;
 }
 
+function is__user_admin( $user_id ) {
+	$user = get_user_by( 'id', $user_id );
+	if ( $user ) {
+		$roles = ( array ) $user->roles;
+
+		return in_array( 'administrator', $roles );
+	}
+
+	return false;
+}
+
 function get_user_by_work_section_id( $performer_id ) {
 	$res   = array();
 	$args  = array(
@@ -1313,6 +1324,7 @@ function get_current_timers() {
 			$status          = carbon_get_post_meta( $id, 'costs_status' );
 			$sum_hour        = carbon_get_post_meta( $id, 'costs_sum_hour' );
 			$sum_hour_pause  = carbon_get_post_meta( $id, 'costs_sum_hour_pause' );
+			$text_list       = carbon_get_post_meta( $id, 'costs_text_list' );
 			$avatar          = get_url_avatar( $user );
 			$current_project = carbon_get_user_meta( $user, 'current_project' );
 			$temp            = array(
@@ -1323,6 +1335,8 @@ function get_current_timers() {
 				'avatar'          => $avatar,
 				'current_project' => $current_project,
 				'user'            => $user,
+				'text_list'       => $text_list,
+				'ID'              => $id,
 			);
 			$res[]           = $temp;
 		}
@@ -1341,18 +1355,19 @@ function get_url_avatar( $user_id = false ) {
 	return $avatar;
 }
 
-function get_dates_of_week($year, $weekNumber) {
+function get_dates_of_week( $year, $weekNumber ) {
 	$dates = [];
-	$date = new DateTime();
-	$date->setISODate($year, $weekNumber);
-	for ($i = 0; $i < 7; $i++) {
-		$dates[] = $date->format('d-m-Y');
-		$date->modify('+1 day');
+	$date  = new DateTime();
+	$date->setISODate( $year, $weekNumber );
+	for ( $i = 0; $i < 7; $i ++ ) {
+		$dates[] = $date->format( 'd-m-Y' );
+		$date->modify( '+1 day' );
 	}
 
 	return $dates;
 }
-function get_localized_month_name($monthNumber, $locale = 'uk_UA') {
+
+function get_localized_month_name( $monthNumber, $locale = 'uk_UA' ) {
 	$formatter = new IntlDateFormatter(
 		$locale,
 		IntlDateFormatter::NONE,
@@ -1361,19 +1376,104 @@ function get_localized_month_name($monthNumber, $locale = 'uk_UA') {
 		null,
 		'MMMM'
 	);
-	$timestamp = mktime(0, 0, 0, $monthNumber, 1, 2000);
-	$monthName = $formatter->format($timestamp);
+	$timestamp = mktime( 0, 0, 0, $monthNumber, 1, 2000 );
+	$monthName = $formatter->format( $timestamp );
 
 	return $monthName;
 }
 
-function get_text_user_status($status) {
-	if($status == -1){
-        return 'пауза';
-    }elseif ($status == 1){
+function get_text_user_status( $status ) {
+	if ( $status == - 1 ) {
+		return 'пауза';
+	} elseif ( $status == 1 ) {
 		return 'старт/розпочато';
-    }elseif ($status == 0){
+	} elseif ( $status == 0 ) {
 		return 'закінчено/непочато';
 	}
-    return '_';
+
+	return '_';
+}
+
+function get_stopwatches( $id ) {
+	$time = time();
+	$res  = array(
+		'pause' => array(
+			'seconds' => 0,
+			'string'  => '00:00:00'
+		),
+		'work'  => array(
+			'seconds' => 0,
+			'string'  => '00:00:00'
+		),
+	);
+	if ( $id && get_post( $id ) ) {
+		$costs_work_list  = carbon_get_post_meta( $id, 'costs_work_list' ) ?: array();
+		$costs_pause_list = carbon_get_post_meta( $id, 'costs_pause_list' ) ?: array();
+		if ( $costs_work_list ) {
+			foreach ( $costs_work_list as $item ) {
+				$start  = (int) $item['start'];
+				$finish = (int) $item['finish'];
+				if ( $start == $finish ) {
+					$finish = $time;
+				}
+				$result                 = $finish - $start;
+				$res['work']['seconds'] = $res['work']['seconds'] + $result;
+			}
+			$res['work']['string'] = secondsToTimeFormat( $res['work']['seconds'] );
+		}
+		if ( $costs_pause_list ) {
+			foreach ( $costs_pause_list as $item ) {
+				$start  = (int) $item['start'];
+				$finish = (int) $item['finish'];
+				if ( $start == $finish ) {
+					$finish = $time;
+				}
+				$result                  = $finish - $start;
+				$res['pause']['seconds'] = $res['pause']['seconds'] + $result;
+			}
+			$res['pause']['string'] = secondsToTimeFormat( $res['pause']['seconds'] );
+		}
+
+	}
+
+	return $res;
+}
+
+function secondsToTimeFormat( $seconds ) {
+	$hours            = floor( $seconds / 3600 );
+	$minutes          = floor( ( $seconds % 3600 ) / 60 );
+	$remainingSeconds = $seconds % 60;
+
+	return sprintf( '%02d:%02d:%02d', $hours, $minutes, $remainingSeconds );
+}
+
+
+function convert_date_to_day_format( $date ) {
+	$dateTime = DateTime::createFromFormat( 'd-m-Y', $date );
+	if ( $dateTime === false ) {
+		return "Неправильний формат дати";
+	}
+	$daysOfWeek         = [
+		'Sunday'    => 'Неділя',
+		'Monday'    => 'Понеділок',
+		'Tuesday'   => 'Вівторок',
+		'Wednesday' => 'Середа',
+		'Thursday'  => 'Четвер',
+		'Friday'    => 'П’ятниця',
+		'Saturday'  => 'Субота'
+	];
+	$dayOfWeek          = $dateTime->format( 'l' );
+	$dayOfWeekUkrainian = $daysOfWeek[ $dayOfWeek ];
+	$dayNumber          = $dateTime->format( 'd' );
+	$mNumber            = $dateTime->format( 'm' );
+	$formattedDate      = $dayOfWeekUkrainian . ', ' . $dayNumber . '.' . $mNumber;
+
+	return $formattedDate;
+}
+
+function get_first_week_number_month($year, $month) {
+	$date = new DateTime("$year-$month-01");
+	$firstWeekNumber = $date->format('W');
+
+	return $firstWeekNumber;
 }

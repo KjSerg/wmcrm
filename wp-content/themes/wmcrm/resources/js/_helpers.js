@@ -239,7 +239,6 @@ export function sendRequest(url, args = {}, method = 'POST', isShowPreloader = t
             error: function (jqXHR, textStatus, errorThrown) {
                 hidePreloader();
                 console.log(jqXHR, textStatus, errorThrown);
-                alert(errorThrown);
                 reject(errorThrown);
             }
         };

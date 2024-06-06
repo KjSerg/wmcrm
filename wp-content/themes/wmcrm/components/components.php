@@ -208,6 +208,8 @@ function the_timer_list() {
 				$u = get_user_by( 'id', $user_ID );
 				$sum_hour = $obj['sum_hour'];
 				$status = $obj['status'];
+				$text_list = $obj['text_list'] ?? array();
+				$text_list_str = $text_list ? $text_list[0]['text'] : '';
 				$cls = '';
 				if ( $status == '-1' ) {
 					$cls = ' pause';
@@ -225,7 +227,7 @@ function the_timer_list() {
                                 title="<?php echo $u->display_name; ?>"
                                 class="cover" src="<?php echo $obj['avatar'] ?>" alt="">
                     </a>
-                    <div class="timer-list-item__value <?php echo $cls; ?>">
+                    <div class="timer-list-item__value <?php echo $cls; ?>" title='<?php echo $text_list_str; ?>'>
 						<?php
 						if ( $sum_hour_arr = explode( ':', $sum_hour ) ) {
 							echo $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
@@ -276,13 +278,13 @@ function the_timer_html() {
 			$costs_sum_pause_hour = carbon_get_post_meta( $cost_id, 'costs_sum_hour_pause' ) ?: '00:00:00';
 			$costs_status         = carbon_get_post_meta( $cost_id, 'costs_status' );
 			$cls                  = '';
-			if ( $costs_status == -1 ) {
+			if ( $costs_status == - 1 ) {
 				$cls = ' pause';
 			} elseif ( $costs_status == 1 ) {
 				$cls = ' play';
 			}
 			?>
-            <div class="timer not-active <?php echo $cls ?>">
+            <div class="timer not-active <?php echo $cls ?> ">
                 <div class="timer-result">
 					<?php echo $costs_sum_hour ?>
                 </div>
@@ -355,7 +357,7 @@ function the_timer_html() {
                         <div class="timer-work-time">
                             Тривалість робочого дня: <span><?php echo $costs_sum_hour ?></span>
                         </div>
-                        <div class="timer-pause-time">
+                        <div class="timer-pause-time" >
                             Тривалість перерви: <span><?php echo $costs_sum_pause_hour ?></span>
                         </div>
                     </div>

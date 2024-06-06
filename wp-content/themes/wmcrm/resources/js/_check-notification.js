@@ -4,7 +4,7 @@ export default function checkingNotifications() {
     setNotificationsNumber();
     setInterval(setNotificationsNumber, 20000);
 }
-const setNotificationsNumber = () => {
+export const setNotificationsNumber = () => {
     let $selector = $(document).find('.header-notification-button span');
     if ($selector.length === 0) return;
     let oldNum = $selector.text() || 0;

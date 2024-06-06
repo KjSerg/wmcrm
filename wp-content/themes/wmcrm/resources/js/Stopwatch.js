@@ -69,6 +69,13 @@ export default class Stopwatch {
             $timer.addClass('play');
             $timer.removeClass('pause');
             _this.start();
+            // sendRequest(adminAjax, {
+            //     action: 'work_day_action',
+            //     status: 1
+            // }).then(function (r) {
+            //     console.log(r)
+            //     _this.tick(r);
+            // });
         });
         _this.$doc.on('click', '.timer-button-finish', function (e) {
             e.preventDefault();
@@ -78,6 +85,13 @@ export default class Stopwatch {
             $timer.removeClass('play');
             $timer.removeClass('pause');
             _this.finish();
+            // sendRequest(adminAjax, {
+            //     action: 'work_day_action',
+            //     status: 0
+            // }).then(function (r) {
+            //     console.log(r)
+            //     _this.tick(r);
+            // });
         });
         _this.$doc.on('click', '.timer-button-pause', function (e) {
             e.preventDefault();
@@ -87,6 +101,13 @@ export default class Stopwatch {
             $timer.removeClass('play');
             $timer.addClass('pause');
             _this.pauseEvent();
+            // sendRequest(adminAjax, {
+            //     action: 'work_day_action',
+            //     status: -1
+            // }).then(function (r) {
+            //     console.log(r)
+            //     _this.tick(r);
+            // });
         });
         _this.$doc.on('click', '.timer-button-play-pause', function (e) {
             e.preventDefault();
@@ -96,6 +117,13 @@ export default class Stopwatch {
             $timer.addClass('play');
             $timer.removeClass('pause');
             _this.start();
+            // sendRequest(adminAjax, {
+            //     action: 'work_day_action',
+            //     status: 1,
+            // }).then(function (r) {
+            //     console.log(r)
+            //     _this.tick(r);
+            // });
         });
         _this.$doc.on('click', '.timer-result', function (e) {
             e.preventDefault();
@@ -134,10 +162,38 @@ export default class Stopwatch {
         });
     }
 
+    tick(data) {
+        const _this = this;
+        if (_this.$doc.find('.test-timer').length > 0) {
+            const status = Number(data.status);
+            const results = data.results;
+            const work = results.work;
+            const pause = results.pause;
+            let pauseSeconds = pause.seconds;
+            let workSeconds = work.seconds;
+
+            setInterval(function () {
+                if (status === 1) {
+                    workSeconds = workSeconds + 1;
+                } else if (status === -1) {
+                    pauseSeconds = pauseSeconds + 1;
+                }
+                let formatedTime = _this.convertMillisecondsToTime(workSeconds * 1000);
+                let formatedPauseTime = _this.convertMillisecondsToTime(pauseSeconds * 1000);
+                const formatedTimeString = formatedTime['hours'] + ':' + formatedTime['minutes'] + ':' + formatedTime['seconds'];
+                const formatedPauseTimeString = formatedPauseTime['hours'] + ':' + formatedPauseTime['minutes'] + ':' + formatedPauseTime['seconds'];
+                _this.$doc.find('.timer-work-time span').text(formatedTimeString);
+                _this.$doc.find('.timer-pause-time span').text(formatedPauseTimeString);
+            }, 1000);
+        }
+
+    }
+
     runTick() {
         const _this = this;
         const _status = _this.status;
         console.log(_status)
+        // if (_this.$doc.find('.test-timer').length > 0) return;
         if (_status === 0) {
             if (_this.interval !== null) {
                 clearInterval(_this.interval);
@@ -359,7 +415,7 @@ export default class Stopwatch {
                 }, 500);
             }
         }).catch(function (e) {
-            alert(e);
+            console.log(e)
         });
     }
 

@@ -15,7 +15,7 @@ import Invite from "./Invite";
 import Stopwatch from "./Stopwatch";
 import Shadow from "./Shadow";
 import CommentObserver from "./CommentObserver";
-import checkingNotifications, {newMessageSoundPlay} from "./_check-notification";
+import checkingNotifications, {newMessageSoundPlay, setNotificationsNumber} from "./_check-notification";
 import BulkEdit from "./BulkEdit";
 import './_forms';
 import './_profile';
@@ -349,6 +349,12 @@ $(document).ready(function () {
     const commentObserver = new CommentObserver();
     const bulkEditor = new BulkEdit();
     const autocomplete = new Autocomplete();
+});
+
+document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) {
+        setNotificationsNumber();
+    }
 });
 
 function validateTime(time) {

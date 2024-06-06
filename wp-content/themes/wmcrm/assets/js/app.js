@@ -9127,6 +9127,13 @@ var Stopwatch = /*#__PURE__*/function () {
         $timer.addClass('play');
         $timer.removeClass('pause');
         _this.start();
+        // sendRequest(adminAjax, {
+        //     action: 'work_day_action',
+        //     status: 1
+        // }).then(function (r) {
+        //     console.log(r)
+        //     _this.tick(r);
+        // });
       });
       _this.$doc.on('click', '.timer-button-finish', function (e) {
         e.preventDefault();
@@ -9136,6 +9143,13 @@ var Stopwatch = /*#__PURE__*/function () {
         $timer.removeClass('play');
         $timer.removeClass('pause');
         _this.finish();
+        // sendRequest(adminAjax, {
+        //     action: 'work_day_action',
+        //     status: 0
+        // }).then(function (r) {
+        //     console.log(r)
+        //     _this.tick(r);
+        // });
       });
       _this.$doc.on('click', '.timer-button-pause', function (e) {
         e.preventDefault();
@@ -9145,6 +9159,13 @@ var Stopwatch = /*#__PURE__*/function () {
         $timer.removeClass('play');
         $timer.addClass('pause');
         _this.pauseEvent();
+        // sendRequest(adminAjax, {
+        //     action: 'work_day_action',
+        //     status: -1
+        // }).then(function (r) {
+        //     console.log(r)
+        //     _this.tick(r);
+        // });
       });
       _this.$doc.on('click', '.timer-button-play-pause', function (e) {
         e.preventDefault();
@@ -9154,6 +9175,13 @@ var Stopwatch = /*#__PURE__*/function () {
         $timer.addClass('play');
         $timer.removeClass('pause');
         _this.start();
+        // sendRequest(adminAjax, {
+        //     action: 'work_day_action',
+        //     status: 1,
+        // }).then(function (r) {
+        //     console.log(r)
+        //     _this.tick(r);
+        // });
       });
       _this.$doc.on('click', '.timer-result', function (e) {
         e.preventDefault();
@@ -9191,11 +9219,38 @@ var Stopwatch = /*#__PURE__*/function () {
       });
     }
   }, {
+    key: "tick",
+    value: function tick(data) {
+      var _this = this;
+      if (_this.$doc.find('.test-timer').length > 0) {
+        var status = Number(data.status);
+        var results = data.results;
+        var work = results.work;
+        var pause = results.pause;
+        var pauseSeconds = pause.seconds;
+        var workSeconds = work.seconds;
+        setInterval(function () {
+          if (status === 1) {
+            workSeconds = workSeconds + 1;
+          } else if (status === -1) {
+            pauseSeconds = pauseSeconds + 1;
+          }
+          var formatedTime = _this.convertMillisecondsToTime(workSeconds * 1000);
+          var formatedPauseTime = _this.convertMillisecondsToTime(pauseSeconds * 1000);
+          var formatedTimeString = formatedTime['hours'] + ':' + formatedTime['minutes'] + ':' + formatedTime['seconds'];
+          var formatedPauseTimeString = formatedPauseTime['hours'] + ':' + formatedPauseTime['minutes'] + ':' + formatedPauseTime['seconds'];
+          _this.$doc.find('.timer-work-time span').text(formatedTimeString);
+          _this.$doc.find('.timer-pause-time span').text(formatedPauseTimeString);
+        }, 1000);
+      }
+    }
+  }, {
     key: "runTick",
     value: function runTick() {
       var _this = this;
       var _status = _this.status;
       console.log(_status);
+      // if (_this.$doc.find('.test-timer').length > 0) return;
       if (_status === 0) {
         if (_this.interval !== null) {
           clearInterval(_this.interval);
@@ -9430,7 +9485,7 @@ var Stopwatch = /*#__PURE__*/function () {
           }, 500);
         }
       })["catch"](function (e) {
-        alert(e);
+        console.log(e);
       });
     }
   }, {
@@ -9529,7 +9584,8 @@ $.fn.isInViewport = function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ checkingNotifications),
-/* harmony export */   newMessageSoundPlay: () => (/* binding */ newMessageSoundPlay)
+/* harmony export */   newMessageSoundPlay: () => (/* binding */ newMessageSoundPlay),
+/* harmony export */   setNotificationsNumber: () => (/* binding */ setNotificationsNumber)
 /* harmony export */ });
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_helpers */ "./resources/js/_helpers.js");
 /* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
@@ -10160,7 +10216,6 @@ function sendRequest(url) {
       error: function error(jqXHR, textStatus, errorThrown) {
         hidePreloader();
         console.log(jqXHR, textStatus, errorThrown);
-        alert(errorThrown);
         reject(errorThrown);
       }
     };
@@ -10583,6 +10638,11 @@ $(document).ready(function () {
   var commentObserver = new _CommentObserver__WEBPACK_IMPORTED_MODULE_7__["default"]();
   var bulkEditor = new _BulkEdit__WEBPACK_IMPORTED_MODULE_9__["default"]();
   var autocomplete = new _Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"]();
+});
+document.addEventListener('visibilitychange', function () {
+  if (!document.hidden) {
+    (0,_check_notification__WEBPACK_IMPORTED_MODULE_8__.setNotificationsNumber)();
+  }
 });
 function validateTime(time) {
   var timeRegex = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;

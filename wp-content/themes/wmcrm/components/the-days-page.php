@@ -1,15 +1,21 @@
 <?php
 function the_days_page() {
-	$var           = variables();
-	$set           = $var['setting_home'];
-	$assets        = $var['assets'];
-	$url           = $var['url'];
-	$url_home      = $var['url_home'];
-	$time          = time();
-	$current_week  = date( "W", $time );
-	$current_year  = date( "Y", $time );
-	$current_month = (int) date( "m", $time );
-	$dates_week    = get_dates_of_week( $current_year, $current_week );
+	$var               = variables();
+	$set               = $var['setting_home'];
+	$assets            = $var['assets'];
+	$url               = $var['url'];
+	$url_home          = $var['url_home'];
+	$time              = time();
+	$current_week      = date( "W", $time );
+	$current_year      = date( "Y", $time );
+	$current_month     = (int) date( "m", $time );
+	$dates_week        = get_dates_of_week( $current_year, $current_week );
+	$users             = get_active_users();
+	$get_user_id       = $_GET['user_id'] ?? '';
+	$get_month         = $_GET['month'] ?? $current_month;
+	$get_week          = $_GET['week'] ?? '';
+	$active_dates_week = $get_week ? get_dates_of_week( $current_year, $get_week ) : $dates_week;
+	$active_users      = get_active_users();
 	get_header();
 	?>
     <div class="nav">
@@ -33,28 +39,105 @@ function the_days_page() {
                     <div class="title days-title">
                         Робочий день
                     </div>
-                    <div class="days-head-controls">
-                        <select name="week" class="selectric submit-on-select">
-							<?php for ( $w = 1; $w < $current_week; $w ++ ):
+                    <form method="get" class="days-head-controls" action="<?php echo $url ?>">
+                        <input type="hidden" name="route" value="work_days">
+                        <input type="hidden" name="week" class="week-js" value="">
+                        <select class="selectric submit-on-select trigger-on-select">
+							<?php for ( $w = 1; $w <= $current_week; $w ++ ):
 								$_dates_week = get_dates_of_week( $current_year, $w );
 								$last_day = $_dates_week[6];
 								$last_day_m = (int) explode( '-', $last_day )[1];
-								if ( $last_day_m == $current_month ):
-									?>
-                                    <option value="<?php echo $w; ?>">
-										<?php echo "Від " . $_dates_week[0] . ' до ' . $last_day; ?>
-                                    </option>
-								<?php endif; endfor; ?>
-                            <option value="<?php echo $current_week; ?>">
-								<?php echo "Від " . $dates_week[0] . ' до ' . $dates_week[6]; ?>
-                            </option>
-                        </select>
-                        <select name="month" class="selectric submit-on-select">
-							<?php for ( $m = 1; $m <= $current_month; $m ++ ): ?>
-                                <option value="<?php echo $m; ?>"><?php echo get_localized_month_name( $m ); ?></option>
+								$attr = '';
+								if ( $get_week ) {
+									if ( $w == $get_week ) {
+										$attr = 'selected';
+									}
+								} else {
+									if ( $current_week == $w ) {
+										$attr = 'selected';
+									}
+								}
+								if ( $last_day_m != $get_month ) {
+									$attr .= ' disabled';
+								}
+								?>
+                                <option data-selector=".week-js" data-val="<?php echo $w; ?>"
+                                        value="<?php echo $w; ?>" <?php echo $attr; ?>>
+									<?php echo "Від " . $_dates_week[0] . ' до ' . $last_day; ?>
+                                </option>
 							<?php endfor; ?>
                         </select>
+                        <select name="month" class="selectric trigger-on-select submit-on-select ">
+							<?php for ( $m = 1; $m <= $current_month; $m ++ ):
+								$attr = '';
+								if ( $m == $get_month ) {
+									$attr = 'selected';
+								}
+								?>
+                                <option data-selector=".week-js"
+                                        data-val="<?php echo get_first_week_number_month( $current_year, $m ) ?>"
+                                        value="<?php echo $m; ?>" <?php echo $attr; ?>>
+									<?php echo get_localized_month_name( $m ); ?>
+                                </option>
+							<?php endfor; ?>
+                        </select>
+						<?php if ( $users ): ?>
+                            <select name="user_id" class="selectric submit-on-select">
+                                <option value="" <?php echo $get_user_id == '' ? 'selected' : ''; ?> >
+                                    Всі працівники
+                                </option>
+								<?php foreach ( $users as $user ): if ( ! is__user_admin( $user->ID ) ): ?>
+                                    <option value="<?php echo $user->ID; ?>" <?php echo $get_user_id == $user->ID ? 'selected' : ''; ?> >
+										<?php echo $user->display_name; ?>
+                                    </option>
+								<?php endif; endforeach; ?>
+                            </select>
+						<?php endif; ?>
+                    </form>
+                </div>
+                <div class="days-table">
+                    <div class="days-table-row">
+                        <div class="days-table-column"></div>
+						<?php if ( $active_dates_week ): foreach ( $active_dates_week as $item ):
+							?>
+                            <div class="days-table-column"><?php echo convert_date_to_day_format( $item ) ?></div>
+						<?php endforeach; endif; ?>
                     </div>
+					<?php if ( $active_users ): foreach ( $active_users as $_user ):
+						$_userID = $_user->ID;
+						if ( ! is__user_admin( $_userID ) ):
+							$_attr = '';
+							if ( $get_user_id ) {
+								if ( $get_user_id != $_userID ) {
+									$_attr = 'style="display:none"';
+								}
+							}
+							?>
+                            <div class="days-table-row" <?php echo $_attr; ?>>
+                                <div class="days-table-column">
+                                    <div class="days-table-user"><?php echo $_user->display_name; ?></div>
+                                </div>
+								<?php if ( $active_dates_week ): foreach ( $active_dates_week as $item ): ?>
+                                    <div class="days-table-column">
+                                        <div class="days-table-value">
+											<?php if ( $cost_id = get_cost_id( array(
+												'user_id' => $_userID,
+												'date'    => $item
+											) ) ) {
+												$costs_sum = carbon_get_post_meta( $cost_id, 'costs_sum_hour' );
+												if ( $costs_sum ) {
+													if ( $sum_hour_arr = explode( ':', $costs_sum ) ) {
+														echo $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
+													} else {
+														echo $costs_sum;
+													}
+												}
+											} ?>
+                                        </div>
+                                    </div>
+								<?php endforeach; endif; ?>
+                            </div>
+						<?php endif; endforeach; endif; ?>
                 </div>
             </div>
         </div>

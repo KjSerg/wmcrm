@@ -612,6 +612,114 @@ function save_user_time() {
 	die();
 }
 
+add_action( 'wp_ajax_nopriv_work_day_action', 'work_day_action' );
+add_action( 'wp_ajax_work_day_action', 'work_day_action' );
+function work_day_action() {
+	$res        = array();
+	$time       = time();
+	$user_agent = get_user_agent();
+	$user_id    = get_current_user_id();
+	$status     = $_POST['status'] ?? '0';
+	if ( $user_id ) {
+		$user_ip = get_the_user_ip();
+		$date    = date( 'd-m-Y', $time );
+		$user    = get_user_by( 'id', $user_id );
+		date_default_timezone_set( "Europe/Kiev" );
+		$cost_id   = get_cost_id( array(
+			'user_id' => $user_id,
+			'date'    => $date,
+		) );
+		$post_data = array(
+			'post_type'   => 'costs',
+			'post_title'  => $date,
+			'post_status' => 'publish',
+		);
+		if ( $cost_id ) {
+			$post_data['ID'] = $cost_id;
+		} else {
+			$post_data['post_author'] = $user_id;
+		}
+		$id = $cost_id ? wp_update_post( $post_data, true ) : wp_insert_post( $post_data, true );
+		if ( $id && ! is_wp_error( $id ) ) {
+			$costs_start      = carbon_get_post_meta( $id, 'costs_start' ) ?: 0;
+			$old_status       = carbon_get_post_meta( $id, 'costs_status' ) ?: 0;
+			$costs_work_list  = carbon_get_post_meta( $id, 'costs_work_list' ) ?: array();
+			$costs_pause_list = carbon_get_post_meta( $id, 'costs_pause_list' ) ?: array();
+			$costs_text_list  = carbon_get_post_meta( $id, 'costs_text_list' ) ?: array();
+			$status           = (int) $status;
+			$old_status       = (int) $old_status;
+			$txt              = $user->display_name;
+			$current_date     = date( 'd-m-Y H:i:s', $time );
+			if ( $status != $old_status ) {
+				if ( $old_status == 0 && $status == 1 ) {
+					$txt .= ' розпочав(ла) робочий день о ' . $current_date;
+				} elseif ( $old_status == 1 && $status == 0 ) {
+					$txt .= ' завершив(ла) робочий день о ' . $current_date;
+				} else {
+					$txt .= ' змінив(ла) робочий статус з "' . get_text_user_status( $old_status ) . '" на "' . get_text_user_status( $status ) . '" о ' . $current_date;
+				}
+				$_temp = array(
+					'text'       => $txt,
+					'user_agent' => $user_agent,
+					'unix'       => $time,
+					'status'     => $status,
+					'old_status' => $old_status,
+					'user_ip'    => $user_ip,
+				);
+				array_unshift( $costs_text_list, $_temp );
+				if ( $status == 1 ) {
+					if ( ! $costs_start ) {
+						carbon_set_post_meta( $id, 'costs_start', $time );
+					}
+					$costs_work_list[] = array(
+						'start'  => $time,
+						'finish' => $time
+					);
+					if ( $costs_pause_list && isset( $costs_pause_list[ array_key_last( $costs_pause_list ) ] ) ) {
+						$costs_pause_list[ array_key_last( $costs_pause_list ) ]['finish'] = $time;
+					}
+				} elseif ( $status == - 1 ) {
+					if ( isset( $costs_work_list[ array_key_last( $costs_work_list ) ] ) ) {
+						$costs_work_list[ array_key_last( $costs_work_list ) ]['finish'] = $time;
+					}
+					$costs_pause_list[] = array(
+						'start'  => $time,
+						'finish' => $time
+					);
+				} elseif ( $status == 0 ) {
+					carbon_set_post_meta( $id, 'costs_finish', $time );
+					if ( isset( $costs_work_list[ array_key_last( $costs_work_list ) ] ) ) {
+						$costs_work_list[ array_key_last( $costs_work_list ) ]['finish'] = $time;
+					}
+					if ( isset( $costs_pause_list[ array_key_last( $costs_pause_list ) ] ) ) {
+						$costs_pause_list[ array_key_last( $costs_pause_list ) ]['finish'] = $time;
+					}
+				}
+				carbon_set_post_meta( $id, 'costs_work_list', $costs_work_list );
+				carbon_set_post_meta( $id, 'costs_pause_list', $costs_pause_list );
+				carbon_set_post_meta( $id, 'costs_text_list', $costs_text_list );
+			}
+			$res['ID']         = $id;
+			$res['results']    = get_stopwatches( $id );
+			$res['status']     = $status;
+			$res['old_status'] = $old_status;
+			if ( $status == '0' || $status == 0 ) {
+				ob_start();
+				the_timer_modal( array(
+					'user_id' => $user_id,
+					'date'    => $date,
+				) );
+				$res['timer_modal_html'] = ob_get_clean();
+			}
+		} else {
+			$res['type'] = 'error';
+			$res['msg']  = $id->get_error_message();
+		}
+	}
+	echo json_encode( $res );
+	die();
+}
+
 add_action( 'wp_ajax_nopriv_get_user_time', 'get_user_time' );
 add_action( 'wp_ajax_get_user_time', 'get_user_time' );
 function get_user_time() {
