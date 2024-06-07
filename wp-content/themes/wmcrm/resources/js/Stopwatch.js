@@ -160,6 +160,16 @@ export default class Stopwatch {
                 clearInterval(_this.timersInterval);
             }
         });
+        document.onvisibilitychange = () => {
+            if (document.visibilityState === "hidden") {
+                console.log("tab inactive");
+                _this.$doc.find('.timer').addClass('not-active');
+            }
+            if (document.visibilityState === "visible") {
+                console.log("tab active");
+                _this.getCurrentData();
+            }
+        };
     }
 
     tick(data) {
@@ -230,12 +240,19 @@ export default class Stopwatch {
         const _this = this;
         const _stopwatches = _this.stopwatches;
         let _sum = 0;
+        const l = _stopwatches.length - 1;
         for (let a = 0; a < _stopwatches.length; a++) {
             let item = _stopwatches[a];
             let start = Number(item.start || 0);
             let finish = item.finish ? Number(item.finish) : _this.getCurrentTimestamp();
             finish = Number(finish);
-            finish = finish === 0 ? Number(_this.getCurrentTimestamp()) : finish;
+            if(finish === 0){
+                if(a < l){
+                    finish = start;
+                }else {
+                    finish = finish === 0 ? Number(_this.getCurrentTimestamp()) : finish;
+                }
+            }
             let subSum = finish - start;
             _sum = _sum + subSum;
         }
@@ -247,13 +264,22 @@ export default class Stopwatch {
         const _workTimes = _this.workTimes;
         const _stopwatches = _this.stopwatches;
         const _status = _this.status;
+        const l = _workTimes.length - 1;
         let _sum = 0;
         let test = 0;
         for (let a = 0; a < _workTimes.length; a++) {
             let item = _workTimes[a];
             let start = Number(item.start || 0);
             let finish = Number(item.finish);
-            finish = finish === 0 ? _this.getCurrentTimestamp() : finish;
+
+            if(finish === 0){
+                if(a < l){
+                    finish = start;
+                }else {
+                    finish = finish === 0 ? _this.getCurrentTimestamp() : finish;
+                }
+            }
+
             let subSum = finish - start;
             _sum = _sum + subSum;
         }
@@ -402,24 +428,57 @@ export default class Stopwatch {
             pause_time: sumPauses,
             pause_time_hour: _this.convertMillisecondsToTime(sumPauses),
         };
-        sendRequest(adminAjax, data, 'POST', showLoader).then((res) => {
-            console.log(res);
-            _this.runTick();
-            const html = res.timer_modal_html;
-            _this.loading = false;
-            if (html !== undefined && html !== '') {
-                if (_this.$doc.find('#report-window').length > 0) closeWindow(_this.$doc.find('#report-window'));
-                $('body').append(html);
-                setTimeout(function () {
-                    openWindow(_this.$doc.find('#report-window'));
-                }, 500);
+        if (showLoader) {
+            showPreloader();
+        }
+        $.ajax({
+            type: 'POST',
+            url: adminAjax,
+            data: data,
+        }).done(function (r) {
+            hidePreloader();
+            if (isJsonString(r)) {
+                const res = JSON.parse(r);
+                console.log(res);
+                // _this.runTick();
+                const html = res.timer_modal_html;
+                _this.loading = false;
+                if (html !== undefined && html !== '') {
+                    if (_this.$doc.find('#report-window').length > 0) closeWindow(_this.$doc.find('#report-window'));
+                    $('body').append(html);
+                    setTimeout(function () {
+                        openWindow(_this.$doc.find('#report-window'));
+                    }, 500);
+                }
+            } else {
+                alert(r);
             }
-        }).catch(function (e) {
-            console.log(e)
+
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR)
+            console.log(textStatus)
+            console.log(errorThrown)
+            _this.saveData(getResultModal, showLoader);
         });
+
+        // sendRequest(adminAjax, data, 'POST', showLoader).then((res) => {
+        //     console.log(res);
+        //     _this.runTick();
+        //     const html = res.timer_modal_html;
+        //     _this.loading = false;
+        //     if (html !== undefined && html !== '') {
+        //         if (_this.$doc.find('#report-window').length > 0) closeWindow(_this.$doc.find('#report-window'));
+        //         $('body').append(html);
+        //         setTimeout(function () {
+        //             openWindow(_this.$doc.find('#report-window'));
+        //         }, 500);
+        //     }
+        // }).catch(function (e) {
+        //     console.log(e)
+        // });
     }
 
-    getCurrentData() {
+    getCurrentData(saveData = false) {
         const _this = this;
         const date = _this.getCurrentDate();
         if (_this.date !== date) _this.clearStorage();
@@ -427,58 +486,113 @@ export default class Stopwatch {
             action: 'get_user_time',
             date: date
         }
-        sendRequest(adminAjax, data, 'POST', false).then((res) => {
-            console.log(res)
-            if (res) {
-                _this.$doc.find('.timer').removeClass('not-active');
-                let pauses = res.pauses || [];
-                let costs_data = res.costs_data || [];
-                const costs_status = res.costs_status;
-                const costs_start = res.costs_start || 0;
-                const costs_finish = res.costs_finish || 0;
-                const timer_modal_html = res.timer_modal_html;
-                const costs_sum_hour = res.costs_sum_hour;
-                const costs_sum = res.costs_sum;
-                const costs_sum_hour_pause = res.costs_sum_hour_pause;
-                const costs_sum_pause = res.costs_sum_pause;
-                if (isJsonString(pauses)) pauses = JSON.parse(pauses);
-                if (isJsonString(costs_data)) costs_data = JSON.parse(costs_data);
-                _this.stopwatches = pauses;
-                _this.workTimes = costs_data;
-                if (costs_status) {
-                    _this.status = Number(costs_status);
-                }
-                _this.startTimestamp = Number(costs_start || 0);
-                _this.finishTimestamp = Number(costs_finish || 0);
-                _this.renderResults();
-                if (_this.status === 1) {
-                    _this.$doc.find('.timer').removeClass('pause');
-                    _this.$doc.find('.timer').addClass('play');
-                    _this.runTick();
-                } else if (_this.status === -1) {
-                    _this.$doc.find('.timer').addClass('pause');
-                    _this.$doc.find('.timer').removeClass('play');
-                    _this.runTick();
+        $.ajax({
+            type: 'POST',
+            url: adminAjax,
+            data: data,
+        }).done(function (r) {
+            hidePreloader();
+            if (isJsonString(r)) {
+                const res = JSON.parse(r);
+                console.log(res)
+                if (res) {
+                    _this.$doc.find('.timer').removeClass('not-active');
+                    let pauses = res.pauses || [];
+                    let costs_data = res.costs_data || [];
+                    const costs_status = res.costs_status;
+                    const costs_start = res.costs_start || 0;
+                    const costs_finish = res.costs_finish || 0;
+                    const timer_modal_html = res.timer_modal_html;
+                    const costs_sum_hour = res.costs_sum_hour;
+                    const costs_sum = res.costs_sum;
+                    const costs_sum_hour_pause = res.costs_sum_hour_pause;
+                    const costs_sum_pause = res.costs_sum_pause;
+                    if (isJsonString(pauses)) pauses = JSON.parse(pauses);
+                    if (isJsonString(costs_data)) costs_data = JSON.parse(costs_data);
+                    _this.stopwatches = pauses;
+                    _this.workTimes = costs_data;
+                    if (costs_status) {
+                        _this.status = Number(costs_status);
+                    }
+                    _this.startTimestamp = Number(costs_start || 0);
+                    _this.finishTimestamp = Number(costs_finish || 0);
+                    _this.renderResults();
+                    if (_this.status === 1) {
+                        _this.$doc.find('.timer').removeClass('pause');
+                        _this.$doc.find('.timer').addClass('play');
+                        _this.runTick();
+                    } else if (_this.status === -1) {
+                        _this.$doc.find('.timer').addClass('pause');
+                        _this.$doc.find('.timer').removeClass('play');
+                        _this.runTick();
+                    } else {
+                        _this.$doc.find('.timer').removeClass('pause');
+                        _this.$doc.find('.timer').removeClass('play');
+                    }
+                    if (res.reload) {
+                        window.location.reload();
+                        return;
+                    }
+                    if(saveData) _this.saveData();
                 } else {
-                    _this.$doc.find('.timer').removeClass('pause');
-                    _this.$doc.find('.timer').removeClass('play');
+                    window.location.reload();
                 }
-                if (res.reload) window.location.reload();
-            } else {
-                window.location.reload();
             }
-
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR)
+            console.log(textStatus)
+            console.log(errorThrown)
+            _this.getCurrentData();
         });
+        // sendRequest(adminAjax, data, 'POST', false).then((res) => {
+        //     console.log(res)
+        //     if (res) {
+        //         _this.$doc.find('.timer').removeClass('not-active');
+        //         let pauses = res.pauses || [];
+        //         let costs_data = res.costs_data || [];
+        //         const costs_status = res.costs_status;
+        //         const costs_start = res.costs_start || 0;
+        //         const costs_finish = res.costs_finish || 0;
+        //         const timer_modal_html = res.timer_modal_html;
+        //         const costs_sum_hour = res.costs_sum_hour;
+        //         const costs_sum = res.costs_sum;
+        //         const costs_sum_hour_pause = res.costs_sum_hour_pause;
+        //         const costs_sum_pause = res.costs_sum_pause;
+        //         if (isJsonString(pauses)) pauses = JSON.parse(pauses);
+        //         if (isJsonString(costs_data)) costs_data = JSON.parse(costs_data);
+        //         _this.stopwatches = pauses;
+        //         _this.workTimes = costs_data;
+        //         if (costs_status) {
+        //             _this.status = Number(costs_status);
+        //         }
+        //         _this.startTimestamp = Number(costs_start || 0);
+        //         _this.finishTimestamp = Number(costs_finish || 0);
+        //         _this.renderResults();
+        //         if (_this.status === 1) {
+        //             _this.$doc.find('.timer').removeClass('pause');
+        //             _this.$doc.find('.timer').addClass('play');
+        //             _this.runTick();
+        //         } else if (_this.status === -1) {
+        //             _this.$doc.find('.timer').addClass('pause');
+        //             _this.$doc.find('.timer').removeClass('play');
+        //             _this.runTick();
+        //         } else {
+        //             _this.$doc.find('.timer').removeClass('pause');
+        //             _this.$doc.find('.timer').removeClass('play');
+        //         }
+        //         if (res.reload) window.location.reload();
+        //     } else {
+        //         window.location.reload();
+        //     }
+        //
+        // });
     }
 
     cyclicallyUpdated() {
         const _this = this;
         setInterval(function () {
-            _this.saveData();
+            _this.getCurrentData(true);
         }, 60000);
-        setInterval(function () {
-            _this.getCurrentData();
-        }, 65000);
     }
 }
 

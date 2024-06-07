@@ -9,6 +9,7 @@ function the_days_page() {
 	$current_week      = date( "W", $time );
 	$current_year      = date( "Y", $time );
 	$current_month     = (int) date( "m", $time );
+	$current_date      = date( "d-m-Y", $time );
 	$dates_week        = get_dates_of_week( $current_year, $current_week );
 	$users             = get_active_users();
 	$get_user_id       = $_GET['user_id'] ?? '';
@@ -119,21 +120,45 @@ function the_days_page() {
                                 </div>
 								<?php if ( $active_dates_week ): foreach ( $active_dates_week as $item ): ?>
                                     <div class="days-table-column">
-                                        <div class="days-table-value">
-											<?php if ( $cost_id = get_cost_id( array(
-												'user_id' => $_userID,
-												'date'    => $item
-											) ) ) {
-												$costs_sum = carbon_get_post_meta( $cost_id, 'costs_sum_hour' );
-												if ( $costs_sum ) {
-													if ( $sum_hour_arr = explode( ':', $costs_sum ) ) {
-														echo $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
-													} else {
-														echo $costs_sum;
-													}
+										<?php if ( $cost_id = get_cost_id( array(
+											'user_id' => $_userID,
+											'date'    => $item
+										) ) ) :
+											$css_class = '';
+											$title_attr = [];
+											$costs_sum = carbon_get_post_meta( $cost_id, 'costs_sum_hour' );
+											$costs_status = carbon_get_post_meta( $cost_id, 'costs_status' );
+											$costs_sum_hour_change = carbon_get_post_meta( $cost_id, 'costs_sum_hour_change' );
+											$costs_confirmed = carbon_get_post_meta( $cost_id, 'costs_confirmed' );
+											$res = $costs_sum;
+											$changed = false;
+											if ( $sum_hour_arr = explode( ':', $costs_sum ) ) {
+												$res = $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
+											} else {
+												$res = $costs_sum;
+											}
+											if ( $costs_sum_hour_change && $costs_confirmed ) {
+												$changed   = $costs_sum_hour_change;
+												$css_class .= ' changed-time';
+                                                $title_attr[] = 'Змінено ' . $costs_confirmed;
+											}
+                                            if($current_date != $item && ($costs_status == 1 || $costs_status == -1)) {
+                                                $css_class .= ' error-time';
+	                                            $title_attr[] = 'Не завершено робочий день(дані можуть бути пораховані некоректно)';
+                                            } 
+											?>
+                                            <div class="days-table-value <?php echo $css_class; ?>"
+                                                 title='<?php echo implode('; ', $title_attr ); ?>'>
+												<?php
+												if ( $changed ) {
+													echo $changed;
 												}
-											} ?>
-                                        </div>
+												if ( $res ) {
+													echo $res;
+												}
+												?>
+                                            </div>
+										<?php endif; ?>
                                     </div>
 								<?php endforeach; endif; ?>
                             </div>

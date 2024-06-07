@@ -9217,6 +9217,16 @@ var Stopwatch = /*#__PURE__*/function () {
           clearInterval(_this.timersInterval);
         }
       });
+      document.onvisibilitychange = function () {
+        if (document.visibilityState === "hidden") {
+          console.log("tab inactive");
+          _this.$doc.find('.timer').addClass('not-active');
+        }
+        if (document.visibilityState === "visible") {
+          console.log("tab active");
+          _this.getCurrentData();
+        }
+      };
     }
   }, {
     key: "tick",
@@ -9289,12 +9299,19 @@ var Stopwatch = /*#__PURE__*/function () {
       var _this = this;
       var _stopwatches = _this.stopwatches;
       var _sum = 0;
+      var l = _stopwatches.length - 1;
       for (var a = 0; a < _stopwatches.length; a++) {
         var item = _stopwatches[a];
         var start = Number(item.start || 0);
         var finish = item.finish ? Number(item.finish) : _this.getCurrentTimestamp();
         finish = Number(finish);
-        finish = finish === 0 ? Number(_this.getCurrentTimestamp()) : finish;
+        if (finish === 0) {
+          if (a < l) {
+            finish = start;
+          } else {
+            finish = finish === 0 ? Number(_this.getCurrentTimestamp()) : finish;
+          }
+        }
         var subSum = finish - start;
         _sum = _sum + subSum;
       }
@@ -9307,13 +9324,20 @@ var Stopwatch = /*#__PURE__*/function () {
       var _workTimes = _this.workTimes;
       var _stopwatches = _this.stopwatches;
       var _status = _this.status;
+      var l = _workTimes.length - 1;
       var _sum = 0;
       var test = 0;
       for (var a = 0; a < _workTimes.length; a++) {
         var item = _workTimes[a];
         var start = Number(item.start || 0);
         var finish = Number(item.finish);
-        finish = finish === 0 ? _this.getCurrentTimestamp() : finish;
+        if (finish === 0) {
+          if (a < l) {
+            finish = start;
+          } else {
+            finish = finish === 0 ? _this.getCurrentTimestamp() : finish;
+          }
+        }
         var subSum = finish - start;
         _sum = _sum + subSum;
       }
@@ -9472,25 +9496,58 @@ var Stopwatch = /*#__PURE__*/function () {
         pause_time: sumPauses,
         pause_time_hour: _this.convertMillisecondsToTime(sumPauses)
       };
-      (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.sendRequest)(adminAjax, data, 'POST', showLoader).then(function (res) {
-        console.log(res);
-        _this.runTick();
-        var html = res.timer_modal_html;
-        _this.loading = false;
-        if (html !== undefined && html !== '') {
-          if (_this.$doc.find('#report-window').length > 0) (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.closeWindow)(_this.$doc.find('#report-window'));
-          $('body').append(html);
-          setTimeout(function () {
-            (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.openWindow)(_this.$doc.find('#report-window'));
-          }, 500);
+      if (showLoader) {
+        (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showPreloader)();
+      }
+      $.ajax({
+        type: 'POST',
+        url: adminAjax,
+        data: data
+      }).done(function (r) {
+        (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.hidePreloader)();
+        if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(r)) {
+          var res = JSON.parse(r);
+          console.log(res);
+          // _this.runTick();
+          var html = res.timer_modal_html;
+          _this.loading = false;
+          if (html !== undefined && html !== '') {
+            if (_this.$doc.find('#report-window').length > 0) (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.closeWindow)(_this.$doc.find('#report-window'));
+            $('body').append(html);
+            setTimeout(function () {
+              (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.openWindow)(_this.$doc.find('#report-window'));
+            }, 500);
+          }
+        } else {
+          alert(r);
         }
-      })["catch"](function (e) {
-        console.log(e);
+      }).fail(function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+        _this.saveData(getResultModal, showLoader);
       });
+
+      // sendRequest(adminAjax, data, 'POST', showLoader).then((res) => {
+      //     console.log(res);
+      //     _this.runTick();
+      //     const html = res.timer_modal_html;
+      //     _this.loading = false;
+      //     if (html !== undefined && html !== '') {
+      //         if (_this.$doc.find('#report-window').length > 0) closeWindow(_this.$doc.find('#report-window'));
+      //         $('body').append(html);
+      //         setTimeout(function () {
+      //             openWindow(_this.$doc.find('#report-window'));
+      //         }, 500);
+      //     }
+      // }).catch(function (e) {
+      //     console.log(e)
+      // });
     }
   }, {
     key: "getCurrentData",
     value: function getCurrentData() {
+      var saveData = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
       var _this = this;
       var date = _this.getCurrentDate();
       if (_this.date !== date) _this.clearStorage();
@@ -9498,58 +9555,114 @@ var Stopwatch = /*#__PURE__*/function () {
         action: 'get_user_time',
         date: date
       };
-      (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.sendRequest)(adminAjax, data, 'POST', false).then(function (res) {
-        console.log(res);
-        if (res) {
-          _this.$doc.find('.timer').removeClass('not-active');
-          var pauses = res.pauses || [];
-          var costs_data = res.costs_data || [];
-          var costs_status = res.costs_status;
-          var costs_start = res.costs_start || 0;
-          var costs_finish = res.costs_finish || 0;
-          var timer_modal_html = res.timer_modal_html;
-          var costs_sum_hour = res.costs_sum_hour;
-          var costs_sum = res.costs_sum;
-          var costs_sum_hour_pause = res.costs_sum_hour_pause;
-          var costs_sum_pause = res.costs_sum_pause;
-          if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(pauses)) pauses = JSON.parse(pauses);
-          if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(costs_data)) costs_data = JSON.parse(costs_data);
-          _this.stopwatches = pauses;
-          _this.workTimes = costs_data;
-          if (costs_status) {
-            _this.status = Number(costs_status);
-          }
-          _this.startTimestamp = Number(costs_start || 0);
-          _this.finishTimestamp = Number(costs_finish || 0);
-          _this.renderResults();
-          if (_this.status === 1) {
-            _this.$doc.find('.timer').removeClass('pause');
-            _this.$doc.find('.timer').addClass('play');
-            _this.runTick();
-          } else if (_this.status === -1) {
-            _this.$doc.find('.timer').addClass('pause');
-            _this.$doc.find('.timer').removeClass('play');
-            _this.runTick();
+      $.ajax({
+        type: 'POST',
+        url: adminAjax,
+        data: data
+      }).done(function (r) {
+        (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.hidePreloader)();
+        if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(r)) {
+          var res = JSON.parse(r);
+          console.log(res);
+          if (res) {
+            _this.$doc.find('.timer').removeClass('not-active');
+            var pauses = res.pauses || [];
+            var costs_data = res.costs_data || [];
+            var costs_status = res.costs_status;
+            var costs_start = res.costs_start || 0;
+            var costs_finish = res.costs_finish || 0;
+            var timer_modal_html = res.timer_modal_html;
+            var costs_sum_hour = res.costs_sum_hour;
+            var costs_sum = res.costs_sum;
+            var costs_sum_hour_pause = res.costs_sum_hour_pause;
+            var costs_sum_pause = res.costs_sum_pause;
+            if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(pauses)) pauses = JSON.parse(pauses);
+            if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(costs_data)) costs_data = JSON.parse(costs_data);
+            _this.stopwatches = pauses;
+            _this.workTimes = costs_data;
+            if (costs_status) {
+              _this.status = Number(costs_status);
+            }
+            _this.startTimestamp = Number(costs_start || 0);
+            _this.finishTimestamp = Number(costs_finish || 0);
+            _this.renderResults();
+            if (_this.status === 1) {
+              _this.$doc.find('.timer').removeClass('pause');
+              _this.$doc.find('.timer').addClass('play');
+              _this.runTick();
+            } else if (_this.status === -1) {
+              _this.$doc.find('.timer').addClass('pause');
+              _this.$doc.find('.timer').removeClass('play');
+              _this.runTick();
+            } else {
+              _this.$doc.find('.timer').removeClass('pause');
+              _this.$doc.find('.timer').removeClass('play');
+            }
+            if (res.reload) {
+              window.location.reload();
+              return;
+            }
+            if (saveData) _this.saveData();
           } else {
-            _this.$doc.find('.timer').removeClass('pause');
-            _this.$doc.find('.timer').removeClass('play');
+            window.location.reload();
           }
-          if (res.reload) window.location.reload();
-        } else {
-          window.location.reload();
         }
+      }).fail(function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+        _this.getCurrentData();
       });
+      // sendRequest(adminAjax, data, 'POST', false).then((res) => {
+      //     console.log(res)
+      //     if (res) {
+      //         _this.$doc.find('.timer').removeClass('not-active');
+      //         let pauses = res.pauses || [];
+      //         let costs_data = res.costs_data || [];
+      //         const costs_status = res.costs_status;
+      //         const costs_start = res.costs_start || 0;
+      //         const costs_finish = res.costs_finish || 0;
+      //         const timer_modal_html = res.timer_modal_html;
+      //         const costs_sum_hour = res.costs_sum_hour;
+      //         const costs_sum = res.costs_sum;
+      //         const costs_sum_hour_pause = res.costs_sum_hour_pause;
+      //         const costs_sum_pause = res.costs_sum_pause;
+      //         if (isJsonString(pauses)) pauses = JSON.parse(pauses);
+      //         if (isJsonString(costs_data)) costs_data = JSON.parse(costs_data);
+      //         _this.stopwatches = pauses;
+      //         _this.workTimes = costs_data;
+      //         if (costs_status) {
+      //             _this.status = Number(costs_status);
+      //         }
+      //         _this.startTimestamp = Number(costs_start || 0);
+      //         _this.finishTimestamp = Number(costs_finish || 0);
+      //         _this.renderResults();
+      //         if (_this.status === 1) {
+      //             _this.$doc.find('.timer').removeClass('pause');
+      //             _this.$doc.find('.timer').addClass('play');
+      //             _this.runTick();
+      //         } else if (_this.status === -1) {
+      //             _this.$doc.find('.timer').addClass('pause');
+      //             _this.$doc.find('.timer').removeClass('play');
+      //             _this.runTick();
+      //         } else {
+      //             _this.$doc.find('.timer').removeClass('pause');
+      //             _this.$doc.find('.timer').removeClass('play');
+      //         }
+      //         if (res.reload) window.location.reload();
+      //     } else {
+      //         window.location.reload();
+      //     }
+      //
+      // });
     }
   }, {
     key: "cyclicallyUpdated",
     value: function cyclicallyUpdated() {
       var _this = this;
       setInterval(function () {
-        _this.saveData();
+        _this.getCurrentData(true);
       }, 60000);
-      setInterval(function () {
-        _this.getCurrentData();
-      }, 65000);
     }
   }]);
 }();
