@@ -40,6 +40,9 @@ function the_users_page() {
                         <a href="<?php echo $url . '?route=work_days' ; ?>" class="button button--bordered link-js">
                             Робочий день
                         </a>
+                        <a href="<?php echo $url . '?route=calendar' ; ?>" class="button button--bordered link-js">
+                            Календар відсутностей
+                        </a>
                     </div>
                 </div>
                 <div class="users-table">
