@@ -69,6 +69,7 @@ export function renderMain(args) {
     $.ajax(param).done(function (r) {
         hidePreloader();
         loading = false;
+
         if (r) {
             let $requestBody = $(parser.parseFromString(r, "text/html"));
             $container.html($requestBody.find('main.content').html());
@@ -103,6 +104,7 @@ export function renderMain(args) {
             const commentObserver = new CommentObserver();
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
+        loading = false;
         renderMain({
             url: url
         });

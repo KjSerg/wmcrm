@@ -3711,23 +3711,57 @@ input {
   align-items: center;
   background: #F2F3F9;
 }
+@media (max-width: 940px) {
+  .days-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 .days-head-controls {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   width: 100%;
 }
+@media (max-width: 940px) {
+  .days-head-controls {
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 460px) {
+  .days-head-controls {
+    flex-direction: column;
+  }
+}
 .days-head-controls > * {
   width: calc(33% - 1rem);
 }
+@media (max-width: 460px) {
+  .days-head-controls > * {
+    width: 100%;
+  }
+}
 .days-head-controls > *:not(:last-child) {
   margin-right: 1rem;
+}
+@media (max-width: 460px) {
+  .days-head-controls > *:not(:last-child) {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
 }
 .days-title {
   width: 40%;
   padding-right: 1rem;
 }
+@media (max-width: 940px) {
+  .days-title {
+    margin-bottom: 2rem;
+    width: 100%;
+  }
+}
 .days-table {
+  width: 130rem;
   background: rgba(242, 243, 249, 0.26);
 }
 .days-table-user {
@@ -3747,15 +3781,30 @@ input {
   font-weight: 600;
   line-height: 140%;
 }
+.days-table-value.active-time {
+  font-weight: 300;
+  font-size: 1.8rem;
+}
+.days-table-value.changed-time {
+  color: #5C6DF9;
+  font-weight: 400;
+}
+.days-table-value.error-time {
+  color: red;
+  font-weight: 500;
+}
 .days-table-row {
   display: flex;
   border-bottom: 1px solid #E2E3EE;
+  overflow: hidden;
 }
 .days-table-column {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 4.4rem;
+  padding: 0.5rem;
   width: 12.5%;
   color: #333;
   text-align: center;
@@ -3765,11 +3814,27 @@ input {
   font-weight: 400;
   line-height: 140%;
 }
+@media (max-width: 1200px) {
+  .days-table-column:nth-child(1) {
+    width: 16rem;
+    z-index: 1;
+    position: fixed;
+    background: #F2F3F9;
+  }
+}
+@media (max-width: 1200px) {
+  .days-table-column:nth-child(2) {
+    margin-left: 12.5%;
+  }
+}
 .days-table-column:nth-child(8), .days-table-column:nth-child(7) {
   background: rgba(136, 158, 252, 0.1);
 }
 .days-table-column:not(:last-child) {
   border-right: 1px solid #E2E3EE;
+}
+.days-table-wrapper {
+  overflow: auto;
 }
 
 html {

@@ -5,17 +5,36 @@
     align-items: center;
     background: #F2F3F9;
 
+    @media (max-width: 940px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
     &-controls {
       display: flex;
       align-items: center;
       justify-content: flex-end;
       width: 100%;
 
+      @media (max-width: 940px) {
+        justify-content: flex-start;
+      }
+      @media (max-width: 460px) {
+        flex-direction: column;
+      }
+
       & > * {
         width: calc(33% - 1rem);
 
+        @media (max-width: 460px) {
+          width: 100%
+        }
+
         &:not(:last-child) {
           margin-right: 1rem;
+          @media (max-width: 460px) {
+            margin-right: 0;
+            margin-bottom: 1rem;
+          }
         }
       }
     }
@@ -24,9 +43,18 @@
   &-title {
     width: 40%;
     padding-right: 1rem;
+    @media (max-width: 940px) {
+      margin-bottom: 2rem;
+      width: 100%;
+    }
+  }
+
+  &-container {
+
   }
 
   &-table {
+    width: 130rem;
     background: rgba(242, 243, 249, 0.26);
 
     &-user {
@@ -36,6 +64,7 @@
       font-style: normal;
       font-weight: 400;
       line-height: 140%;
+
     }
 
     &-value {
@@ -46,18 +75,36 @@
       font-style: normal;
       font-weight: 600;
       line-height: 140%;
+
+      &.active-time {
+        font-weight: 300;
+        font-size: 1.8rem;
+      }
+
+      &.changed-time {
+        color: #5C6DF9;
+        font-weight: 400;
+      }
+
+      &.error-time {
+        color: red;
+        font-weight: 500;
+      }
     }
 
     &-row {
       display: flex;
       border-bottom: 1px solid #E2E3EE;
+      overflow: hidden;
     }
 
     &-column {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
       height: 4.4rem;
+      padding: 0.5rem;
       width: 12.5%;
       color: #333;
       text-align: center;
@@ -67,6 +114,20 @@
       font-weight: 400;
       line-height: 140%;
 
+      &:nth-child(1) {
+        @media (max-width: 1200px) {
+          width: 16rem;
+          z-index: 1;
+          position: fixed;
+          background: #F2F3F9;
+        }
+      }
+      &:nth-child(2) {
+        @media (max-width: 1200px) {
+          margin-left: 12.5%;
+        }
+      }
+
       &:nth-child(8), &:nth-child(7) {
         background: rgba(#889EFC, 0.1);
       }
@@ -74,6 +135,10 @@
       &:not(:last-child) {
         border-right: 1px solid #E2E3EE;
       }
+    }
+
+    &-wrapper {
+      overflow: auto;
     }
   }
 }

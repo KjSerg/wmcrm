@@ -10201,6 +10201,7 @@ function renderMain(args) {
       var commentObserver = new _CommentObserver__WEBPACK_IMPORTED_MODULE_3__["default"]();
     }
   }).fail(function (jqXHR, textStatus, errorThrown) {
+    loading = false;
     renderMain({
       url: url
     });
