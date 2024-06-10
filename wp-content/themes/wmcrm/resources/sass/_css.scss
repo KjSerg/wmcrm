@@ -461,6 +461,13 @@ img.cover {
       }
     }
 
+    &.quarter {
+      width: calc(25% - 0.5rem);
+      &:not(:last-child){
+        margin-right: 0.5rem;
+      }
+    }
+
     & > * {
       margin-bottom: 5px;
     }
@@ -655,9 +662,20 @@ textarea {
     }
   }
 
-  @media (max-width: 700px) {
-
+  &-change-user {
+    overflow: visible;
+    .title {
+      margin-bottom: 2rem;
+      @media (max-width: 700px) {
+        font-size: 1.8rem;
+      }
+    }
+    @media (max-width: 700px) {
+      width: 100%;
+    }
   }
+
+
 }
 
 .window-main {

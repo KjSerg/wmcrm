@@ -3751,8 +3751,11 @@ input {
   }
 }
 .days-title {
-  width: 40%;
+  width: 41%;
   padding-right: 1rem;
+}
+.days-title.title {
+  font-size: 2.2rem;
 }
 @media (max-width: 940px) {
   .days-title {
@@ -3835,6 +3838,84 @@ input {
 }
 .days-table-wrapper {
   overflow: auto;
+}
+
+.calendar-table {
+  width: 130rem;
+  background: rgba(242, 243, 249, 0.26);
+  color: #333;
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 1.6rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
+}
+.calendar-table-user {
+  color: #5C6DF9;
+  font-family: Montserrat;
+  font-size: 1.6rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 140%;
+  text-align: left;
+}
+.calendar-table-wrapper {
+  overflow-x: auto;
+}
+.calendar-table-row {
+  display: flex;
+  border-bottom: 1px solid #E2E3EE;
+}
+.calendar-table-column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4.4rem;
+  width: 100%;
+  padding: 2px;
+}
+.calendar-table-column.weekday {
+  background: rgba(136, 158, 252, 0.1);
+}
+.calendar-table-column:nth-child(1) {
+  width: 23rem;
+  flex-grow: 0;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  padding: 0 2rem;
+}
+.calendar-table-column:not(:last-child) {
+  border-right: 1px solid #E2E3EE;
+}
+
+.absences-section {
+  padding: 3rem 0;
+}
+.absences-item-controls {
+  display: flex;
+  margin-top: 2rem;
+}
+.absences-item-controls a.button--bordered {
+  color: #5C6DF9;
+}
+.absences-item-controls a.button--bordered:hover {
+  color: #fff;
+}
+.absences-item-controls > * {
+  margin-right: 1rem;
+}
+.absences-title {
+  margin-bottom: 1rem;
+  font-size: 2.2rem;
+}
+.absences-form {
+  width: 100%;
+  padding: 2rem;
+  background: #F2F3F9;
+}
+.absences-form input, .absences-form .selectric {
+  background-color: #fff;
 }
 
 html {
@@ -4260,6 +4341,12 @@ img.cover {
 .form-group.half:first-child {
   margin-right: 1rem;
 }
+.form-group.quarter {
+  width: calc(25% - 0.5rem);
+}
+.form-group.quarter:not(:last-child) {
+  margin-right: 0.5rem;
+}
 .form-group > * {
   margin-bottom: 5px;
 }
@@ -4441,6 +4528,23 @@ textarea::placeholder {
 .modal-window .close-window svg path {
   fill: #686D86;
 }
+.modal-window-change-user {
+  overflow: visible;
+}
+.modal-window-change-user .title {
+  margin-bottom: 2rem;
+}
+@media (max-width: 700px) {
+  .modal-window-change-user .title {
+    font-size: 1.8rem;
+  }
+}
+@media (max-width: 700px) {
+  .modal-window-change-user {
+    width: 100%;
+  }
+}
+
 .window-main {
   position: fixed;
   top: 50%;

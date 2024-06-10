@@ -131,6 +131,19 @@ function crb_attach_in_comments() {
 
 }
 
+add_action( 'carbon_fields_register_fields', 'crb_attach_in_absences' );
+function crb_attach_in_absences() {
+	Container::make( 'post_meta', 'Інформація' )
+	         ->show_on_post_type( 'absences' )
+	         ->add_fields(
+		         array(
+			         Field::make( "separator", "crb_style_options1", "Дата" ),
+			         Field::make( "text", "absences_start_date", "Дата початку" )->set_width( 50 ),
+			         Field::make( "text", "absences_finish_date", "Дата кінця" )->set_width( 50 ),
+		         )
+	         );
+}
+
 add_action( 'carbon_fields_register_fields', 'crb_attach_in_discussion' );
 function crb_attach_in_discussion() {
 	$labels = array(
@@ -211,7 +224,6 @@ function crb_attach_in_costs() {
 			         Field::make( "text", "costs_sum_hour_change", "Сума часу [змінено]" )->set_width( 50 ),
 			         Field::make( "text", "costs_confirmed", "Підтвердженно" )->set_width( 50 ),
 			         Field::make( "text", "costs_change_text", "Коментар" ),
-
 			         Field::make( "complex", "costs_list", "Список зупинок" )
 			              ->setup_labels( $labels )
 			              ->add_fields( array(
@@ -251,11 +263,11 @@ function crb_attach_in_costs() {
 			              ->setup_labels( $labels )
 			              ->add_fields( array(
 				              Field::make( "text", "text", "Розшифровка текстом" ),
-				              Field::make( "text", "user_agent"  )->set_width(50),
-				              Field::make( "text", "user_ip"  )->set_width(50),
-				              Field::make( "text", "unix"  )->set_width(33),
-				              Field::make( "text", "status"  )->set_width(33),
-				              Field::make( "text", "old_status"  )->set_width(33),
+				              Field::make( "text", "user_agent" )->set_width( 50 ),
+				              Field::make( "text", "user_ip" )->set_width( 50 ),
+				              Field::make( "text", "unix" )->set_width( 33 ),
+				              Field::make( "text", "status" )->set_width( 33 ),
+				              Field::make( "text", "old_status" )->set_width( 33 ),
 			              ) ),
 		         )
 	         );

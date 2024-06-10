@@ -37,10 +37,10 @@ function the_users_page() {
 						<?php elseif ($section == 'dismissed'): ?>
                             <a href="<?php echo $url . '?route=' . $route ; ?>" class="button link-js">Працівники</a>
 						<?php endif; ?>
-                        <a href="<?php echo $url . '?route=work_days' ; ?>" class="button button--bordered link-js">
+                        <a href="<?php echo get_post_type_archive_link('costs') ?>" class="button button--bordered link-js">
                             Робочий день
                         </a>
-                        <a href="<?php echo $url . '?route=calendar' ; ?>" class="button button--bordered link-js">
+                        <a href="<?php echo get_post_type_archive_link('absences') ?>" class="button button--bordered link-js">
                             Календар відсутностей
                         </a>
                     </div>

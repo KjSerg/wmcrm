@@ -69,13 +69,7 @@ export default class Stopwatch {
             $timer.addClass('play');
             $timer.removeClass('pause');
             _this.start();
-            // sendRequest(adminAjax, {
-            //     action: 'work_day_action',
-            //     status: 1
-            // }).then(function (r) {
-            //     console.log(r)
-            //     _this.tick(r);
-            // });
+
         });
         _this.$doc.on('click', '.timer-button-finish', function (e) {
             e.preventDefault();
@@ -85,13 +79,7 @@ export default class Stopwatch {
             $timer.removeClass('play');
             $timer.removeClass('pause');
             _this.finish();
-            // sendRequest(adminAjax, {
-            //     action: 'work_day_action',
-            //     status: 0
-            // }).then(function (r) {
-            //     console.log(r)
-            //     _this.tick(r);
-            // });
+
         });
         _this.$doc.on('click', '.timer-button-pause', function (e) {
             e.preventDefault();
@@ -101,13 +89,7 @@ export default class Stopwatch {
             $timer.removeClass('play');
             $timer.addClass('pause');
             _this.pauseEvent();
-            // sendRequest(adminAjax, {
-            //     action: 'work_day_action',
-            //     status: -1
-            // }).then(function (r) {
-            //     console.log(r)
-            //     _this.tick(r);
-            // });
+
         });
         _this.$doc.on('click', '.timer-button-play-pause', function (e) {
             e.preventDefault();
@@ -117,13 +99,7 @@ export default class Stopwatch {
             $timer.addClass('play');
             $timer.removeClass('pause');
             _this.start();
-            // sendRequest(adminAjax, {
-            //     action: 'work_day_action',
-            //     status: 1,
-            // }).then(function (r) {
-            //     console.log(r)
-            //     _this.tick(r);
-            // });
+
         });
         _this.$doc.on('click', '.timer-result', function (e) {
             e.preventDefault();
@@ -133,6 +109,9 @@ export default class Stopwatch {
             if (!isOpen) {
                 $timer.addClass('open-controls');
                 $('body').addClass('open-timer');
+                if (_this.status === 0 && _this.workTimes.length === 0) {
+                    _this.$doc.find('.timer-button-start').trigger('click');
+                }
             } else {
                 $timer.removeClass('open-controls');
                 $('body').removeClass('open-timer');
@@ -210,9 +189,12 @@ export default class Stopwatch {
             }
         } else {
             console.log(_this.interval)
-            _this.interval = setInterval(function () {
-                _this.renderResults();
-            }, 1000);
+            if (_this.interval === null) {
+                _this.interval = setInterval(function () {
+                    _this.renderResults();
+                }, 1000);
+            }
+
         }
     }
 
@@ -246,10 +228,10 @@ export default class Stopwatch {
             let start = Number(item.start || 0);
             let finish = item.finish ? Number(item.finish) : _this.getCurrentTimestamp();
             finish = Number(finish);
-            if(finish === 0){
-                if(a < l){
+            if (finish === 0) {
+                if (a < l) {
                     finish = start;
-                }else {
+                } else {
                     finish = finish === 0 ? Number(_this.getCurrentTimestamp()) : finish;
                 }
             }
@@ -272,10 +254,10 @@ export default class Stopwatch {
             let start = Number(item.start || 0);
             let finish = Number(item.finish);
 
-            if(finish === 0){
-                if(a < l){
+            if (finish === 0) {
+                if (a < l) {
                     finish = start;
-                }else {
+                } else {
                     finish = finish === 0 ? _this.getCurrentTimestamp() : finish;
                 }
             }
@@ -440,7 +422,7 @@ export default class Stopwatch {
             if (isJsonString(r)) {
                 const res = JSON.parse(r);
                 console.log(res);
-                // _this.runTick();
+                _this.runTick();
                 const html = res.timer_modal_html;
                 _this.loading = false;
                 if (html !== undefined && html !== '') {
@@ -533,7 +515,7 @@ export default class Stopwatch {
                         window.location.reload();
                         return;
                     }
-                    if(saveData) _this.saveData();
+                    if (saveData) _this.saveData();
                 } else {
                     window.location.reload();
                 }

@@ -42,7 +42,7 @@ export function initTriggers() {
         let $t = $(this);
         let href = $t.attr('href');
         if (href === undefined) return;
-        if(isImageUrl(href)){
+        if (isImageUrl(href)) {
             $doc.find('.window-main').html('<div class="window-main-image"><img src="' + href + '"  alt=""></div>');
             openWindow($doc.find('.window-main'));
             return;
@@ -209,6 +209,9 @@ $(document).ready(function () {
         let $t = $(this);
         let url = $t.attr('src');
         if (url === undefined) return;
+        if (url.includes('cleanshot')) {
+            return;
+        }
         $doc.find('.window-main').html('<div class="window-main-image"><img src="' + url + '"  alt=""></div>');
         openWindow($doc.find('.window-main'));
     });

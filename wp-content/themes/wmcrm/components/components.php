@@ -357,7 +357,7 @@ function the_timer_html() {
                         <div class="timer-work-time">
                             Тривалість робочого дня: <span><?php echo $costs_sum_hour ?></span>
                         </div>
-                        <div class="timer-pause-time" >
+                        <div class="timer-pause-time">
                             Тривалість перерви: <span><?php echo $costs_sum_pause_hour ?></span>
                         </div>
                     </div>
@@ -591,5 +591,43 @@ function the_autocomplete_input( $args = array() ) {
                placeholder="<?php echo $placeholder ?>">
         <span class="autocomplete-wrapper" style="display: none"></span>
     </label>
+	<?php
+}
+
+function the_absences( $id = false ) {
+	$id        = $id ?: get_the_ID();
+	$author_id = get_post_field( 'post_author', $id );
+	$user      = get_user_by( 'id', $author_id );
+	$avatar    = carbon_get_user_meta( $author_id, 'avatar' );
+	$avatar    = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $author_id );
+	$link      = get_post_type_archive_link( 'absences' ) . '?confirm_absences=' . $id;
+	$remove_link      = get_post_type_archive_link( 'absences' ) . '?remove_absences=' . $id;
+	$reasons   = get_the_terms( $id, 'reasons' );
+	?>
+    <div class="comment absences-item"
+         id="absences-<?php echo $id ?>">
+        <div class="comment-head">
+            <div class="comment-author">
+				<?php echo $user->display_name ?>
+				<?php if ( $avatar ) {
+					echo "<div class='comment-author__avatar'><img class='cover' src='$avatar' alt=''/></div>";
+				} ?>
+            </div>
+            <div class="comment-date">
+				<?php echo get_the_date( 'd-m-Y H:i', $id ); ?>
+				<?php if ( $reasons ) {
+					echo '[' . $reasons[0]->name . ']';
+				} ?>
+            </div>
+        </div>
+        <div class="comment-content text">
+			<?php echo replace_url( get_content_by_id( $id ) ); ?>
+
+        </div>
+        <div class="absences-item-controls">
+            <a href="<?php echo $link; ?>" class="button">Підтвердити</a>
+            <a href="<?php echo $remove_link; ?>" class="button button--bordered">Відмінити</a>
+        </div>
+    </div>
 	<?php
 }

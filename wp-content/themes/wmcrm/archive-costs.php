@@ -1,56 +1,58 @@
 <?php
-function the_days_page() {
-	$current_user_id = get_current_user_id();
-	$is_admin        = is_current_user_admin();
-	$var             = variables();
-	$set             = $var['setting_home'];
-	$assets          = $var['assets'];
-	$url             = $var['url'];
-	$url_home        = $var['url_home'];
-	$time            = time();
-	$current_week    = date( "W", $time );
-	$current_year    = date( "Y", $time );
-	$current_month   = (int) date( "m", $time );
-	$current_date    = date( "d-m-Y", $time );
-	$dates_week      = get_dates_of_week( $current_year, $current_week );
-	$users           = get_active_users();
-	$get_user_id     = $_GET['user_id'] ?? '';
-	if ( ! $is_admin ) {
-		$get_user_id = $current_user_id;
-	}
-	$get_month         = $_GET['month'] ?? $current_month;
-	$get_week          = $_GET['week'] ?? '';
-	$active_dates_week = $get_week ? get_dates_of_week( $current_year, $get_week ) : $dates_week;
-	$active_users      = get_active_users();
-	get_header();
-	?>
-    <div class="nav">
+$current_user_id = get_current_user_id();
+$var             = variables();
+$set             = $var['setting_home'];
+$assets          = $var['assets'];
+$url             = $var['url'];
+$url_home        = $var['url_home'];
+if(!$current_user_id){
+	header('Location: ' . $url);
+	die();
+}
+$is_admin        = is_current_user_admin();
+$time            = time();
+$current_week    = date( "W", $time );
+$current_year    = date( "Y", $time );
+$current_month   = (int) date( "m", $time );
+$current_date    = date( "d-m-Y", $time );
+$dates_week      = get_dates_of_week( $current_year, $current_week );
+$users           = get_active_users();
+$get_user_id     = $_GET['user_id'] ?? '';
+if ( ! $is_admin ) {
+	$get_user_id = $current_user_id;
+}
+$get_month         = $_GET['month'] ?? $current_month;
+$get_week          = $_GET['week'] ?? '';
+$active_dates_week = $get_week ? get_dates_of_week( $current_year, $get_week ) : $dates_week;
+$active_users      = get_active_users();
+get_header();
+?>
+	<div class="nav">
 		<?php if ( $is_admin ): ?>
-            <div class="container">
-                <div class="nav-list">
+			<div class="container">
+				<div class="nav-list">
 
-                    <a href="<?php echo $url . '?route=users'; ?>" class="nav-list__item link-js">
+					<a href="<?php echo $url . '?route=users'; ?>" class="nav-list__item link-js">
                 <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12"
                                         fill="none">
 <path d="M0.174904 5.57196C-0.058285 5.80515 -0.058285 6.19475 0.174904 6.42853L5.55538 11.8228C5.79156 12.059 6.17458 12.059 6.41016 11.8228C6.64634 11.5866 6.64634 11.203 6.41016 10.9668L1.45709 5.99997L6.41076 1.0337C6.64694 0.796928 6.64694 0.41391 6.41076 0.177134C6.17458 -0.0590446 5.79156 -0.0590446 5.55598 0.177134L0.174904 5.57196Z"
       fill="#5C6DF9"/>
 </svg></span>Назад до списку працівників
-                    </a>
-                </div>
-            </div>
+					</a>
+				</div>
+			</div>
 		<?php endif; ?>
-    </div>
-    <section class="section days-section">
-        <div class="container">
-            <div class="days-container">
-                <div class="days-head">
-                    <div class="title days-title">
-                        Робочий день
-                    </div>
-                    <form method="get" class="days-head-controls" action="<?php echo $url ?>">
-                        <input type="hidden" name="route" value="work_days">
-                        <input type="hidden" name="week" class="week-js" value="">
-                        <select class="selectric submit-on-select trigger-on-select">
+	</div>
+	<section class="section days-section">
+		<div class="container">
+			<div class="days-container">
+				<div class="days-head">
+					<div class="title days-title">
+						Робочий день
+					</div>
+					<form method="get" class="days-head-controls" action="<?php echo get_post_type_archive_link('costs') ?>">
+						<input type="hidden" name="week" class="week-js" value="">
+						<select class="selectric submit-on-select trigger-on-select">
 							<?php for ( $w = 1; $w <= $current_week; $w ++ ):
 								$_dates_week = get_dates_of_week( $current_year, $w );
 								$last_day = $_dates_week[6];
@@ -69,49 +71,49 @@ function the_days_page() {
 									$attr .= ' disabled';
 								}
 								?>
-                                <option data-selector=".week-js" data-val="<?php echo $w; ?>"
-                                        value="<?php echo $w; ?>" <?php echo $attr; ?>>
+								<option data-selector=".week-js" data-val="<?php echo $w; ?>"
+								        value="<?php echo $w; ?>" <?php echo $attr; ?>>
 									<?php echo "Від " . $_dates_week[0] . ' до ' . $last_day; ?>
-                                </option>
+								</option>
 							<?php endfor; ?>
-                        </select>
-                        <select name="month" class="selectric trigger-on-select submit-on-select ">
+						</select>
+						<select name="month" class="selectric trigger-on-select submit-on-select ">
 							<?php for ( $m = 1; $m <= $current_month; $m ++ ):
 								$attr = '';
 								if ( $m == $get_month ) {
 									$attr = 'selected';
 								}
 								?>
-                                <option data-selector=".week-js"
-                                        data-val="<?php echo get_first_week_number_month( $current_year, $m ) ?>"
-                                        value="<?php echo $m; ?>" <?php echo $attr; ?>>
+								<option data-selector=".week-js"
+								        data-val="<?php echo get_first_week_number_month( $current_year, $m ) ?>"
+								        value="<?php echo $m; ?>" <?php echo $attr; ?>>
 									<?php echo get_localized_month_name( $m ); ?>
-                                </option>
+								</option>
 							<?php endfor; ?>
-                        </select>
+						</select>
 						<?php if ( $users && $is_admin ): ?>
-                            <select name="user_id" class="selectric submit-on-select">
-                                <option value="" <?php echo $get_user_id == '' ? 'selected' : ''; ?> >
-                                    Всі працівники
-                                </option>
+							<select name="user_id" class="selectric submit-on-select">
+								<option value="" <?php echo $get_user_id == '' ? 'selected' : ''; ?> >
+									Всі працівники
+								</option>
 								<?php foreach ( $users as $user ): if ( ! is__user_admin( $user->ID ) ): ?>
-                                    <option value="<?php echo $user->ID; ?>" <?php echo $get_user_id == $user->ID ? 'selected' : ''; ?> >
+									<option value="<?php echo $user->ID; ?>" <?php echo $get_user_id == $user->ID ? 'selected' : ''; ?> >
 										<?php echo $user->display_name; ?>
-                                    </option>
+									</option>
 								<?php endif; endforeach; ?>
-                            </select>
+							</select>
 						<?php endif; ?>
-                    </form>
-                </div>
-                <div class="days-table-wrapper">
-                    <div class="days-table">
-                        <div class="days-table-row">
-                            <div class="days-table-column"></div>
+					</form>
+				</div>
+				<div class="days-table-wrapper">
+					<div class="days-table">
+						<div class="days-table-row">
+							<div class="days-table-column"></div>
 							<?php if ( $active_dates_week ): foreach ( $active_dates_week as $item ):
 								?>
-                                <div class="days-table-column"><?php echo convert_date_to_day_format( $item ) ?></div>
+								<div class="days-table-column"><?php echo convert_date_to_day_format( $item ) ?></div>
 							<?php endforeach; endif; ?>
-                        </div>
+						</div>
 						<?php if ( $active_users ): foreach ( $active_users as $_user ):
 							$_userID = $_user->ID;
 							if ( ! is__user_admin( $_userID ) ):
@@ -122,12 +124,12 @@ function the_days_page() {
 									}
 								}
 								?>
-                                <div class="days-table-row" <?php echo $_attr; ?>>
-                                    <div class="days-table-column">
-                                        <div class="days-table-user"><?php echo $_user->display_name; ?></div>
-                                    </div>
+								<div class="days-table-row" <?php echo $_attr; ?>>
+									<div class="days-table-column">
+										<div class="days-table-user"><?php echo $_user->display_name; ?></div>
+									</div>
 									<?php if ( $active_dates_week ): foreach ( $active_dates_week as $item ): ?>
-                                        <div class="days-table-column">
+										<div class="days-table-column">
 											<?php if ( $cost_id = get_cost_id( array(
 												'user_id' => $_userID,
 												'date'    => $item
@@ -176,20 +178,19 @@ function the_days_page() {
 													$string = $changed ? $res . '⮕' . $changed : $res;
 												}
 												?>
-                                                <div class="days-table-value <?php echo $css_class; ?>"
-                                                     title='<?php echo implode( '; ', $title_attr ); ?>'>
+												<div class="days-table-value <?php echo $css_class; ?>"
+												     title='<?php echo implode( '; ', $title_attr ); ?>'>
 													<?php echo $string; ?>
-                                                </div>
+												</div>
 											<?php endif; ?>
-                                        </div>
+										</div>
 									<?php endforeach; endif; ?>
-                                </div>
+								</div>
 							<?php endif; endforeach; endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-	<?php
-	get_footer();
-}
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+<?php
+get_footer();

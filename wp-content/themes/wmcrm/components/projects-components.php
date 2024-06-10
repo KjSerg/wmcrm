@@ -108,7 +108,7 @@ function the_project_performers( $id ) {
 			<?php if ( $performer_id ):
 				$user = get_user_by_work_section_id( $performer_id );
 				$avatar      = false;
-                $_url = $projects . '?performer=' . $performer_id;
+				$_url        = $projects . '?performer=' . $performer_id;
 				if ( $user ) {
 					$_user_id       = $user->ID;
 					$avatar         = carbon_get_user_meta( $_user_id, 'avatar' );
@@ -116,7 +116,7 @@ function the_project_performers( $id ) {
 					$last_name      = $user->last_name;
 					$first_name     = $user->first_name;
 					$performer_name = $last_name;
-					$_url = get_author_posts_url($_user_id);
+					$_url           = get_author_posts_url( $_user_id );
 					if ( $first_name ) {
 						$performer_name .= ' ' . mb_substr( $first_name, 0, 1 ) . '.';
 					}
@@ -268,6 +268,7 @@ function the_observers( $id ) {
 }
 
 function the__user( $_user_id, $role = '' ) {
+	global $post;
 	if ( $u = get_user_by( 'id', $_user_id ) ):
 		$worksection_id = carbon_get_user_meta( $_user_id, 'worksection_id' );
 		$avatar = carbon_get_user_meta( $_user_id, 'avatar' );
@@ -282,18 +283,63 @@ function the__user( $_user_id, $role = '' ) {
 		if ( $role ) {
 			$title .= ' - ' . $role;
 		}
+		$role_hush = md5( $role );
+		$users     = get_active_users();
 		?>
         <div class="project-user" title="<?php echo $title; ?>">
-            <div class="project-user__avatar">
+            <a href="#edit-user-<?php echo $role_hush; ?>" class="project-user__avatar modal-open">
                 <img src="<?php echo $avatar; ?>" alt="">
-            </div>
+            </a>
             <div class="project-user-text">
-                <div class="project-user__title"><?php echo $display_name; ?></div>
+                <a class="project-user__title modal-open"
+                   href="#edit-user-<?php echo $role_hush; ?>"><?php echo $display_name; ?></a>
 				<?php if ( $role ): ?>
                     <div class="project-user__role"><?php echo $role; ?></div>
 				<?php endif; ?>
             </div>
         </div>
+		<?php if ( $role != 'Автор' ):
+		$_users = [];
+		if ( $role == 'Відповідальний' ) {
+			$project_users_to_id = carbon_get_post_meta( $post->ID, 'project_users_to_id' );
+			$_users              = $project_users_to_id ? explode( ',', $project_users_to_id ) : array();
+		}
+		if ( $role == 'Спостерігач' ) {
+			$project_users_observer_id = carbon_get_post_meta( $post->ID, 'project_users_observer_id' );
+			$_users                    = $project_users_observer_id ? explode( ',', $project_users_observer_id ) : array();
+		}
+		?>
+        <div class=" modal-window-change-user modal-window" id="edit-user-<?php echo $role_hush; ?>">
+            <div class="title">
+                Змінити користувачів із ролю <br> <?php echo $role; ?>
+            </div>
+            <form class="form form-js change-project-users-form" id="change-project-users-form" method="post">
+                <input type="hidden" name="action" value="change_project_user">
+                <input type="hidden" name="role" value="<?php echo $role; ?>">
+                <input type="hidden" name="project_id" value="<?php echo $post->ID; ?>">
+				<?php if ( $users ): ?>
+                    <label class="form-group ">
+                        <span class="form-group__title"><?php echo $role; ?></span>
+                        <select name="<?php echo $role; ?>[]" multiple class="selectric">
+                            <option disabled><?php echo $role; ?></option>
+							<?php foreach ( $users as $user ):
+								$attr = in_array( $user->ID, $_users ) ? 'selected' : '';
+								?>
+                                <option value="<?php echo esc_attr( $user->ID ) ?>" <?php echo esc_attr( $attr ) ?>>
+									<?php echo esc_html( $user->display_name ) ?>
+                                </option>
+							<?php endforeach; ?>
+                        </select>
+                    </label>
+				<?php endif; ?>
+                <div class="form-buttons">
+                    <button class="form-button button">
+                        Змінити <?php echo $role ?>
+                    </button>
+                </div>
+            </form>
+        </div>
+	<?php endif; ?>
 	<?php
 	endif;
 }

@@ -7,12 +7,11 @@ if ( $user_id ) {
 	$route = $_GET['route'] ?? '';
 	if ( $route == 'profile' ) {
 		the_profile();
-	} elseif ( $route == 'work_days' ) {
-		the_days_page();
 	} elseif ( $route == 'users' && $is_admin ) {
 		the_users_page();
 	} else {
 		$projects = get_post_type_archive_link( 'projects' );
+
 		header( 'Location: ' . $projects );
 	}
 	die();
@@ -27,6 +26,7 @@ $id           = get_the_ID();
 $isLighthouse = isLighthouse();
 $size         = isLighthouse() ? 'thumbnail' : 'full';
 the_login_page();
-get_footer(); ?>
+get_footer();
+?>
 
 

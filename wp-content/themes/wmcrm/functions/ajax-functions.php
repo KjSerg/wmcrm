@@ -1468,6 +1468,168 @@ function return_user() {
 	die();
 }
 
+add_action( 'wp_ajax_nopriv_change_project_user', 'change_project_user' );
+add_action( 'wp_ajax_change_project_user', 'change_project_user' );
+function change_project_user() {
+	$res = array();
+	if ( is_current_user_admin() ) {
+		$role       = $_POST['role'] ?? '';
+		$project_id = $_POST['project_id'] ?? '';
+		if ( $role && $project_id && get_post( $project_id ) ) {
+			$users = $_POST[ $role ] ?? '';
+			$title = get_the_title( $project_id );
+			if ( $users ) {
+				if ( $role == 'Спостерігач' ) {
+					$observers       = $users;
+					$observers_ids   = array();
+					$observers_names = array();
+					if ( $observers ) {
+						if ( ! is_array( $observers ) ) {
+							$observers = array( $observers );
+						}
+						foreach ( $observers as $item ) {
+							$user = get_user_by( 'id', $item );
+							if ( $user ) {
+								$observers_ids[]   = $item;
+								$observers_names[] = $user->display_name;
+							}
+						}
+					}
+					carbon_set_post_meta( $project_id, 'project_users_observer_id', implode( ',', $observers_ids ) );
+					carbon_set_post_meta( $project_id, 'project_users_observer_name', implode( ',', $observers_names ) );
+					$res['url'] = get_the_permalink( $project_id );
+				}
+				if ( $role == 'Відповідальний' ) {
+					$project_users_to_id_old = carbon_get_post_meta( $project_id, 'project_users_to_id' ) ?: array();
+					if ( $project_users_to_id_old ) {
+						$project_users_to_id_old = explode( ',', $project_users_to_id_old );
+					}
+					$responsible       = $users;
+					$responsible_ids   = array();
+					$responsible_names = array();
+					if ( ! is_array( $responsible ) ) {
+						$responsible = array( $responsible );
+					}
+					foreach ( $responsible as $item ) {
+						$user = get_user_by( 'id', $item );
+						if ( $user ) {
+							$responsible_ids[]   = $item;
+							$responsible_names[] = $user->display_name;
+						}
+					}
+					$worksection_id = carbon_get_user_meta( $responsible_ids[0], 'worksection_id' );
+					carbon_set_post_meta( $project_id, 'worksection_user_to_id', $worksection_id );
+					carbon_set_post_meta( $project_id, 'project_users_to_id', implode( ',', $responsible_ids ) );
+					carbon_set_post_meta( $project_id, 'project_users_to_name', implode( ',', $responsible_names ) );
+					$comment_id = create_comment( array(
+						'text'       => 'Змінено відповідальних: ' . implode( ',', $responsible_names ),
+						'id'         => (int) $project_id,
+						'is_service' => true,
+					) );
+					if ( $responsible_ids ) {
+						foreach ( $responsible_ids as $_user_id ) {
+							if ( ! in_array( $_user_id, $project_users_to_id_old ) ) {
+								if ( carbon_get_user_meta( $_user_id, 'project_notification' ) ) {
+									send_notification( $_user_id, $project_id );
+								}
+								create_notification( $project_id, $comment_id, 'Ви назначенні відповідальним ' . $title );
+							}
+						}
+					}
+				}
+				$res['url'] = get_the_permalink( $project_id );
+			} else {
+				$res['type'] = 'error';
+				$res['msg']  = 'Помилка';
+			}
+		} else {
+			$res['type'] = 'error';
+			$res['msg']  = 'Помилка';
+		}
+	} else {
+		$res['type'] = 'error';
+		$res['msg']  = 'Помилка доступу';
+	}
+	echo json_encode( $res );
+	die();
+}
+
+add_action( 'wp_ajax_nopriv_add_absences', 'add_absences' );
+add_action( 'wp_ajax_add_absences', 'add_absences' );
+function add_absences() {
+	$res             = array();
+	$current_user_id = get_current_user_id();
+	$reason          = $_POST['reason'] ?? '';
+	$text            = $_POST['text'] ?? '';
+	$date_start      = $_POST['date_start'] ?? '';
+	$date_finish     = $_POST['date_finish'] ?? '';
+	if ( $current_user_id && $reason && $date_start ) {
+		$var         = variables();
+		$set         = $var['setting_home'];
+		$assets      = $var['assets'];
+		$url         = $var['url'];
+		$url_home    = $var['url_home'];
+		$reason_obj  = get_term_by( 'id', (int) $reason, 'reasons' );
+		$user        = get_user_by( 'id', $current_user_id );
+		$name        = $user->display_name;
+		$title       = "Заявка на відсутність користувача $name $date_start";
+		$post_data   = array(
+			'post_type'    => 'absences',
+			'post_title'   => $title,
+			'post_status'  => 'pending',
+			'post_content' => $text,
+			'post_author'  => $current_user_id
+		);
+		$absences_id = wp_insert_post( $post_data, true );
+		if ( $absences_id && ! is_wp_error( $absences_id ) ) {
+			$link        = get_post_type_archive_link( 'absences' ) . '?confirm_absences=' . $absences_id;
+			$message_txt = $title . ' - ' . ( $date_finish ?: $date_start );
+			$message_txt .= '<hr>' . $reason_obj->name;
+			$message_txt .= '<br>"' . $text . '"';
+			$message_txt .= '<hr>' . '<a target="_blank" href="' . $link . '">Підтвердити</a>';
+			carbon_set_post_meta( $absences_id, "absences_start_date", $date_start );
+			carbon_set_post_meta( $absences_id, "absences_finish_date", $date_finish ?: $date_start );
+			wp_set_post_terms( $absences_id, array(), 'reasons', false );
+			if ( is_array( $reason ) ) {
+				foreach ( $reason as $item ) {
+					$item = (int) $item;
+					wp_set_post_terms( $absences_id, array( $item ), 'reasons', true );
+				}
+			} else {
+				$reason = (int) $reason;
+				wp_set_post_terms( $absences_id, array( $reason ), 'reasons', true );
+			}
+			if ( $users = get_active_users() ) {
+				foreach ( $users as $user ) {
+					$user_id = $user->ID;
+					if ( carbon_get_user_meta( $user_id, 'super_admin' ) ) {
+						$email_notification    = carbon_get_user_meta( $user_id, 'email_notification' );
+						$telegram_notification = carbon_get_user_meta( $user_id, 'telegram_notification' );
+						$telegram_id           = carbon_get_user_meta( $user_id, 'telegram_id' );
+						if ( $email_notification ) {
+							send_message( $message_txt, $user_id->user_email, $title );
+						}
+						if ( $telegram_notification && $telegram_id ) {
+							$message_txt = str_replace( '<br>', PHP_EOL, $message_txt );
+							$message_txt .= ': ' . $link;
+							send_telegram_message( $telegram_id, $message_txt );
+						}
+					}
+				}
+			}
+			$res['id'] = $absences_id;
+		} else {
+			$res['type'] = 'error';
+			$res['msg']  = $absences_id->get_error_message();
+		}
+	} else {
+		$res['type'] = 'error';
+		$res['msg']  = 'Помилка';
+	}
+	echo json_encode( $res );
+	die();
+}
+
 function get_cost_id( $arr = array() ) {
 	$res     = 0;
 	$user_id = $arr['user_id'] ?? false;

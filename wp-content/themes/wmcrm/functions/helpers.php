@@ -1367,6 +1367,25 @@ function get_dates_of_week( $year, $weekNumber ) {
 	return $dates;
 }
 
+function get_day_of_month( $month = false, $year = false ) {
+	$days  = array();
+	$time  = time();
+	$year  = $year ?: date( "Y", $time );
+	$month = $month ?: date( "m", $time );
+	$month = (int) $month;
+	$str   = ( $month < 10 ? '0' . $month : $month ) . '-' . $year;
+	$date  = new DateTime();
+	$date->setDate( $year, (int) $month, 1 );
+	$new_str = $date->format( 'm-Y' );
+	while ( $new_str == $str ) {
+		$days[] = $date->format( 'd-m-Y,N' );
+		$date->modify( '+1 day' );
+		$new_str = $date->format( 'm-Y' );
+	}
+
+	return $days;
+}
+
 function get_localized_month_name( $monthNumber, $locale = 'uk_UA' ) {
 	$formatter = new IntlDateFormatter(
 		$locale,
@@ -1447,7 +1466,6 @@ function secondsToTimeFormat( $seconds ) {
 	return sprintf( '%02d:%02d:%02d', $hours, $minutes, $remainingSeconds );
 }
 
-
 function convert_date_to_day_format( $date ) {
 	$dateTime = DateTime::createFromFormat( 'd-m-Y', $date );
 	if ( $dateTime === false ) {
@@ -1471,9 +1489,14 @@ function convert_date_to_day_format( $date ) {
 	return $formattedDate;
 }
 
-function get_first_week_number_month($year, $month) {
-	$date = new DateTime("$year-$month-01");
-	$firstWeekNumber = $date->format('W');
+function get_first_week_number_month( $year, $month ) {
+	$date            = new DateTime( "$year-$month-01" );
+	$firstWeekNumber = $date->format( 'W' );
 
 	return $firstWeekNumber;
+}
+
+function absences_action() {
+	$confirm_absences = $_GET['confirm_absences'] ?? '';
+	$remove_absences  = $_GET['remove_absences'] ?? '';
 }

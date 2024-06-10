@@ -9127,13 +9127,6 @@ var Stopwatch = /*#__PURE__*/function () {
         $timer.addClass('play');
         $timer.removeClass('pause');
         _this.start();
-        // sendRequest(adminAjax, {
-        //     action: 'work_day_action',
-        //     status: 1
-        // }).then(function (r) {
-        //     console.log(r)
-        //     _this.tick(r);
-        // });
       });
       _this.$doc.on('click', '.timer-button-finish', function (e) {
         e.preventDefault();
@@ -9143,13 +9136,6 @@ var Stopwatch = /*#__PURE__*/function () {
         $timer.removeClass('play');
         $timer.removeClass('pause');
         _this.finish();
-        // sendRequest(adminAjax, {
-        //     action: 'work_day_action',
-        //     status: 0
-        // }).then(function (r) {
-        //     console.log(r)
-        //     _this.tick(r);
-        // });
       });
       _this.$doc.on('click', '.timer-button-pause', function (e) {
         e.preventDefault();
@@ -9159,13 +9145,6 @@ var Stopwatch = /*#__PURE__*/function () {
         $timer.removeClass('play');
         $timer.addClass('pause');
         _this.pauseEvent();
-        // sendRequest(adminAjax, {
-        //     action: 'work_day_action',
-        //     status: -1
-        // }).then(function (r) {
-        //     console.log(r)
-        //     _this.tick(r);
-        // });
       });
       _this.$doc.on('click', '.timer-button-play-pause', function (e) {
         e.preventDefault();
@@ -9175,13 +9154,6 @@ var Stopwatch = /*#__PURE__*/function () {
         $timer.addClass('play');
         $timer.removeClass('pause');
         _this.start();
-        // sendRequest(adminAjax, {
-        //     action: 'work_day_action',
-        //     status: 1,
-        // }).then(function (r) {
-        //     console.log(r)
-        //     _this.tick(r);
-        // });
       });
       _this.$doc.on('click', '.timer-result', function (e) {
         e.preventDefault();
@@ -9191,6 +9163,9 @@ var Stopwatch = /*#__PURE__*/function () {
         if (!isOpen) {
           $timer.addClass('open-controls');
           $('body').addClass('open-timer');
+          if (_this.status === 0 && _this.workTimes.length === 0) {
+            _this.$doc.find('.timer-button-start').trigger('click');
+          }
         } else {
           $timer.removeClass('open-controls');
           $('body').removeClass('open-timer');
@@ -9267,9 +9242,11 @@ var Stopwatch = /*#__PURE__*/function () {
         }
       } else {
         console.log(_this.interval);
-        _this.interval = setInterval(function () {
-          _this.renderResults();
-        }, 1000);
+        if (_this.interval === null) {
+          _this.interval = setInterval(function () {
+            _this.renderResults();
+          }, 1000);
+        }
       }
     }
   }, {
@@ -9508,7 +9485,7 @@ var Stopwatch = /*#__PURE__*/function () {
         if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(r)) {
           var res = JSON.parse(r);
           console.log(res);
-          // _this.runTick();
+          _this.runTick();
           var html = res.timer_modal_html;
           _this.loading = false;
           if (html !== undefined && html !== '') {
@@ -10613,6 +10590,9 @@ $(document).ready(function () {
     var $t = $(this);
     var url = $t.attr('src');
     if (url === undefined) return;
+    if (url.includes('cleanshot')) {
+      return;
+    }
     $doc.find('.window-main').html('<div class="window-main-image"><img src="' + url + '"  alt=""></div>');
     (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.openWindow)($doc.find('.window-main'));
   });
