@@ -162,10 +162,16 @@ $doc.ready(function () {
                 contentType: false,
                 data: formData,
             }).done(function (r) {
+                const projectID = $form.find('[name="project_id"]').val();
+                if (projectID !== undefined) localStorage.removeItem('comment-for-project-' + projectID);
+                let _r = r || '';
                 const resetTriggerTest = !$form.hasClass('profile-form') && !$form.hasClass('profile-notifications') && !$form.hasClass('change-user-form');
-                if (resetTriggerTest) $form.trigger('reset');
-                $form.find('.form-files-result').html('');
+                if (!_r.includes('Error establishing a database connection')) {
+                    if (resetTriggerTest) $form.trigger('reset');
+                    $form.find('.form-files-result').html('');
+                }
                 if (r) {
+
                     if (isJsonString(r)) {
                         let res = JSON.parse(r);
                         if (res.avatar !== undefined) {
@@ -182,7 +188,7 @@ $doc.ready(function () {
                         }
                         if (res.change_data !== undefined) {
                             const changedData = res.change_data;
-                            if(changedData.user_id === undefined){
+                            if (changedData.user_id === undefined) {
                                 if (changedData.name) {
                                     $doc.find('.profile-head-user__name').text(changedData.name);
                                 }
@@ -195,8 +201,8 @@ $doc.ready(function () {
                                 if (changedData.position) {
                                     $doc.find('.profile-head-position').text(changedData.position);
                                 }
-                            }else {
-                                const $row = $doc.find('.users-table-body-row[data-id="'+changedData.user_id+'"]');
+                            } else {
+                                const $row = $doc.find('.users-table-body-row[data-id="' + changedData.user_id + '"]');
                                 if (changedData.name) {
                                     $row.find('.users-table-item__name').text(changedData.name);
                                 }
@@ -257,7 +263,6 @@ $doc.ready(function () {
                 }
                 hidePreloader();
                 setQiullText();
-                // if (!$form.hasClass('report-footer-form') && !$form.hasClass('profile-form')) closeWindow();
                 const invite = new Invite();
             });
         }

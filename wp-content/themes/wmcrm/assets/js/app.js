@@ -9894,9 +9894,14 @@ $doc.ready(function () {
         contentType: false,
         data: formData
       }).done(function (r) {
+        var projectID = $form.find('[name="project_id"]').val();
+        if (projectID !== undefined) localStorage.removeItem('comment-for-project-' + projectID);
+        var _r = r || '';
         var resetTriggerTest = !$form.hasClass('profile-form') && !$form.hasClass('profile-notifications') && !$form.hasClass('change-user-form');
-        if (resetTriggerTest) $form.trigger('reset');
-        $form.find('.form-files-result').html('');
+        if (!_r.includes('Error establishing a database connection')) {
+          if (resetTriggerTest) $form.trigger('reset');
+          $form.find('.form-files-result').html('');
+        }
         if (r) {
           if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(r)) {
             var res = JSON.parse(r);
@@ -9991,7 +9996,6 @@ $doc.ready(function () {
         }
         (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.hidePreloader)();
         (0,_quill_init__WEBPACK_IMPORTED_MODULE_1__.setQiullText)();
-        // if (!$form.hasClass('report-footer-form') && !$form.hasClass('profile-form')) closeWindow();
         var invite = new _Invite__WEBPACK_IMPORTED_MODULE_2__["default"]();
       });
     }
@@ -10720,11 +10724,35 @@ $(document).ready(function () {
     }
     $form.find('.form-files-result').html(HTML);
   });
+  $doc.on('keyup', function (e) {
+    //modal-window
+    //window-main
+    if (e.key === "Escape") {
+      var $window = $doc.find('.modal-window.active');
+      if ($window.length > 0) {
+        $window.removeClass('active');
+        $('body').removeClass('open-window');
+      } else {
+        $window = $doc.find('.window-main.active');
+        if ($window.length > 0) {
+          $window.removeClass('active');
+          $('body').removeClass('open-window');
+        } else {
+          $doc.find('.timer.open-controls').removeClass('open-controls');
+          $('body').removeClass('open-timer');
+        }
+      }
+    }
+  });
   $doc.mouseup(function (e) {
     var div = $(".window-main.active, .modal-window.active, .dialog-window.active");
     if (!div.is(e.target) && div.has(e.target).length === 0) {
       if (!$doc.find('.ui-datepicker').is(':visible')) div.find('.close-window').trigger('click');
     }
+  });
+  $doc.on('click', '[data-cost-id]', function (e) {
+    e.preventDefault();
+    var $t = $(this);
   });
   var invite = new _Invite__WEBPACK_IMPORTED_MODULE_4__["default"]();
   var stopwatch = new _Stopwatch__WEBPACK_IMPORTED_MODULE_5__["default"]();
@@ -10948,6 +10976,11 @@ $(document).ready(function () {
       $form.find('.select-user-quill-js').selectric('open');
     }
   });
+  $doc.on('keydown', '#editor, #project-editor', function (event) {
+    if (event.ctrlKey && event.key === 'Enter') {
+      $(this).closest('form').trigger('submit');
+    }
+  });
   $doc.on('click', '.comment-change-js', function (e) {
     e.preventDefault();
     var $this = $(this);
@@ -10955,7 +10988,7 @@ $(document).ready(function () {
     var $wrapper = $this.closest('.comment');
     var $text = $wrapper.find('.comment-content');
     var html = $text.html();
-    var $html = $(html);
+    var $html = $('<div>').html(html);
     $html.find('.invite').removeAttr('data-user-id');
     $html.find('.invite__image').remove();
     html = $html.html();
@@ -10985,12 +11018,29 @@ function setProjectQuillText() {
 function initProjectQuill() {
   var $editor = $doc.find('#project-editor');
   if ($editor.length === 0) return;
+  var projectID = $editor.attr('data-project-id');
+  if (projectID !== undefined) {
+    var text = localStorage.getItem('comment-for-project-' + projectID);
+    if (text !== null) {
+      if (text.trim().length !== 0) {
+        $editor.closest('form').find('.value-field').val(text);
+        $editor.html(text);
+      }
+    }
+  }
   quillProject = new (_quill__WEBPACK_IMPORTED_MODULE_0___default())('#project-editor', {
     theme: 'snow'
   });
   quillProject.on('text-change', function (delta, oldDelta, source) {
     var val = quillProject.getSemanticHTML();
     $editor.closest('form').find('.value-field').val(val);
+    if ($editor.attr('data-project-id') !== undefined) {
+      if (val && val !== '<p></p>') {
+        localStorage.setItem('comment-for-project-' + $editor.attr('data-project-id'), val);
+      } else {
+        localStorage.removeItem('comment-for-project-' + $editor.attr('data-project-id'));
+      }
+    }
   });
 }
 function initQuill() {
@@ -10998,6 +11048,18 @@ function initQuill() {
   if (quill !== null) quill = null;
   var $editor = $doc.find('#editor');
   if ($editor.length === 0) return;
+  if ($editor.html().trim().length === 0) {
+    var projectID = $editor.attr('data-project-id');
+    if (projectID !== undefined) {
+      var text = localStorage.getItem('comment-for-project-' + projectID);
+      if (text !== null) {
+        if (text.trim().length !== 0) {
+          $editor.closest('form').find('.value-field').val(text);
+          $editor.html(text);
+        }
+      }
+    }
+  }
   if (checkHTML) {
     $editor.find('span.invite').each(function () {
       var text = $(this).text();
@@ -11006,6 +11068,7 @@ function initQuill() {
     var html = $editor.html().trim();
     if (html.length > 0) {
       $editor.html(html);
+      $editor.closest('form').find('.value-field').val(html);
     }
   }
   quill = new (_quill__WEBPACK_IMPORTED_MODULE_0___default())('#editor', {
@@ -11014,6 +11077,13 @@ function initQuill() {
   quill.on('text-change', function (delta, oldDelta, source) {
     var val = quill.getSemanticHTML();
     $editor.closest('form').find('.value-field').val(val);
+    if ($editor.attr('data-project-id') !== undefined) {
+      if (val && val !== '<p></p>') {
+        localStorage.setItem('comment-for-project-' + $editor.attr('data-project-id'), val);
+      } else {
+        localStorage.removeItem('comment-for-project-' + $editor.attr('data-project-id'));
+      }
+    }
   });
 }
 

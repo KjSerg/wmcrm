@@ -170,15 +170,15 @@ get_header();
 														}
 													} else {
 														$css_class    .= ' active-time';
-														$title_attr[] = $costs_text_list[0]['text'];
 													}
 												}
+												$title_attr[] = $costs_text_list[0]['text'];
 												$string = '';
 												if ( $res ) {
 													$string = $changed ? $res . '⮕' . $changed : $res;
 												}
 												?>
-												<div class="days-table-value <?php echo $css_class; ?>"
+												<div data-cost-id="<?php echo $cost_id; ?>" class="days-table-value <?php echo $css_class; ?>"
 												     title='<?php echo implode( '; ', $title_attr ); ?>'>
 													<?php echo $string; ?>
 												</div>

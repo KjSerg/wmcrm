@@ -24,7 +24,6 @@ $reasons       = get_terms( array(
 	'hide_empty' => false,
 ) );
 get_header();
-
 ?>
     <div class="nav">
 		<?php if ( $is_admin ): ?>
@@ -52,7 +51,7 @@ get_header();
                     <form method="get" class="days-head-controls"
                           action="<?php echo get_post_type_archive_link( 'absences' ) ?>">
                         <select name="month" class="selectric submit-on-select ">
-							<?php for ( $m = 1; $m <= $current_month; $m ++ ):
+							<?php for ( $m = 1; $m <= 12; $m ++ ):
 								$attr = '';
 								if ( $m == $get_month ) {
 									$attr = 'selected';
@@ -89,29 +88,73 @@ get_header();
                             <div class="calendar-table-column <?php echo $css_cls; ?>"><?php echo $_day; ?></div>
 						<?php endforeach; endif; ?>
                     </div>
-					<?php if ( $users ): foreach ( $users as $user ): if ( ! is__user_admin( $user->ID ) ):
-						$first_name = $user->first_name;
-						$last_name = $user->last_name;
-						$n = $last_name;
-						if ( $first_name ) {
-							$n .= ' ' . mb_substr( $first_name, 0, 1 ) . '.';
-						}
-						?>
-                        <div class="calendar-table-row">
-                            <div class="calendar-table-column">
-                                <div class="calendar-table-user">
-									<?php echo $n ?>
-                                </div>
-                            </div>
-							<?php if ( $days ): foreach ( $days as $_date ):
-								$_day = explode( '-', $_date )[0];
-								$_day_number = explode( ',', $_date )[1];
-								$css_cls = $_day_number == 6 || $_day_number == 7 ? 'weekday' : '';
+					<?php if ( $users ):
+						foreach ( $users as $user ):
+							if ( ! is__user_admin( $user->ID )):
+								$items = get_absences_list( $get_month, $current_year, $user->ID );
+								$first_name = $user->first_name;
+								$last_name = $user->last_name;
+								$n = $last_name;
+                                $cls = '';
+                                if($get_user_id){
+                                    if($get_user_id != $user->ID){
+	                                    $cls = 'hidden';
+                                    }
+                                }
+								if ( $first_name ) {
+									$n .= ' ' . mb_substr( $first_name, 0, 1 ) . '.';
+								}
 								?>
-                                <div class="calendar-table-column <?php echo $css_cls; ?>"></div>
-							<?php endforeach; endif; ?>
-                        </div>
-					<?php endif; endforeach; endif; ?>
+                                <div class="calendar-table-row <?php echo $cls ?>">
+                                    <div class="calendar-table-column">
+                                        <div class="calendar-table-user">
+											<?php echo $n ?>
+                                        </div>
+                                    </div>
+									<?php if ( $days ): foreach ( $days as $_date ):
+										$_day = explode( '-', $_date )[0];
+										$_day_arr = explode( ',', $_date );
+										$_day_number = $_day_arr[1];
+										$_day_date = $_day_arr[0];
+										$css_cls = $_day_number == 6 || $_day_number == 7 ? 'weekday' : '';
+										$attr = '';
+										$html = '';
+										if ( $items ) {
+											foreach ( $items as $_id => $item ) {
+												if ( is_date_in_range( $_day_date, $item['date_start'], $item['finish_date'] ) ) {
+													$item_reason      = $item['reasons'][0];
+													$diff             = $item['diff'];
+													$first_date       = $item['date_start'] == $_day_date;
+													$item_reason_slug = $item_reason->slug;
+													$item_reason_name = $item_reason->name;
+													$item_reason_id   = $item_reason->term_id;
+													$reason_color     = carbon_get_term_meta( $item_reason_id, 'reason_color' );
+													$css_cls          .= " $item_reason_slug";
+													$attr             .= "data-id='$_id' data-diff='$diff'";
+													$str              = $item_reason_name . ' (від ' . $item['date_start'] . ' до ' . $item['finish_date'] . ')';
+													if ( $first_date ) {
+														$attr .= ' data-first ';
+														if ( $reason_color ) {
+															$width = 100 + (100 * $diff);
+															$width = "calc($width% + " . $diff . "px)";
+															$attr  .= "style='background:$reason_color; width: $width'";
+														}
+														$html .= '<div ' . $attr . ' data-date=' . $_day_date . ' title="' . $str . '" class="calendar-table-item">' . $str . '</div>';
+													}
+
+												}
+											}
+										}
+										?>
+                                        <div data-date="<?php echo $_day_date; ?>"
+                                             class="calendar-table-column <?php echo $css_cls; ?>">
+											<?php echo $html; ?>
+                                        </div>
+									<?php endforeach; endif; ?>
+                                </div>
+							<?php endif;
+						endforeach;
+					endif; ?>
                 </div>
             </div>
         </div>
@@ -141,6 +184,61 @@ get_header();
 	endif;
 	wp_reset_postdata();
 	wp_reset_query();
+	?>
+
+    <section class="section absences-section">
+        <div class="container">
+            <div class="absences-title title">
+                Додати відсутність
+            </div>
+            <form method="post" class="form absences-form form-js" novalidate id="add-absences-form">
+                <input type="hidden" name="action" value="add_absences">
+                <div class="form-row">
+	                <?php if ( $users ): ?>
+                        <label class="form-group quarter">
+                            <span class="form-group__title"> Користувач</span>
+                            <select name="user_id" required class="selectric">
+                                <option disabled selected>Оберіть користувача</option>
+				                <?php foreach ( $users as $user ): ?>
+                                    <option value="<?php echo $user->ID; ?>"><?php echo $user->display_name; ?></option>
+				                <?php endforeach; ?>
+                            </select>
+                        </label>
+	                <?php endif; ?>
+					<?php if ( $reasons ): ?>
+                        <label class="form-group quarter">
+                            <span class="form-group__title"> Причина відсутності</span>
+                            <select name="reason" required class="selectric">
+                                <option disabled selected>Оберіть причину</option>
+								<?php foreach ( $reasons as $reason ): ?>
+                                    <option value="<?php echo $reason->term_id; ?>"><?php echo $reason->name; ?></option>
+								<?php endforeach; ?>
+                            </select>
+                        </label>
+					<?php endif; ?>
+                    <label class="form-group quarter">
+                        <span class="form-group__title"> Дата з</span>
+                        <input type="text" name="date_start" required readonly class="date-input"
+                               value="<?php echo $current_date; ?>"
+                               placeholder="Оберіть дату">
+                    </label>
+                    <label class="form-group quarter">
+                        <span class="form-group__title"> Дата до</span>
+                        <input type="text" name="date_finish" required readonly class="date-input"
+                               value="<?php echo $current_date; ?>"
+                               placeholder="Оберіть дату">
+                    </label>
+                </div>
+                <div class="form-row">
+                    <button class="button" type="submit">
+                        Відправити на погодження
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+<?php
 else: ?>
     <section class="section absences-section">
         <div class="container">
@@ -149,7 +247,6 @@ else: ?>
             </div>
             <form method="post" class="form absences-form form-js" novalidate id="add-absences-form">
                 <input type="hidden" name="action" value="add_absences">
-
                 <div class="form-row">
 					<?php if ( $reasons ): ?>
                         <label class="form-group quarter">

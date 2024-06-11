@@ -1193,37 +1193,6 @@ function get_birthdays() {
 	return $res;
 }
 
-function change_user_time_event() {
-	$action     = $_GET['action'] ?? '';
-	$id         = $_GET['id'] ?? '';
-	$comment_id = $_GET['comment_id'] ?? '';
-	$is_admin   = is_current_user_admin();
-	$user_id    = get_current_user_id();
-	if ( $is_admin && carbon_get_user_meta( $user_id, 'super_admin' ) ) {
-		$time = time();
-		if ( $action === 'change_user_time' ) {
-			if ( $id && get_post( $id ) ) {
-				$costs_confirmed = carbon_get_post_meta( $id, 'costs_confirmed' );
-				if ( ! $costs_confirmed ) {
-					carbon_set_post_meta( $id, 'costs_confirmed', date( 'd.m.Y', $time ) );
-				}
-			}
-			$notification = get_user_notification_by_comment_id( $comment_id, $user_id );
-			if ( $notification ) {
-				wp_delete_post( $notification );
-			}
-		} elseif ( $action === 'remove_change_user_time' ) {
-			if ( $comment_id ) {
-				$notification = get_user_notification_by_comment_id( $comment_id, $user_id );
-				wp_delete_post( $comment_id );
-				if ( $notification ) {
-					wp_delete_post( $notification );
-				}
-			}
-		}
-	}
-}
-
 function get_active_users() {
 	$res = array();
 	if ( $users = get_users() ) {
@@ -1496,7 +1465,72 @@ function get_first_week_number_month( $year, $month ) {
 	return $firstWeekNumber;
 }
 
-function absences_action() {
-	$confirm_absences = $_GET['confirm_absences'] ?? '';
-	$remove_absences  = $_GET['remove_absences'] ?? '';
+function is_date_in_range( $date, $startDate, $endDate ) {
+	$date      = DateTime::createFromFormat( 'd-m-Y', $date );
+	$startDate = DateTime::createFromFormat( 'd-m-Y', $startDate );
+	$endDate   = DateTime::createFromFormat( 'd-m-Y', $endDate );
+	if ( ! $date || ! $startDate || ! $endDate ) {
+		return false;
+	}
+
+	return ( $date >= $startDate ) && ( $date <= $endDate );
+}
+
+function calculate_days_between_dates( $startDate, $endDate ) {
+	$startDateTime = DateTime::createFromFormat( 'd-m-Y', $startDate );
+	$endDateTime   = DateTime::createFromFormat( 'd-m-Y', $endDate );
+	if ( ! $startDateTime || ! $endDateTime ) {
+		return false;
+	}
+	$interval = $startDateTime->diff( $endDateTime );
+
+	return $interval->days;
+}
+
+function get_absences_list( $get_month, $current_year, $author ) {
+	$res   = array();
+	$d     = "$get_month-$current_year";
+	$args  = array(
+		'post_type'     => 'absences',
+		'post_status'   => 'publish',
+		'post_per_page' => - 1,
+		'author__in'    => array( $author ),
+		'meta_query'    => array(
+			'relation' => 'OR',
+			array(
+				'key'     => '_absences_start_date',
+				'value'   => $d,
+				'compare' => 'LIKE',
+			),
+			array(
+				'key'     => '_absences_finish_date',
+				'value'   => $d,
+				'compare' => 'LIKE',
+			)
+		)
+	);
+	$query = new WP_Query( $args );
+	if ( $query->have_posts() ) {
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			$id          = get_the_ID();
+			$author      = get_post_author_id( $id );
+			$reasons     = get_the_terms( $id, 'reasons' );
+			$date_start  = carbon_get_post_meta( $id, 'absences_start_date' );
+			$finish_date = carbon_get_post_meta( $id, 'absences_finish_date' );
+			$diff        = calculate_days_between_dates( $date_start, $finish_date );
+			$res[ $id ]  = array(
+				'id'          => $id,
+				'author_id'   => $author,
+				'reasons'     => $reasons,
+				'date_start'  => $date_start,
+				'finish_date' => $finish_date,
+				'diff'        => $diff,
+			);
+		}
+	}
+	wp_reset_postdata();
+	wp_reset_query();
+
+	return $res;
 }

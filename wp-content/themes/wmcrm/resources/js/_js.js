@@ -339,12 +339,37 @@ $(document).ready(function () {
         }
         $form.find('.form-files-result').html(HTML);
     });
+    $doc.on('keyup', function (e) {
+        //modal-window
+        //window-main
+        if (e.key === "Escape") {
+            let $window = $doc.find('.modal-window.active');
+            if($window.length > 0){
+                $window.removeClass('active');
+                $('body').removeClass('open-window');
+            }else {
+                $window = $doc.find('.window-main.active');
+                if($window.length > 0){
+                    $window.removeClass('active');
+                    $('body').removeClass('open-window');
+                }else {
+                    $doc.find('.timer.open-controls').removeClass('open-controls');
+                    $('body').removeClass('open-timer');
+                }
+            }
+        }
+
+    });
     $doc.mouseup(function (e) {
         let div = $(".window-main.active, .modal-window.active, .dialog-window.active");
         if (!div.is(e.target)
             && div.has(e.target).length === 0) {
             if (!$doc.find('.ui-datepicker').is(':visible')) div.find('.close-window').trigger('click');
         }
+    });
+    $doc.on('click', '[data-cost-id]', function (e){
+       e.preventDefault();
+       const $t = $(this);
     });
     const invite = new Invite();
     const stopwatch = new Stopwatch();

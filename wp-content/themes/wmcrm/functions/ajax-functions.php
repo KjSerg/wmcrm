@@ -1563,12 +1563,50 @@ function add_absences() {
 	$text            = $_POST['text'] ?? '';
 	$date_start      = $_POST['date_start'] ?? '';
 	$date_finish     = $_POST['date_finish'] ?? '';
-	if ( $current_user_id && $reason && $date_start ) {
-		$var         = variables();
-		$set         = $var['setting_home'];
-		$assets      = $var['assets'];
-		$url         = $var['url'];
-		$url_home    = $var['url_home'];
+	$user_id         = $_POST['user_id'] ?? '';
+	$var             = variables();
+	$set             = $var['setting_home'];
+	$assets          = $var['assets'];
+	$url             = $var['url'];
+	$url_home        = $var['url_home'];
+	if ( $user_id && is_current_user_admin() ) {
+		$reason_obj = get_term_by( 'id', (int) $reason, 'reasons' );
+		$user       = get_user_by( 'id', $user_id );
+		if ( $user ) {
+			$name        = $user->display_name;
+			$title       = "Відсутність користувача $name $date_start";
+			$post_data   = array(
+				'post_type'    => 'absences',
+				'post_title'   => $title,
+				'post_status'  => 'publish',
+				'post_content' => $text,
+				'post_author'  => $user_id
+			);
+			$absences_id = wp_insert_post( $post_data, true );
+			if ( $absences_id && ! is_wp_error( $absences_id ) ) {
+				carbon_set_post_meta( $absences_id, "absences_start_date", $date_start );
+				carbon_set_post_meta( $absences_id, "absences_finish_date", $date_finish ?: $date_start );
+				wp_set_post_terms( $absences_id, array(), 'reasons', false );
+				if ( is_array( $reason ) ) {
+					foreach ( $reason as $item ) {
+						$item = (int) $item;
+						wp_set_post_terms( $absences_id, array( $item ), 'reasons', true );
+					}
+				} else {
+					$reason = (int) $reason;
+					wp_set_post_terms( $absences_id, array( $reason ), 'reasons', true );
+				}
+				$res['id']        = $absences_id;
+				$res['is_reload'] = "true";
+			} else {
+				$res['type'] = 'error';
+				$res['msg']  = $absences_id->get_error_message();
+			}
+		} else {
+			$res['type'] = 'error';
+			$res['msg']  = 'Помилка';
+		}
+	} else if ( $current_user_id && $reason && $date_start ) {
 		$reason_obj  = get_term_by( 'id', (int) $reason, 'reasons' );
 		$user        = get_user_by( 'id', $current_user_id );
 		$name        = $user->display_name;
@@ -1617,7 +1655,8 @@ function add_absences() {
 					}
 				}
 			}
-			$res['id'] = $absences_id;
+			$res['id']  = $absences_id;
+			$res['msg'] = "Відправлено на погодження";
 		} else {
 			$res['type'] = 'error';
 			$res['msg']  = $absences_id->get_error_message();

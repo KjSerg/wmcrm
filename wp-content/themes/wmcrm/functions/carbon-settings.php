@@ -288,6 +288,21 @@ function crb_attach_in_tags() {
 	         );
 }
 
+add_action( 'carbon_fields_register_fields', 'crb_attach_in_reasons' );
+function crb_attach_in_reasons() {
+	$labels = array(
+		'plural_name'   => 'елементи',
+		'singular_name' => 'елемент',
+	);
+	Container::make( 'term_meta', 'Налаштування' )
+	         ->show_on_taxonomy( 'reasons' )
+	         ->add_fields(
+		         array(
+			         Field::make( "text", "reason_color", "Колір тега" ),
+		         )
+	         );
+}
+
 add_action( 'carbon_fields_register_fields', 'crb_attach_in_user' );
 function crb_attach_in_user() {
 	Container::make( 'user_meta', 'Користувач' )

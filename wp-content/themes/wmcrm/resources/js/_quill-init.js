@@ -1,5 +1,6 @@
 import Quill from './_quill';
 import 'selectric';
+
 let doc = document;
 let $doc = $(doc);
 let load = false;
@@ -39,6 +40,11 @@ $(document).ready(function () {
             $form.find('.select-user-quill-js').selectric('open');
         }
     });
+    $doc.on('keydown', '#editor, #project-editor', function (event) {
+        if (event.ctrlKey && event.key === 'Enter') {
+            $(this).closest('form').trigger('submit');
+        }
+    });
     $doc.on('click', '.comment-change-js', function (e) {
         e.preventDefault();
         let $this = $(this);
@@ -46,7 +52,7 @@ $(document).ready(function () {
         let $wrapper = $this.closest('.comment');
         let $text = $wrapper.find('.comment-content');
         let html = $text.html();
-        let $html = $(html);
+        let $html = $('<div>').html(html);
         $html.find('.invite').removeAttr('data-user-id');
         $html.find('.invite__image').remove();
         html = $html.html();
@@ -64,6 +70,7 @@ $(document).ready(function () {
     });
     initQuill();
     initProjectQuill();
+
 });
 
 export function setQiullText(text = '') {
@@ -77,19 +84,54 @@ export function setProjectQuillText(text = '') {
 function initProjectQuill() {
     const $editor = $doc.find('#project-editor');
     if ($editor.length === 0) return;
+    const projectID = $editor.attr('data-project-id');
+    if (projectID !== undefined) {
+        let text = localStorage.getItem('comment-for-project-' + projectID);
+        if (text !== null) {
+            if (text.trim().length !== 0) {
+
+                $editor.closest('form').find('.value-field').val(text);
+                $editor.html(text);
+            }
+        }
+
+    }
     quillProject = new Quill('#project-editor', {
         theme: 'snow',
     });
     quillProject.on('text-change', (delta, oldDelta, source) => {
         let val = quillProject.getSemanticHTML();
         $editor.closest('form').find('.value-field').val(val);
+        if ($editor.attr('data-project-id') !== undefined) {
+            if (val && val !== '<p></p>') {
+                localStorage.setItem('comment-for-project-' + $editor.attr('data-project-id'), val);
+            } else {
+                localStorage.removeItem('comment-for-project-' + $editor.attr('data-project-id'));
+            }
+        }
     });
+
 }
 
 export default function initQuill(checkHTML = true) {
     if (quill !== null) quill = null;
     const $editor = $doc.find('#editor');
     if ($editor.length === 0) return;
+    if ($editor.html().trim().length === 0) {
+        const projectID = $editor.attr('data-project-id');
+        if (projectID !== undefined) {
+            let text = localStorage.getItem('comment-for-project-' + projectID);
+            if (text !== null) {
+                if (text.trim().length !== 0) {
+
+                    $editor.closest('form').find('.value-field').val(text);
+                    $editor.html(text);
+                }
+            }
+
+        }
+    }
+
     if (checkHTML) {
         $editor.find('span.invite').each(function () {
             let text = $(this).text();
@@ -98,14 +140,24 @@ export default function initQuill(checkHTML = true) {
         let html = $editor.html().trim();
         if (html.length > 0) {
             $editor.html(html);
+            $editor.closest('form').find('.value-field').val(html);
         }
     }
+
     quill = new Quill('#editor', {
         theme: 'snow',
     });
     quill.on('text-change', (delta, oldDelta, source) => {
         let val = quill.getSemanticHTML();
         $editor.closest('form').find('.value-field').val(val);
+        if ($editor.attr('data-project-id') !== undefined) {
+            if (val && val !== '<p></p>') {
+                localStorage.setItem('comment-for-project-' + $editor.attr('data-project-id'), val);
+            } else {
+                localStorage.removeItem('comment-for-project-' + $editor.attr('data-project-id'));
+            }
+        }
     });
+
 }
 

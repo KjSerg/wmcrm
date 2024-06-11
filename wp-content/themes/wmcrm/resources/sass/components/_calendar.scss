@@ -25,11 +25,13 @@
     }
 
     &-row {
+      position: relative;
       display: flex;
       border-bottom: 1px solid #E2E3EE;
     }
 
     &-column {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -52,6 +54,27 @@
       &:not(:last-child) {
         border-right: 1px solid #E2E3EE;
       }
+    }
+
+    &-item {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 1rem;
+      overflow: hidden;
+      color:  #FFF;
+      font-family: Montserrat;
+      font-size: 1.4rem;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 140%;
+      white-space: nowrap;
     }
   }
 }

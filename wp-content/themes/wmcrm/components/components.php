@@ -595,14 +595,14 @@ function the_autocomplete_input( $args = array() ) {
 }
 
 function the_absences( $id = false ) {
-	$id        = $id ?: get_the_ID();
-	$author_id = get_post_field( 'post_author', $id );
-	$user      = get_user_by( 'id', $author_id );
-	$avatar    = carbon_get_user_meta( $author_id, 'avatar' );
-	$avatar    = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $author_id );
-	$link      = get_post_type_archive_link( 'absences' ) . '?confirm_absences=' . $id;
-	$remove_link      = get_post_type_archive_link( 'absences' ) . '?remove_absences=' . $id;
-	$reasons   = get_the_terms( $id, 'reasons' );
+	$id          = $id ?: get_the_ID();
+	$author_id   = get_post_field( 'post_author', $id );
+	$user        = get_user_by( 'id', $author_id );
+	$avatar      = carbon_get_user_meta( $author_id, 'avatar' );
+	$avatar      = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $author_id );
+	$link        = get_post_type_archive_link( 'absences' ) . '?action=confirm_absences&id=' . $id;
+	$remove_link = get_post_type_archive_link( 'absences' ) . '?action=remove_absences&id=' . $id;
+	$reasons     = get_the_terms( $id, 'reasons' );
 	?>
     <div class="comment absences-item"
          id="absences-<?php echo $id ?>">
