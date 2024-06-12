@@ -2073,6 +2073,13 @@ input {
   font-weight: 500;
   line-height: normal;
 }
+.timer-project {
+  background: #7BB500;
+  color: #fff;
+}
+.timer-project:not(:last-child) {
+  margin-bottom: 5px;
+}
 
 .section-projects {
   padding: 3rem 0;
@@ -2660,6 +2667,16 @@ input {
 }
 .comment.service-comment {
   background: #e7e8f4;
+}
+@media (max-width: 880px) {
+  .comment.service-comment .comment-head {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 880px) {
+  .comment.service-comment .text {
+    width: 100%;
+  }
 }
 .comment-date {
   margin-right: auto;
@@ -3763,6 +3780,9 @@ input {
     width: 100%;
   }
 }
+.days-container {
+  position: relative;
+}
 .days-table {
   width: 130rem;
   background: rgba(242, 243, 249, 0.26);
@@ -3825,6 +3845,50 @@ input {
 }
 .days-table-wrapper {
   overflow: auto;
+}
+.days-controls {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 110%;
+  height: 5rem;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  pointer-events: none;
+}
+@media (max-width: 1430px) {
+  .days-controls {
+    width: 105%;
+  }
+}
+@media (max-width: 1365px) {
+  .days-controls {
+    width: 104%;
+  }
+}
+@media (max-width: 1220px) {
+  .days-controls {
+    width: 100%;
+  }
+}
+.days-controls__next {
+  margin-left: auto;
+  transform: rotate(180deg);
+}
+.days-controls a {
+  display: flex;
+  width: 5rem;
+  height: 5rem;
+  pointer-events: auto;
+}
+@media (max-width: 1365px) {
+  .days-controls a {
+    width: 3rem;
+    height: 3rem;
+  }
 }
 
 .calendar-table {

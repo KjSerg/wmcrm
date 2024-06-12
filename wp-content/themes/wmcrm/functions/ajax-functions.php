@@ -879,6 +879,7 @@ function save_event_result() {
 add_action( 'wp_ajax_nopriv_reading_discussion', 'reading_discussion' );
 add_action( 'wp_ajax_reading_discussion', 'reading_discussion' );
 function reading_discussion() {
+	$res     = array();
 	$id      = $_POST['id'] ?? '';
 	$user_id = get_current_user_id();
 	if ( $user_id && $id && get_post( $id ) ) {
@@ -891,12 +892,16 @@ function reading_discussion() {
 		$users_read[] = $user_id;
 		$users_read   = array_unique( $users_read );
 		carbon_set_post_meta( $id, 'discussion_read_users', implode( ',', $users_read ) );
-		$notification_id = get_user_notification_by_comment_id( $id, $user_id );
+		$notification_id        = get_user_notification_by_comment_id( $id, $user_id );
+		$res['notification_id'] = $notification_id;
 		if ( $notification_id ) {
-			wp_delete_post( $notification_id );
+			if ( wp_delete_post( $notification_id ) ) {
+				$res['is_read'] = 'true';
+			}
 		}
-		echo json_encode( $users_read );
+		$res['users_read'] = $users_read;
 	}
+	echo json_encode( $res );
 	die();
 }
 
@@ -1664,6 +1669,33 @@ function add_absences() {
 	} else {
 		$res['type'] = 'error';
 		$res['msg']  = 'Помилка';
+	}
+	echo json_encode( $res );
+	die();
+}
+
+add_action( 'wp_ajax_nopriv_get_user_time_modal', 'get_user_time_modal' );
+add_action( 'wp_ajax_get_user_time_modal', 'get_user_time_modal' );
+function get_user_time_modal() {
+	$date            = $_POST['date'] ?? '';
+	$id              = $_POST['id'] ?? '';
+	$user_id         = $_POST['user'] ?? '';
+	$user_id         = (int) $user_id;
+	$current_user_id = get_current_user_id();
+	$res             = array();
+	if ( $date && $user_id ) {
+		if ( $current_user_id == $user_id || is_current_user_admin() ) {
+			ob_start();
+			the_timer_modal( array(
+				'user_id' => $user_id,
+				'date'    => $date,
+			) );
+			$res['timer_modal_html'] = ob_get_clean();
+		} else {
+			$res['msg'] = "Помилка доступу";
+		}
+	} else {
+		$res['msg'] = "Помилка";
 	}
 	echo json_encode( $res );
 	die();

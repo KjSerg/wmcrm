@@ -273,6 +273,7 @@ function the_timer_html() {
 			'user_id' => $user_ID,
 			'date'    => $today,
 		) );
+		$selected_project_id      = carbon_get_user_meta( $user_ID, 'current_project' );
 		if ( $cost_id ):
 			$costs_sum_hour = carbon_get_post_meta( $cost_id, 'costs_sum_hour' ) ?: '00:00:00';
 			$costs_sum_pause_hour = carbon_get_post_meta( $cost_id, 'costs_sum_hour_pause' ) ?: '00:00:00';
@@ -360,6 +361,10 @@ function the_timer_html() {
                         <div class="timer-pause-time">
                             Тривалість перерви: <span><?php echo $costs_sum_pause_hour ?></span>
                         </div>
+                        <a href="<?php echo $selected_project_id ? get_the_permalink( $selected_project_id ) : '#' ?>" class="timer-project link-js">
+                            Проєкт:
+                            <span><?php echo $selected_project_id ? get_the_title( $selected_project_id ) : 'Не вибрано'; ?></span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -452,10 +457,11 @@ function the_timer_html() {
 
 function the_timer_modal( $args = array() ) {
 	date_default_timezone_set( 'Europe/Kiev' );
-	$time    = time();
-	$user_id = $args['user_id'] ?? wp_get_current_user();
-	$date    = $args['date'] ?? date( 'd-m-Y', $time );
-	$cost_id = get_cost_id( array(
+	$time            = time();
+	$current_user_id = get_current_user_id();
+	$user_id         = $args['user_id'] ?? wp_get_current_user();
+	$date            = $args['date'] ?? date( 'd-m-Y', $time );
+	$cost_id         = get_cost_id( array(
 		'user_id' => $user_id,
 		'date'    => $date,
 	) );
@@ -467,81 +473,81 @@ function the_timer_modal( $args = array() ) {
 		$costs_sum_hour_pause  = carbon_get_post_meta( $cost_id, 'costs_sum_hour_pause' );
 		$costs_sum_hour_change = carbon_get_post_meta( $cost_id, 'costs_sum_hour_change' );
 		$costs_confirmed       = carbon_get_post_meta( $cost_id, 'costs_confirmed' );
-		if ( $costs_finish && $costs_status == '0' ) {
-			$costs_start  = (int) $costs_start;
-			$costs_finish = (int) $costs_finish;
-			$costs_start  = $costs_start / 1000;
-			$costs_finish = $costs_finish / 1000;
-			$user         = get_user_by( 'id', $user_id );
-			$avatar       = carbon_get_user_meta( $user_id, 'avatar' );
-			if ( ! $avatar ) {
-				$avatar = get_avatar_url( $user_id );
-			} else {
-				$avatar = _u( $avatar, 1 );
-			}
-			$last_name    = $user->last_name;
-			$first_name   = $user->first_name;
-			$display_name = $last_name;
-			if ( $first_name ) {
-				$display_name .= ' ' . mb_substr( $first_name, 0, 1 ) . '.';
-			}
-			?>
-            <div class="report window-main" id="report-window">
-                <div class="report-head">
-                    <div class="report-head__title">
-                        Звіт за день
+		$costs_start           = (int) $costs_start;
+		$costs_finish          = (int) $costs_finish;
+		$costs_start           = $costs_start / 1000;
+		$costs_finish          = $costs_finish / 1000;
+		$user                  = get_user_by( 'id', $user_id );
+		$avatar                = carbon_get_user_meta( $user_id, 'avatar' );
+		if ( ! $avatar ) {
+			$avatar = get_avatar_url( $user_id );
+		} else {
+			$avatar = _u( $avatar, 1 );
+		}
+		$last_name    = $user->last_name;
+		$first_name   = $user->first_name;
+		$display_name = $last_name;
+		if ( $first_name ) {
+			$display_name .= ' ' . mb_substr( $first_name, 0, 1 ) . '.';
+		}
+		?>
+        <div class="report window-main" id="report-window">
+            <div class="report-head">
+                <div class="report-head__title">
+                    Звіт за день
+                </div>
+                <div class="report-head-user">
+                    <div class="report-head-user__avatar">
+                        <img class="cover" src="<?php echo $avatar; ?>" alt="">
                     </div>
-                    <div class="report-head-user">
-                        <div class="report-head-user__avatar">
-                            <img src="<?php echo $avatar; ?>" alt="">
+                    <div class="report-head-user__name">
+						<?php echo $display_name; ?>
+                    </div>
+                </div>
+            </div>
+            <div class="report-body">
+                <div class="report-body__title">
+                    Робочий час
+                </div>
+                <div class="report-body-content">
+                    <div class="report-cart">
+                        <div class="report-cart__head">
+                            Початок
                         </div>
-                        <div class="report-head-user__name">
-							<?php echo $display_name; ?>
+                        <div class="report-cart__body" data-time="<?php echo $costs_start; ?>">
+							<?php echo date( 'H:i', $costs_start ); ?>
+                        </div>
+                    </div>
+                    <div class="report-cart">
+                        <div class="report-cart__head">
+                            Закінчення
+                        </div>
+                        <div class="report-cart__body">
+							<?php echo $costs_finish ? date( 'H:i', $costs_finish ) : '-'; ?>
+                        </div>
+                    </div>
+                    <div class="report-cart report-cart--green">
+                        <div class="report-cart__head">
+                            Робочий час
+                        </div>
+                        <div class="report-cart__body">
+                            <div class="report-cart-sum"> <?php echo $costs_sum_hour_change ?: $costs_sum_hour; ?></div>
+                            <div class="report-cart-changed">
+								<?php echo $costs_confirmed ? 'Підтверджено ' . $costs_confirmed : ( $costs_sum_hour_change ? 'Змінено' : '' ); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="report-cart report-cart--green">
+                        <div class="report-cart__head">
+                            Перерва
+                        </div>
+                        <div class="report-cart__body">
+							<?php echo $costs_sum_hour_pause; ?>
                         </div>
                     </div>
                 </div>
-                <div class="report-body">
-                    <div class="report-body__title">
-                        Робочий час
-                    </div>
-                    <div class="report-body-content">
-                        <div class="report-cart">
-                            <div class="report-cart__head">
-                                Початок
-                            </div>
-                            <div class="report-cart__body" data-time="<?php echo $costs_start; ?>">
-								<?php echo date( 'H:i', $costs_start ); ?>
-                            </div>
-                        </div>
-                        <div class="report-cart">
-                            <div class="report-cart__head">
-                                Закінчення
-                            </div>
-                            <div class="report-cart__body">
-								<?php echo date( 'H:i', $costs_finish ); ?>
-                            </div>
-                        </div>
-                        <div class="report-cart report-cart--green">
-                            <div class="report-cart__head">
-                                Робочий час
-                            </div>
-                            <div class="report-cart__body">
-                                <div class="report-cart-sum"> <?php echo $costs_sum_hour_change ?: $costs_sum_hour; ?></div>
-                                <div class="report-cart-changed">
-									<?php echo $costs_confirmed ? 'Підтверджено ' . $costs_confirmed : ( $costs_sum_hour_change ? 'Змінено' : '' ); ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="report-cart report-cart--green">
-                            <div class="report-cart__head">
-                                Перерва
-                            </div>
-                            <div class="report-cart__body">
-								<?php echo $costs_sum_hour_pause; ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            </div>
+			<?php if ( $current_user_id == $user_id ): ?>
 				<?php if ( ! $costs_sum_hour_change ): ?>
                     <div class="report-footer">
                         <div class="report-footer-control">
@@ -567,9 +573,9 @@ function the_timer_modal( $args = array() ) {
                         </form>
                     </div>
 				<?php endif; ?>
-            </div>
-			<?php
-		}
+			<?php endif; ?>
+        </div>
+		<?php
 	}
 }
 
@@ -595,39 +601,56 @@ function the_autocomplete_input( $args = array() ) {
 }
 
 function the_absences( $id = false ) {
-	$id          = $id ?: get_the_ID();
-	$author_id   = get_post_field( 'post_author', $id );
-	$user        = get_user_by( 'id', $author_id );
-	$avatar      = carbon_get_user_meta( $author_id, 'avatar' );
-	$avatar      = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $author_id );
-	$link        = get_post_type_archive_link( 'absences' ) . '?action=confirm_absences&id=' . $id;
-	$remove_link = get_post_type_archive_link( 'absences' ) . '?action=remove_absences&id=' . $id;
-	$reasons     = get_the_terms( $id, 'reasons' );
-	?>
-    <div class="comment absences-item"
-         id="absences-<?php echo $id ?>">
-        <div class="comment-head">
-            <div class="comment-author">
-				<?php echo $user->display_name ?>
-				<?php if ( $avatar ) {
-					echo "<div class='comment-author__avatar'><img class='cover' src='$avatar' alt=''/></div>";
-				} ?>
+	$id              = $id ?: get_the_ID();
+	$current_user_id = get_current_user_id();
+	$is_admin        = is_current_user_admin();
+	$author_id       = get_post_field( 'post_author', $id );
+	$test            = $author_id == $current_user_id;
+	$test            = $test ?: $is_admin;
+	if ( $test ):
+		$user = get_user_by( 'id', $author_id );
+		$avatar      = carbon_get_user_meta( $author_id, 'avatar' );
+		$avatar      = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $author_id );
+		$link        = get_post_type_archive_link( 'absences' ) . '?action=confirm_absences&id=' . $id;
+		$remove_link = get_post_type_archive_link( 'absences' ) . '?action=remove_absences&id=' . $id;
+		$reasons     = get_the_terms( $id, 'reasons' );
+		$start_date  = carbon_get_post_meta( $id, 'absences_start_date' );
+		$finish_date = carbon_get_post_meta( $id, 'absences_finish_date' );
+		$str         = '';
+		if ( $start_date == $finish_date ) {
+			$str = 'дата відсутності ' . $start_date;
+		} else {
+			$str = '(від ' . $start_date . ' до ' . $finish_date . ')';
+		}
+		?>
+        <div class="comment absences-item"
+             id="absences-<?php echo $id ?>">
+            <div class="comment-head">
+                <div class="comment-author">
+					<?php echo $user->display_name ?>
+					<?php if ( $avatar ) {
+						echo "<div class='comment-author__avatar'><img class='cover' src='$avatar' alt=''/></div>";
+					} ?>
+                </div>
+                <div class="comment-date">
+					<?php echo get_the_date( 'd-m-Y H:i', $id ); ?>
+					<?php if ( $reasons ) {
+						echo '[' . $reasons[0]->name . ']';
+					} ?>
+                </div>
             </div>
-            <div class="comment-date">
-				<?php echo get_the_date( 'd-m-Y H:i', $id ); ?>
-				<?php if ( $reasons ) {
-					echo '[' . $reasons[0]->name . ']';
-				} ?>
+            <div class="comment-content text">
+				<?php echo replace_url( get_content_by_id( $id ) ); ?>
+                <br>
+                <strong><?php echo $str; ?></strong>
+            </div>
+            <div class="absences-item-controls">
+				<?php if ( is_current_user_admin() ): ?>
+                    <a href="<?php echo $link; ?>" class="button">Підтвердити</a>
+				<?php endif; ?>
+                <a href="<?php echo $remove_link; ?>" class="button button--bordered">Відмінити</a>
             </div>
         </div>
-        <div class="comment-content text">
-			<?php echo replace_url( get_content_by_id( $id ) ); ?>
-
-        </div>
-        <div class="absences-item-controls">
-            <a href="<?php echo $link; ?>" class="button">Підтвердити</a>
-            <a href="<?php echo $remove_link; ?>" class="button button--bordered">Відмінити</a>
-        </div>
-    </div>
 	<?php
+	endif;
 }

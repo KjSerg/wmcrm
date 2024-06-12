@@ -10,7 +10,7 @@ import {
     hidePreloader,
     changeProjectStatus, renderMainInModal, sendRequest, bytesToMB, bytesToKB, copyToClipboard, isImageUrl
 } from "./_helpers";
-import {setQiullText} from './_quill-init';
+import initQuill, {setQiullText} from './_quill-init';
 import Invite from "./Invite";
 import Stopwatch from "./Stopwatch";
 import Shadow from "./Shadow";
@@ -251,6 +251,8 @@ $(document).ready(function () {
         e.preventDefault();
         let $t = $(this);
         let id = $t.attr('data-id');
+        let title = $t.attr('data-title');
+        let permalink = $t.attr('data-permalink');
         $t.addClass('not-active');
         showPreloader();
         $.ajax({
@@ -261,6 +263,8 @@ $(document).ready(function () {
                 project_id: id,
             },
         }).done(function (r) {
+            $doc.find('.timer-project span').text(title);
+            $doc.find('.timer-project').attr('href', permalink);
             if (r) {
                 if (isJsonString(r)) {
                     let res = JSON.parse(r);
@@ -344,15 +348,15 @@ $(document).ready(function () {
         //window-main
         if (e.key === "Escape") {
             let $window = $doc.find('.modal-window.active');
-            if($window.length > 0){
+            if ($window.length > 0) {
                 $window.removeClass('active');
                 $('body').removeClass('open-window');
-            }else {
+            } else {
                 $window = $doc.find('.window-main.active');
-                if($window.length > 0){
+                if ($window.length > 0) {
                     $window.removeClass('active');
                     $('body').removeClass('open-window');
-                }else {
+                } else {
                     $doc.find('.timer.open-controls').removeClass('open-controls');
                     $('body').removeClass('open-timer');
                 }
@@ -367,9 +371,44 @@ $(document).ready(function () {
             if (!$doc.find('.ui-datepicker').is(':visible')) div.find('.close-window').trigger('click');
         }
     });
-    $doc.on('click', '[data-cost-id]', function (e){
-       e.preventDefault();
-       const $t = $(this);
+    $doc.on('click', '[data-cost-id]', function (e) {
+        e.preventDefault();
+        const $t = $(this);
+        let id = $t.attr('data-cost-id');
+        let date = $t.attr('data-date');
+        let user = $t.attr('data-user-id');
+        if (id === undefined || date === undefined) return;
+        const data = {
+            action: 'get_user_time_modal',
+            id, date, user
+        };
+        $doc.find('body').addClass('loading');
+        showPreloader();
+        $doc.find('.report.window-main').remove();
+        let param = {
+            type: 'POST',
+            url: adminAjax,
+            data
+        };
+        $.ajax(param).done(function (r) {
+            $doc.find('body').removeClass('loading');
+            if (isJsonString(r)) {
+                const res = JSON.parse(r);
+                const html = res.timer_modal_html;
+                if (html !== undefined && html !== '') {
+                    $('body').append(html);
+                    setTimeout(function () {
+                        hidePreloader();
+                        openWindow($doc.find('#report-window'));
+                    }, 500);
+                } else {
+                    hidePreloader();
+                }
+            }
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            $doc.find('body').removeClass('loading');
+            console.log(jqXHR)
+        });
     });
     const invite = new Invite();
     const stopwatch = new Stopwatch();

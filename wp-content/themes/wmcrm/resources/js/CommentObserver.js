@@ -1,5 +1,5 @@
 import './_$isInViewPort';
-import {sendRequest} from "./_helpers";
+import {sendRequest, isJsonString} from "./_helpers";
 
 export default class CommentObserver {
     constructor() {
@@ -11,18 +11,16 @@ export default class CommentObserver {
 
     readingComment(id) {
         const _this = this;
-        const res = sendRequest(adminAjax, {
+        sendRequest(adminAjax, {
             action: 'reading_discussion',
             id
-        }, 'POST', false).then(function () {
+        }, 'POST', false).then(function (r) {
             _this.$doc.find(`[data-reading-id="${id}"]`).removeClass('unread');
             _this.$doc.find(`[data-reading-id="${id}"]`).addClass('read');
             _this.$doc.find(`[data-reading-id="${id}"] .discussion-item__check.unread`).removeClass('unread');
             _this.$doc.find(`[data-reading-id="${id}"] .discussion-item__check`).addClass('read');
             _this.$doc.find(`[data-reading-id="${id}"]`).removeAttr('data-reading-id');
         });
-        console.log(res);
-
     }
 
     obsever() {

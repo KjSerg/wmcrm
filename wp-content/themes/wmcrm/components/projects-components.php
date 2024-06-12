@@ -308,37 +308,39 @@ function the__user( $_user_id, $role = '' ) {
 			$project_users_observer_id = carbon_get_post_meta( $post->ID, 'project_users_observer_id' );
 			$_users                    = $project_users_observer_id ? explode( ',', $project_users_observer_id ) : array();
 		}
-		?>
-        <div class=" modal-window-change-user modal-window" id="edit-user-<?php echo $role_hush; ?>">
-            <div class="title">
-                Змінити користувачів із ролю <br> <?php echo $role; ?>
-            </div>
-            <form class="form form-js change-project-users-form" id="change-project-users-form" method="post">
-                <input type="hidden" name="action" value="change_project_user">
-                <input type="hidden" name="role" value="<?php echo $role; ?>">
-                <input type="hidden" name="project_id" value="<?php echo $post->ID; ?>">
-				<?php if ( $users ): ?>
-                    <label class="form-group ">
-                        <span class="form-group__title"><?php echo $role; ?></span>
-                        <select name="<?php echo $role; ?>[]" multiple class="selectric">
-                            <option disabled><?php echo $role; ?></option>
-							<?php foreach ( $users as $user ):
-								$attr = in_array( $user->ID, $_users ) ? 'selected' : '';
-								?>
-                                <option value="<?php echo esc_attr( $user->ID ) ?>" <?php echo esc_attr( $attr ) ?>>
-									<?php echo esc_html( $user->display_name ) ?>
-                                </option>
-							<?php endforeach; ?>
-                        </select>
-                    </label>
-				<?php endif; ?>
-                <div class="form-buttons">
-                    <button class="form-button button">
-                        Змінити <?php echo $role ?>
-                    </button>
+		if ( is_current_user_admin() ):
+			?>
+            <div class=" modal-window-change-user modal-window" id="edit-user-<?php echo $role_hush; ?>">
+                <div class="title">
+                    Змінити користувачів із ролю <br> <?php echo $role; ?>
                 </div>
-            </form>
-        </div>
+                <form class="form form-js change-project-users-form" id="change-project-users-form" method="post">
+                    <input type="hidden" name="action" value="change_project_user">
+                    <input type="hidden" name="role" value="<?php echo $role; ?>">
+                    <input type="hidden" name="project_id" value="<?php echo $post->ID; ?>">
+					<?php if ( $users ): ?>
+                        <label class="form-group ">
+                            <span class="form-group__title"><?php echo $role; ?></span>
+                            <select name="<?php echo $role; ?>[]" multiple class="selectric">
+                                <option disabled><?php echo $role; ?></option>
+								<?php foreach ( $users as $user ):
+									$attr = in_array( $user->ID, $_users ) ? 'selected' : '';
+									?>
+                                    <option value="<?php echo esc_attr( $user->ID ) ?>" <?php echo esc_attr( $attr ) ?>>
+										<?php echo esc_html( $user->display_name ) ?>
+                                    </option>
+								<?php endforeach; ?>
+                            </select>
+                        </label>
+					<?php endif; ?>
+                    <div class="form-buttons">
+                        <button class="form-button button">
+                            Змінити <?php echo $role ?>
+                        </button>
+                    </div>
+                </form>
+            </div>
+		<?php endif; ?>
 	<?php endif; ?>
 	<?php
 	endif;

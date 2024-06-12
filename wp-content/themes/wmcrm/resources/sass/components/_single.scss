@@ -182,6 +182,16 @@
   background: #F2F3F9;
   &.service-comment {
     background: #e7e8f4;
+    .comment-head {
+      @media (max-width: 880px) {
+        flex-wrap: wrap;
+      }
+    }
+    .text {
+      @media (max-width: 880px) {
+        width: 100%;
+      }
+    }
   }
   &-date {
     margin-right: auto;

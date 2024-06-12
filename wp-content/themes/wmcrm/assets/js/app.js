@@ -8845,17 +8845,16 @@ var CommentObserver = /*#__PURE__*/function () {
     key: "readingComment",
     value: function readingComment(id) {
       var _this = this;
-      var res = (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.sendRequest)(adminAjax, {
+      (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.sendRequest)(adminAjax, {
         action: 'reading_discussion',
         id: id
-      }, 'POST', false).then(function () {
+      }, 'POST', false).then(function (r) {
         _this.$doc.find("[data-reading-id=\"".concat(id, "\"]")).removeClass('unread');
         _this.$doc.find("[data-reading-id=\"".concat(id, "\"]")).addClass('read');
         _this.$doc.find("[data-reading-id=\"".concat(id, "\"] .discussion-item__check.unread")).removeClass('unread');
         _this.$doc.find("[data-reading-id=\"".concat(id, "\"] .discussion-item__check")).addClass('read');
         _this.$doc.find("[data-reading-id=\"".concat(id, "\"]")).removeAttr('data-reading-id');
       });
-      console.log(res);
     }
   }, {
     key: "obsever",
@@ -10636,6 +10635,8 @@ $(document).ready(function () {
     e.preventDefault();
     var $t = $(this);
     var id = $t.attr('data-id');
+    var title = $t.attr('data-title');
+    var permalink = $t.attr('data-permalink');
     $t.addClass('not-active');
     (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showPreloader)();
     $.ajax({
@@ -10646,6 +10647,8 @@ $(document).ready(function () {
         project_id: id
       }
     }).done(function (r) {
+      $doc.find('.timer-project span').text(title);
+      $doc.find('.timer-project').attr('href', permalink);
       if (r) {
         if ((0,_helpers__WEBPACK_IMPORTED_MODULE_2__.isJsonString)(r)) {
           var res = JSON.parse(r);
@@ -10753,6 +10756,43 @@ $(document).ready(function () {
   $doc.on('click', '[data-cost-id]', function (e) {
     e.preventDefault();
     var $t = $(this);
+    var id = $t.attr('data-cost-id');
+    var date = $t.attr('data-date');
+    var user = $t.attr('data-user-id');
+    if (id === undefined || date === undefined) return;
+    var data = {
+      action: 'get_user_time_modal',
+      id: id,
+      date: date,
+      user: user
+    };
+    $doc.find('body').addClass('loading');
+    (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showPreloader)();
+    $doc.find('.report.window-main').remove();
+    var param = {
+      type: 'POST',
+      url: adminAjax,
+      data: data
+    };
+    $.ajax(param).done(function (r) {
+      $doc.find('body').removeClass('loading');
+      if ((0,_helpers__WEBPACK_IMPORTED_MODULE_2__.isJsonString)(r)) {
+        var res = JSON.parse(r);
+        var html = res.timer_modal_html;
+        if (html !== undefined && html !== '') {
+          $('body').append(html);
+          setTimeout(function () {
+            (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.hidePreloader)();
+            (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.openWindow)($doc.find('#report-window'));
+          }, 500);
+        } else {
+          (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.hidePreloader)();
+        }
+      }
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+      $doc.find('body').removeClass('loading');
+      console.log(jqXHR);
+    });
   });
   var invite = new _Invite__WEBPACK_IMPORTED_MODULE_4__["default"]();
   var stopwatch = new _Stopwatch__WEBPACK_IMPORTED_MODULE_5__["default"]();

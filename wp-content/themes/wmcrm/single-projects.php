@@ -54,7 +54,7 @@ require_once ABSPATH . 'wp-admin/includes/media.php';
     <div class="container">
         <div class="nav-list">
 			<?php if ( $post_parent_id ): ?>
-                <a href="<?php echo get_the_permalink($post_parent_id); ?>" class="nav-list__item link-js">
+                <a href="<?php echo get_the_permalink( $post_parent_id ); ?>" class="nav-list__item link-js">
                 <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12"
                                         fill="none">
 <path d="M0.174904 5.57196C-0.058285 5.80515 -0.058285 6.19475 0.174904 6.42853L5.55538 11.8228C5.79156 12.059 6.17458 12.059 6.41016 11.8228C6.64634 11.5866 6.64634 11.203 6.41016 10.9668L1.45709 5.99997L6.41076 1.0337C6.64694 0.796928 6.64694 0.41391 6.41076 0.177134C6.17458 -0.0590446 5.79156 -0.0590446 5.55598 0.177134L0.174904 5.57196Z"
@@ -86,17 +86,18 @@ require_once ABSPATH . 'wp-admin/includes/media.php';
                     <div class="project-title">
 						<?php echo $title ?>
                         <a href="<?php echo $permalink ?>" class="copy-link">
-		                    <?php _s( _i( 'link' ) ) ?>
+							<?php _s( _i( 'link' ) ) ?>
                         </a>
                     </div>
 				<?php endif; ?>
 
                 <div class="project-control">
-
 					<?php if ( $is_performer && $current_project != $id ): ?>
 						<?php if ( $post_status == 'pending' || $post_status == 'publish' ): ?>
                             <a href="#" data-id="<?php echo $id ?>"
-                               class="project-control__user-button project-start button button-green">
+                               data-title="<?php echo get_the_title( $id ) ?>"
+                               data-permalink="<?php echo get_the_permalink( $id ) ?>"
+                               class="project-control__user-button project-start button button-green ">
                                 Розпочати задачу
                             </a>
 						<?php endif; ?>

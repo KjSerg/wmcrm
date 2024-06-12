@@ -96,6 +96,7 @@ $statuses       = array(
         <div class="title">
             Нова задача
         </div>
+
         <form class="form form-js create-form" id="create-form" method="post">
             <input type="hidden" name="action" value="create_new_project">
             <input type="hidden" name="text" value="" class="value-field">
@@ -172,9 +173,12 @@ $statuses       = array(
 				<?php endif; ?>
             </div>
             <div class="form-buttons">
-                <button class="form-button button">
+                <button type="submit" class="form-button button">
                     Створити
                 </button>
+                <a href="#" class="form-button button button--bordered">
+                    Зберегти шаблон
+                </a>
             </div>
         </form>
     </div>

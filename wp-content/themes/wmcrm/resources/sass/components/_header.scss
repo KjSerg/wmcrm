@@ -626,4 +626,12 @@
 
 
   }
+
+  &-project {
+    background: #7BB500;
+    color: #fff;
+    &:not(:last-child){
+      margin-bottom: 5px;
+    }
+  }
 }
