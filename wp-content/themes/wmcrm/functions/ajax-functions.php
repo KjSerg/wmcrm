@@ -1897,9 +1897,9 @@ add_action( 'wp_ajax_remove_user_notice', 'remove_user_notice' );
 function remove_user_notice() {
 	$id      = $_POST['id'] ?? '';
 	$user_id = get_current_user_id();
-	if($id && $user_id){
-		if($user_id == get_post_author_id($id)){
-			wp_delete_post($id);
+	if ( $id && $user_id ) {
+		if ( $user_id == get_post_author_id( $id ) ) {
+			wp_delete_post( $id );
 		}
 	}
 	$notices = get_notices();
@@ -1908,6 +1908,33 @@ function remove_user_notice() {
 			echo $notice['html'];
 		}
 	}
+	die();
+}
+
+add_action( 'wp_ajax_nopriv_create_notice', 'create_notice' );
+add_action( 'wp_ajax_create_notice', 'create_notice' );
+function create_notice() {
+	$res = array();
+	if ( is_current_user_admin() ) {
+		$user_id = $_POST['user_id'] ?? '';
+		$text    = $_POST['text'] ?? '';
+		if ( $text && $user_id ) {
+			$post_data        = array(
+				'post_type'   => 'notice',
+				'post_title'  => $text,
+				'post_status' => 'publish',
+				'post_author' => $user_id
+			);
+			$notice_id        = wp_insert_post( $post_data, true );
+			$res['notice_id'] = $notice_id;
+			$res['msg']       = 'Успішно';
+		} else {
+			$res['msg'] = 'Помилка';
+		}
+	} else {
+		$res['msg'] = 'Помилка доступу';
+	}
+	echo json_encode( $res );
 	die();
 }
 

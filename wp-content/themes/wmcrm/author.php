@@ -105,5 +105,27 @@ $birthday          = carbon_get_user_meta( $current_author_id, 'birthday' );
         </div>
     </div>
 </section>
+<?php if ( is_current_user_admin() ): ?>
+    <section class="section profile-section">
+        <div class="container">
+            <div class="title">Оголошення для <?php echo $user->display_name ?></div>
+            <form novalidate method="post" class="profile-form form form-js" id="create-notice">
+                <input type="hidden" name="action" value="create_notice">
+                <input type="hidden" name="user_id" value="<?php echo $current_author_id; ?>">
+                <label class="form-group">
+                    <span class="form-group__title">Текст</span>
+                    <input type="text" name="text" required=""
+                           value=""
+                           placeholder="Введіть текст оголошення">
+                </label>
+                <div class="profile-form-controls">
+                    <button class="button profile-form__button" type="submit">
+                        Надіслати оголошення
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+<?php endif; ?>
 
 <?php get_footer(); ?>
