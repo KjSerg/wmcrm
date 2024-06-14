@@ -2480,6 +2480,22 @@ input {
   border-top-color: rgba(226, 227, 238, 0);
   border-right-color: rgba(226, 227, 238, 0);
 }
+.project-item__remove {
+  opacity: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
+  padding: 2px;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background-color: #c9085f;
+  transition: 0.5s ease;
+}
+.project-item:hover .project-item__remove {
+  opacity: 1;
+}
 .project-section-children {
   padding: 0;
   margin-bottom: 2rem;

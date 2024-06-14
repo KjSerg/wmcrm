@@ -11115,6 +11115,39 @@ $doc.ready(function () {
       (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.hidePreloader)();
     });
   });
+  $doc.on('click', '.project-item__remove', function (e) {
+    e.preventDefault();
+    var $t = $(this);
+    var $wrapper = $t.closest('.project-item');
+    var id = $t.attr('data-id');
+    if (id === undefined) return;
+    (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.showPreloader)();
+    $.ajax({
+      type: "POST",
+      url: adminAjax,
+      data: {
+        action: 'remove_project',
+        id: id
+      }
+    }).done(function (r) {
+      (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.hidePreloader)();
+      if (r) {
+        if ((0,_helpers__WEBPACK_IMPORTED_MODULE_1__.isJsonString)(r)) {
+          var res = JSON.parse(r);
+          if (res) {
+            if (res.msg !== undefined && res.msg !== '') {
+              (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.showMassage)(res.msg);
+            }
+            if (res.deleted !== undefined) {
+              $doc.find('.project-item[data-id="' + res.deleted + '"]').remove();
+            }
+          }
+        } else {
+          (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.showMassage)(r);
+        }
+      }
+    });
+  });
 });
 function appendContainer(href) {
   var $container = $doc.find('.container-js');

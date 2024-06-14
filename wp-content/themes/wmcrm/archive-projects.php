@@ -63,7 +63,8 @@ $statuses = array(
 					<?php if ( $users ): ?>
                         <select name="user_id" class="selectric submit-on-select">
                             <option <?php echo $_user_id == '' ? 'selected' : ''; ?> value="">Виконавець</option>
-							<?php foreach ( $users as $user ): $userID = $user->ID; $ws_id = carbon_get_user_meta($userID, 'worksection_id') ?>
+							<?php foreach ( $users as $user ): $userID = $user->ID;
+								$ws_id = carbon_get_user_meta( $userID, 'worksection_id' ) ?>
                                 <option <?php echo $_user_id == $userID ? 'selected' : ''; ?>
                                         value="<?php echo esc_attr( $userID ) ?>">
 									<?php echo $user->display_name; ?>

@@ -34,6 +34,11 @@ function the_project( $id = false, $cls = '' ) {
 			<?php the_project_tags_html( $tags ); ?>
         </div>
 		<?php the_project_performers( $id ) ?>
+        <?php if($current_user_admin): ?>
+            <a href="#" data-id="<?php echo $id ?>" class="project-item__remove">
+                <?php _s(_i('remove')) ?>
+            </a>
+        <?php endif; ?>
     </div>
 	<?php
 	if ( is_empty_query() ) {

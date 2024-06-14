@@ -1938,6 +1938,56 @@ function create_notice() {
 	die();
 }
 
+add_action( 'wp_ajax_nopriv_remove_project', 'remove_project' );
+add_action( 'wp_ajax_remove_project', 'remove_project' );
+function remove_project() {
+	$res = array( 'deleted_comments' => array() );
+	if ( is_current_user_admin() ) {
+		$id = $_POST['id'] ?? '';
+		if ( $id && get_post( $id ) ) {
+			$arr                     = array();
+			$worksection_comment_ids = carbon_get_post_meta( $id, 'worksection_comment_ids' );
+			$comment_ids             = carbon_get_post_meta( $id, 'project_comment_ids' );
+			if ( $comment_ids || $worksection_comment_ids ) {
+				$worksection_comment_ids = explode( ',', $worksection_comment_ids );
+				$comment_ids             = explode( ',', $comment_ids );
+				$comments_collection     = array_merge( $worksection_comment_ids, $comment_ids );
+				$query                   = new WP_Query( array(
+					'post_type'      => array( 'comments', 'discussion' ),
+					'post_status'    => 'publish',
+					'posts_per_page' => - 1,
+					'post__in'       => $comments_collection,
+				) );
+				$arr[]                   = 'Видалено ' . $query->found_posts . ' коментарів';
+				if ( $query->have_posts() ) {
+					while ( $query->have_posts() ) {
+						$query->the_post();
+						$comment_id = get_the_ID();
+						if ( wp_delete_post( $comment_id ) ) {
+							$res['deleted_comments'][] = $comment_id;
+						}
+					}
+
+				}
+				wp_reset_postdata();
+				wp_reset_query();
+			}
+			$title = get_the_title( $id );
+			if ( wp_delete_post( $id ) ) {
+				$res['deleted'] = $id;
+				$arr[]          = 'Видалено ' . $title;
+			}
+			$res['msg'] = implode( ';', $arr );
+		} else {
+			$res['msg'] = 'Помилка';
+		}
+	} else {
+		$res['msg'] = 'Помилка доступу';
+	}
+	echo json_encode( $res );
+	die();
+}
+
 function get_cost_id( $arr = array() ) {
 	$res     = 0;
 	$user_id = $arr['user_id'] ?? false;

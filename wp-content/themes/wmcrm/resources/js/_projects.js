@@ -153,6 +153,38 @@ $doc.ready(function () {
             hidePreloader();
         });
     });
+    $doc.on('click', '.project-item__remove', function (e) {
+        e.preventDefault();
+        let $t = $(this);
+        const $wrapper = $t.closest('.project-item');
+        const id = $t.attr('data-id');
+        if (id === undefined) return;
+        showPreloader();
+        $.ajax({
+            type: "POST",
+            url: adminAjax,
+            data: {
+                action: 'remove_project', id
+            },
+        }).done(function (r) {
+            hidePreloader();
+            if (r) {
+                if (isJsonString(r)) {
+                    const res = JSON.parse(r);
+                    if (res) {
+                        if (res.msg !== undefined && res.msg !== '') {
+                            showMassage(res.msg);
+                        }
+                        if (res.deleted !== undefined) {
+                            $doc.find('.project-item[data-id="' + res.deleted + '"]').remove();
+                        }
+                    }
+                } else {
+                    showMassage(r);
+                }
+            }
+        });
+    });
 });
 
 function appendContainer(href) {
