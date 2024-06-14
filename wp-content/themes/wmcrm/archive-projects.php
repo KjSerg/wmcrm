@@ -48,6 +48,7 @@ $statuses = array(
 	'archive' => 'Завершена',
 	'pending' => 'В черзі'
 );
+
 ?>
 
 <section class="section section-projects" id="list">

@@ -40,7 +40,16 @@ function send_notification( $user_id, $ID ) {
 		$telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' );
 		if ( $telegram_id && carbon_get_user_meta( $user_id, 'telegram_notification' ) ) {
 			$message_telegram = $user_form_subject . ': "' . $string3 . '"';
-			$result           = send_telegram_message( $telegram_id, $message_telegram );
+			if ( is_working_hours() ) {
+				send_telegram_message( $telegram_id, $message_telegram );
+			} else {
+				wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
+					$telegram_id,
+					$message_telegram,
+					false,
+					'html'
+				) );
+			}
 		}
 	}
 }

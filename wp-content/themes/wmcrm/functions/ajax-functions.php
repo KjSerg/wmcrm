@@ -1714,7 +1714,16 @@ function add_absences() {
 						if ( $telegram_notification && $telegram_id ) {
 							$message_txt = str_replace( '<br>', PHP_EOL, $message_txt );
 							$message_txt .= ': ' . $link;
-							send_telegram_message( $telegram_id, $message_txt );
+							if ( is_working_hours() ) {
+								send_telegram_message( $telegram_id, $message_txt );
+							} else {
+								wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
+									$telegram_id,
+									$message_txt,
+									false,
+									'html'
+								) );
+							}
 						}
 					}
 				}
@@ -1850,7 +1859,17 @@ function delete_user_absence() {
 					}
 					if ( carbon_get_user_meta( $user_id, 'telegram_notification' ) ) {
 						if ( $telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' ) ) {
-							send_telegram_message( $telegram_id, $text );
+
+							if ( is_working_hours() ) {
+								send_telegram_message( $telegram_id, $text );
+							} else {
+								wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
+									$telegram_id,
+									$text,
+									false,
+									'html'
+								) );
+							}
 						}
 					}
 					$post_data = array(

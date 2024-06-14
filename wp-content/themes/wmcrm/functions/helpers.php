@@ -1568,3 +1568,24 @@ function get_notices() {
 
 	return $res;
 }
+
+function is_working_hours() {
+	date_default_timezone_set( "Europe/Kiev" );
+	$start_time   = strtotime( '09:00' );
+	$end_time     = strtotime( '20:00' );
+	$current_time = strtotime( date( 'H:i' ) );
+
+	return ( $current_time >= $start_time && $current_time <= $end_time );
+}
+
+function get_next_work_timestamp() {
+	date_default_timezone_set( "Europe/Kiev" );
+	$now         = time();
+	$currentDate = date( 'Y-m-d', $now );
+	$next9AM     = strtotime( $currentDate . ' 09:00:00' );
+	if ( $now >= $next9AM ) {
+		$next9AM = strtotime( '+1 day 09:00:00', $now );
+	}
+
+	return $next9AM;
+}

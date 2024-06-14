@@ -150,7 +150,7 @@ function the_profile() {
                         </label>
                     </div>
                     <div class="switcher">
-                        <div class="switcher__text">Телеграм сповіщення</div>
+                        <div class="switcher__text">Телеграм сповіщення (працює із 09:00 до 20:00)</div>
                         <label class="switch">
                             <input type="checkbox" name="telegram_notification"
 								<?php echo $telegram_notification ? 'checked' : '' ?>

@@ -13,7 +13,7 @@ function absences_action() {
 				'post_status' => 'publish',
 			);
 			$id      = wp_update_post( $my_post, true );
-			if ( !is_wp_error( $id ) ) {
+			if ( ! is_wp_error( $id ) ) {
 				$res     = '<div class="admin-notification">Відгул підтверджений <a href="#" class="close-notice">x</a></div>';
 				$user_id = get_post_author_id( $id );
 				if ( $user_id ) {
@@ -38,7 +38,16 @@ function absences_action() {
 							}
 							if ( carbon_get_user_meta( $user_id, 'telegram_notification' ) ) {
 								if ( $telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' ) ) {
-									send_telegram_message( $telegram_id, $text );
+									if ( is_working_hours() ) {
+										send_telegram_message( $telegram_id, $text );
+									} else {
+										wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
+											$telegram_id,
+											$text,
+											false,
+											'html'
+										) );
+									}
 								}
 							}
 							$post_data = array(
@@ -61,7 +70,7 @@ function absences_action() {
 				$user_id = get_post_author_id( $id );
 				if ( $current_user_id == $user_id || is_current_user_admin() ) {
 					if ( wp_delete_post( $id ) ) {
-						$res = '<div class="admin-notification">Відгул видалено і непідтверджений <a href="#" class="close-notice">x</a></div>';
+						$res       = '<div class="admin-notification">Відгул видалено і непідтверджений <a href="#" class="close-notice">x</a></div>';
 						$post_data = array(
 							'post_type'   => 'notice',
 							'post_title'  => 'Відгул видалено і непідтверджений',

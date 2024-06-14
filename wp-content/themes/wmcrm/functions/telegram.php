@@ -75,6 +75,7 @@ function on_telegram_auth() {
 }
 
 function send_telegram_message( $chat_id, $message, $bot_token = false, $parse_mode = 'html' ) {
+
 	$bot_token = $bot_token ?: carbon_get_theme_option( 'telegram_token' );
 	$message   = str_replace(
 		array(
@@ -106,13 +107,11 @@ function send_telegram_message( $chat_id, $message, $bot_token = false, $parse_m
 		)
 	);
 	$message = replaceUrl($message);
-
 	$data      = [
 		'chat_id'    => (int) $chat_id,
 		'text'       => $message,
 		"parse_mode" => $parse_mode
 	];
-
 	$ch = curl_init( "https://api.telegram.org/bot" . $bot_token . "/sendMessage?" . http_build_query( $data ) );
 	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 	curl_setopt( $ch, CURLOPT_HEADER, false );
@@ -121,3 +120,5 @@ function send_telegram_message( $chat_id, $message, $bot_token = false, $parse_m
 
 	return $resultQuery;
 }
+
+add_action( 'send_telegram_message_action_hook', 'send_telegram_message', 10, 4 );

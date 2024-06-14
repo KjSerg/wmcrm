@@ -104,7 +104,16 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 	}
 	if ( $telegram_users ) {
 		foreach ( $telegram_users as $telegram_id ) {
-			send_telegram_message( $telegram_id, $telegram_m );
+			if ( is_working_hours() ) {
+				send_telegram_message( $telegram_id, $telegram_m );
+			} else {
+				wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
+					$telegram_id,
+					$telegram_m,
+					false,
+					'html'
+				) );
+			}
 		}
 	}
 }
@@ -181,7 +190,15 @@ function birthday_notification( $user_id ) {
 									$_telegram_notification = carbon_get_user_meta( $userID, 'telegram_notification' );
 									$_telegram_id           = carbon_get_user_meta( $userID, 'telegram_id' );
 									if ( $_telegram_notification && $_telegram_id ) {
-										send_telegram_message( $_telegram_id, $m );
+										if ( is_working_hours() ) {
+											send_telegram_message( $_telegram_id, $m );
+										} else {
+											wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
+												$_telegram_id, $m,
+												false,
+												'html'
+											) );
+										}
 									}
 								}
 							}
