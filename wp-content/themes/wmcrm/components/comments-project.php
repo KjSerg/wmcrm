@@ -87,10 +87,10 @@ function the_comment_project( $comment_id, $user_id = false ) {
          id="comment-<?php echo $comment_id ?>">
         <div class="comment-head">
             <div class="comment-author">
+	            <?php if ( $avatar ) {
+		            echo "<div class='comment-author__avatar'><img class='cover' src='$avatar' alt=''/></div>";
+	            } ?>
 				<?php echo $name ?>
-				<?php if ( $avatar ) {
-					echo "<div class='comment-author__avatar'><img class='cover' src='$avatar' alt=''/></div>";
-				} ?>
             </div>
             <div class="comment-date">
 				<?php echo date( 'd-m-Y H:i', $time );

@@ -5,7 +5,6 @@ $set             = $var['setting_home'];
 $assets          = $var['assets'];
 $url             = $var['url'];
 $url_home        = $var['url_home'];
-absences_action();
 if ( ! $current_user_id ) {
 	header( 'Location: ' . $url );
 	die();
@@ -68,6 +67,11 @@ get_header();
         <div class="container">
 
             <div class="days-container calendar-container">
+				<?php if ( is_current_user_admin() ): ?>
+                    <a href="#" class="calendar-button button delete-absence">
+                        Видалити відсутність
+                    </a>
+				<?php endif; ?>
                 <div class="days-controls">
 					<?php if ( $prev_year > 2019 ): ?>
                         <a href="<?php echo $prev_link; ?>" class="days-controls__prev link-js">

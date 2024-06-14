@@ -290,6 +290,7 @@ function create_new_project() {
 	$res      = array();
 	if ( $is_admin && $user_id ) {
 		$title           = $_POST['title'] ?? '';
+		$type            = $_POST['type'] ?? '';
 		$responsible     = $_POST['responsible'] ?? '';
 		$text            = $_POST['text'] ?? '';
 		$tags            = $_POST['tags'] ?? '';
@@ -302,8 +303,66 @@ function create_new_project() {
 			$responsible_names = array();
 			$observers_ids     = array();
 			$observers_names   = array();
+			$tags_ids          = array();
 			$text              = $text ? get_text_with_users( $text )['result_text'] : '';
-			$post_data         = array(
+			if ( $type == 'preset' ) {
+				$post_data = array(
+					'post_type'    => 'presets',
+					'post_status'  => 'publish',
+					'post_title'   => $title,
+					'post_content' => $text,
+					'post_author'  => $user_id
+				);
+				$preset_id = wp_insert_post( $post_data, true );
+				if ( $preset_id && ! is_wp_error( $preset_id ) ) {
+					if ( ! is_array( $responsible ) ) {
+						$responsible = array( $responsible );
+					}
+					foreach ( $responsible as $item ) {
+						$user = get_user_by( 'id', $item );
+						if ( $user ) {
+							$responsible_ids[] = $item;
+						}
+					}
+					if ( $observers ) {
+						if ( ! is_array( $observers ) ) {
+							$observers = array( $observers );
+						}
+						foreach ( $observers as $item ) {
+							$user = get_user_by( 'id', $item );
+							if ( $user ) {
+								$observers_ids[] = $item;
+							}
+						}
+					}
+					if ( $tags ) {
+						if ( is_array( $tags ) ) {
+							foreach ( $tags as $tag ) {
+								$tag        = (int) $tag;
+								$tags_ids[] = $tag;
+							}
+						} else {
+							$tags       = (int) $tags;
+							$tags_ids[] = $tags;
+						}
+					}
+					carbon_set_post_meta( $preset_id, 'preset_tags', implode( ',', $tags_ids ) );
+					carbon_set_post_meta( $preset_id, 'preset_status', $post_status );
+					carbon_set_post_meta( $preset_id, 'preset_parent_project', $parent_id );
+					carbon_set_post_meta( $preset_id, 'preset_observers', implode( ',', $observers_ids ) );
+					carbon_set_post_meta( $preset_id, 'preset_performers', implode( ',', $responsible_ids ) );
+					$res['msg'] = 'Шаблон збережено під назвою ' . $title;
+					ob_start();
+					the_presets_select();
+					$res['presets_select_html'] = ob_get_clean();
+				} else {
+					$res['type'] = 'error';
+					$res['msg']  = $preset_id->get_error_message();
+				}
+				echo json_encode( $res );
+				die();
+			}
+			$post_data = array(
 				'post_type'    => 'projects',
 				'post_title'   => $title,
 				'post_status'  => $post_status,
@@ -1698,6 +1757,157 @@ function get_user_time_modal() {
 		$res['msg'] = "Помилка";
 	}
 	echo json_encode( $res );
+	die();
+}
+
+add_action( 'wp_ajax_nopriv_get_preset_data', 'get_preset_data' );
+add_action( 'wp_ajax_get_preset_data', 'get_preset_data' );
+function get_preset_data() {
+	$res = array();
+	$id  = $_POST['id'] ?? '';
+	if ( $id && get_post( $id ) ) {
+		$parent_id         = carbon_get_post_meta( $id, 'preset_parent_project' );
+		$preset_observers  = carbon_get_post_meta( $id, 'preset_observers' );
+		$preset_performers = carbon_get_post_meta( $id, 'preset_performers' );
+		$preset_tags       = carbon_get_post_meta( $id, 'preset_tags' );
+		$res['title']      = esc_html( get_the_title( $id ) );
+		$res['text']       = get_content_by_id( $id );
+		$res['status']     = carbon_get_post_meta( $id, 'preset_status' );
+		if ( $preset_observers ) {
+			$res['observers'] = explode( ',', $preset_observers );
+		}
+		if ( $preset_performers ) {
+			$res['performers'] = explode( ',', $preset_performers );
+		}
+		if ( $preset_tags ) {
+			$res['tags'] = explode( ',', $preset_tags );
+		}
+		if ( $parent_id && get_post( $parent_id ) ) {
+			$res['parent_id']    = $parent_id;
+			$res['parent_title'] = esc_html( get_the_title( $parent_id ) );
+		}
+	}
+	$res = json_encode( $res );
+	$res = str_replace( array( '&#8220;', '&#8221;' ), '', $res );
+	echo $res;
+	die();
+}
+
+add_action( 'wp_ajax_nopriv_delete_user_notifications', 'delete_user_notifications' );
+add_action( 'wp_ajax_delete_user_notifications', 'delete_user_notifications' );
+function delete_user_notifications() {
+	$res     = array( 'deleted' => array() );
+	$user_id = get_current_user_id();
+	if ( $user_id ) {
+		$args  = array(
+			'post_type'      => 'notification',
+			'posts_per_page' => - 1,
+			'author__in'     => array( $user_id )
+		);
+		$query = new WP_Query( $args );
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				$id = get_the_ID();
+				if ( wp_delete_post( $id ) ) {
+					$res['deleted'][] = $id;
+				}
+			}
+		}
+		wp_reset_postdata();
+		wp_reset_query();
+	}
+	echo json_encode( $res );
+	die();
+}
+
+add_action( 'wp_ajax_nopriv_delete_user_absence', 'delete_user_absence' );
+add_action( 'wp_ajax_delete_user_absence', 'delete_user_absence' );
+function delete_user_absence() {
+	$res = array();
+	$id  = $_POST['id'] ?? '';
+	if ( $id && get_post( $id ) && is_current_user_admin() ) {
+		$user_id     = get_post_author_id( $id );
+		$start_date  = carbon_get_post_meta( $id, 'absences_start_date' );
+		$finish_date = carbon_get_post_meta( $id, 'absences_finish_date' );
+		$reasons     = get_the_terms( $id, 'reasons' );
+		$text        = 'Відмінено ';
+		if ( $reasons ) {
+			$text .= $reasons[0]->name;
+			$text .= ' ';
+		}
+		if ( $start_date == $finish_date ) {
+			$text .= 'дата відсутності ' . $start_date;
+		} else {
+			$text .= '(від ' . $start_date . ' до ' . $finish_date . ')';
+		}
+		if ( $user_id ) {
+			$user = get_user_by( 'id', $user_id );
+			if ( ! carbon_get_user_meta( $user_id, 'fired' ) ) {
+				if ( $user ) {
+					if ( carbon_get_user_meta( $user_id, 'email_notification' ) ) {
+						send_message( $text, $user->user_email, 'Відмінено відсутність' );
+					}
+					if ( carbon_get_user_meta( $user_id, 'telegram_notification' ) ) {
+						if ( $telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' ) ) {
+							send_telegram_message( $telegram_id, $text );
+						}
+					}
+					$post_data = array(
+						'post_type'   => 'notice',
+						'post_title'  => $text,
+						'post_status' => 'publish',
+						'post_author' => $user_id
+					);
+					$notice_id = wp_insert_post( $post_data, true );
+					if ( $notice_id && ! is_wp_error( $notice_id ) ) {
+						carbon_set_post_meta( $notice_id, 'notice_type', 'warning' );
+					}
+				}
+			}
+
+		}
+		if ( wp_delete_post( $id ) ) {
+			$res['msg']        = 'Відсутність видалено ☑️';
+			$res['deleted_id'] = $id;
+		} else {
+			$res['msg'] = 'Помилка';
+		}
+	} else {
+		$res['msg'] = 'Помилка';
+	}
+	echo json_encode( $res );
+	die();
+}
+
+add_action( 'wp_ajax_nopriv_get_user_notice', 'get_user_notice' );
+add_action( 'wp_ajax_get_user_notice', 'get_user_notice' );
+function get_user_notice() {
+	$notices = get_notices();
+	if ( $notices ) {
+		foreach ( $notices as $notice ) {
+			echo $notice['html'];
+		}
+	}
+	die();
+}
+
+add_action( 'wp_ajax_nopriv_remove_user_notice', 'remove_user_notice' );
+add_action( 'wp_ajax_remove_user_notice', 'remove_user_notice' );
+function remove_user_notice() {
+	$id      = $_POST['id'] ?? '';
+	$user_id = get_current_user_id();
+	if($id && $user_id){
+		if($user_id == get_post_author_id($id)){
+			wp_delete_post($id);
+		}
+	}
+	$notices = get_notices();
+	if ( $notices ) {
+		foreach ( $notices as $notice ) {
+			echo $notice['html'];
+		}
+	}
 	die();
 }
 

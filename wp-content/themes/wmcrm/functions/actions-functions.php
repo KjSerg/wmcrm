@@ -1,8 +1,9 @@
 <?php
 
 function absences_action() {
-	$action = $_GET['action'] ?? '';
-	$id     = $_GET['id'] ?? '';
+	$res             = '';
+	$action          = $_GET['action'] ?? '';
+	$id              = $_GET['id'] ?? '';
 	$current_user_id = get_current_user_id();
 	if ( $action == 'confirm_absences' || $action == 'remove_absences' && $id && get_post( $id ) ) {
 		$id = (int) $id;
@@ -12,10 +13,8 @@ function absences_action() {
 				'post_status' => 'publish',
 			);
 			$id      = wp_update_post( $my_post, true );
-			if ( is_wp_error( $id ) ) {
-				echo '<div class="admin-warning">' . $id->get_error_message() . '</div>';
-			} else {
-				echo '<div class="admin-notification">Відгул підтверджений</div>';
+			if ( !is_wp_error( $id ) ) {
+				$res     = '<div class="admin-notification">Відгул підтверджений <a href="#" class="close-notice">x</a></div>';
 				$user_id = get_post_author_id( $id );
 				if ( $user_id ) {
 					if ( ! carbon_get_user_meta( $user_id, 'fired' ) ) {
@@ -42,23 +41,45 @@ function absences_action() {
 									send_telegram_message( $telegram_id, $text );
 								}
 							}
+							$post_data = array(
+								'post_type'   => 'notice',
+								'post_title'  => $text,
+								'post_status' => 'publish',
+								'post_author' => $user_id
+							);
+							$notice_id = wp_insert_post( $post_data, true );
+							if ( $notice_id && ! is_wp_error( $notice_id ) ) {
+								carbon_set_post_meta( $notice_id, 'notice_type', 'notification' );
+							}
 						}
 					}
 				}
 			}
 		}
-		if ( $action == 'remove_absences'  ) {
-			if($current_user_id && get_post_status( $id ) != 'publish'  ){
+		if ( $action == 'remove_absences' ) {
+			if ( $current_user_id && get_post_status( $id ) != 'publish' ) {
 				$user_id = get_post_author_id( $id );
-				if($current_user_id == $user_id || is_current_user_admin()){
+				if ( $current_user_id == $user_id || is_current_user_admin() ) {
 					if ( wp_delete_post( $id ) ) {
-						echo '<div class="admin-notification">Відгул видалено і непідтверджений</div>';
+						$res = '<div class="admin-notification">Відгул видалено і непідтверджений <a href="#" class="close-notice">x</a></div>';
+						$post_data = array(
+							'post_type'   => 'notice',
+							'post_title'  => 'Відгул видалено і непідтверджений',
+							'post_status' => 'publish',
+							'post_author' => $user_id
+						);
+						$notice_id = wp_insert_post( $post_data, true );
+						if ( $notice_id && ! is_wp_error( $notice_id ) ) {
+							carbon_set_post_meta( $notice_id, 'notice_type', 'warning' );
+						}
 					}
 				}
 			}
 
 		}
 	}
+
+	return $res;
 }
 
 function change_user_time_event() {

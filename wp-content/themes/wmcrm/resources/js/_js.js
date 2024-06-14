@@ -19,6 +19,7 @@ import checkingNotifications, {newMessageSoundPlay, setNotificationsNumber} from
 import BulkEdit from "./BulkEdit";
 import './_forms';
 import './_profile';
+import './_notice';
 import Autocomplete from "./Autocomplete";
 
 let $doc = $(document);
@@ -219,6 +220,55 @@ $(document).ready(function () {
         e.preventDefault();
         let $t = $(this);
         $t.find('span').text(0);
+        $.ajax({
+            type: "POST",
+            url: adminAjax,
+            data: {
+                action: 'delete_user_notifications'
+            },
+        }).done(function (r) {
+            console.log(r)
+        });
+    });
+    $doc.on('click', '.calendar-table-item', function (e) {
+        e.preventDefault();
+        let $t = $(this);
+        const id = $t.attr('data-id');
+        if (id === undefined) return;
+        $doc.find('.delete-absence').attr('data-id', id);
+        $doc.find('.delete-absence').addClass('active');
+    });
+    $doc.on('click', '.delete-absence', function (e) {
+        e.preventDefault();
+        const $t = $(this);
+        const id = $t.attr('data-id');
+        if (id === undefined) return;
+        showPreloader();
+        $.ajax({
+            type: "POST",
+            url: adminAjax,
+            data: {
+                action: 'delete_user_absence',
+                id
+            },
+        }).done(function (r) {
+            hidePreloader();
+            $t.removeClass('active');
+            $t.removeAttr('data-id');
+            if (isJsonString(r)) {
+                const res = JSON.parse(r);
+                if (res) {
+                    if (res.deleted_id !== undefined && res.deleted_id !== '') {
+                        $doc.find(`.calendar-table-item[data-id="${res.deleted_id}"]`).remove();
+                    }
+                    if (res.msg !== undefined && res.msg !== '') {
+                        showMassage(res.msg);
+                    }
+                }
+            } else {
+                showMassage(r);
+            }
+        });
     });
     $doc.on('click', '.vote-js', function (e) {
         e.preventDefault();
@@ -347,6 +397,7 @@ $(document).ready(function () {
         //modal-window
         //window-main
         if (e.key === "Escape") {
+            $doc.find('.delete-absence').removeClass('active');
             let $window = $doc.find('.modal-window.active');
             if ($window.length > 0) {
                 $window.removeClass('active');

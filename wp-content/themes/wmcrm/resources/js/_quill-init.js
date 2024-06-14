@@ -81,7 +81,7 @@ export function setProjectQuillText(text = '') {
     if (quillProject !== null) quillProject.setText(text);
 }
 
-function initProjectQuill() {
+export function initProjectQuill() {
     const $editor = $doc.find('#project-editor');
     if ($editor.length === 0) return;
     const projectID = $editor.attr('data-project-id');

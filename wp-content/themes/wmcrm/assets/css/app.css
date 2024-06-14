@@ -2708,9 +2708,9 @@ input {
   line-height: 140%;
 }
 .comment-author__avatar {
-  margin-left: 5px;
-  width: 2.6rem;
-  height: 2.6rem;
+  margin-right: 5px;
+  width: 5rem;
+  height: 5rem;
   overflow: hidden;
   border-radius: 50%;
 }
@@ -3961,6 +3961,17 @@ input {
   line-height: 140%;
   white-space: nowrap;
 }
+.calendar-button {
+  position: absolute;
+  bottom: calc(100% + 1rem);
+  right: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.calendar-button.active {
+  opacity: 1;
+  pointer-events: auto;
+}
 
 .absences-section {
   padding: 3rem 0;
@@ -4207,6 +4218,7 @@ img.cover {
   padding: 1rem 2rem;
   cursor: pointer;
   border-radius: 3rem;
+  border: 1px solid #5C6DF9;
   color: #FFF;
   text-align: center;
   font-family: Montserrat;
@@ -4254,16 +4266,10 @@ img.cover {
   background: rgba(255, 255, 255, 0);
 }
 .button--bordered {
-  border-radius: 5rem;
   border: 1px solid #5C6DF9;
   background: #FFF;
   color: #333;
-  text-align: center;
-  font-family: Montserrat;
-  font-size: 1.4rem;
-  font-style: normal;
   font-weight: 600;
-  line-height: 150%;
 }
 .button--bordered:hover {
   background: #5C6DF9;
@@ -4454,9 +4460,18 @@ img.cover {
 .form-group--third {
   width: calc(33% - 1rem);
 }
+.form-group.error .selectric {
+  border-color: red;
+}
 .form-buttons {
   display: flex;
   align-items: center;
+}
+.form-buttons > *:not(:last-child) {
+  margin-right: 1rem;
+}
+.form-button {
+  border: 1px solid #5C6DF9;
 }
 .form-files-result {
   color: #333;
@@ -4815,7 +4830,7 @@ main.content {
   background: #F2F3F9;
 }
 .create-window .ql-toolbar.ql-snow + .ql-container.ql-snow {
-  height: 31rem;
+  height: 25rem;
   border-radius: 0px 0px 2rem 2rem;
 }
 @media (max-width: 700px) {
@@ -5132,22 +5147,35 @@ button {
 }
 
 .admin-warning {
+  display: flex;
+  position: relative;
   width: 100%;
   padding: 1rem 2rem;
   background-color: orange;
+  color: white;
 }
 
 .admin-error {
+  display: flex;
+  position: relative;
   width: 100%;
   padding: 1rem 2rem;
-  background-color: red;
+  background-color: #c9085f;
   color: white;
 }
 
 .admin-notification {
+  display: flex;
+  position: relative;
   width: 100%;
   padding: 1rem 2rem;
   background-color: #7BB500;
+  color: white;
+}
+
+.close-notice {
+  display: inline-block;
+  margin-left: auto;
 }
 
 .hidden {
@@ -5156,4 +5184,8 @@ button {
 
 [data-cost-id] {
   cursor: pointer;
+}
+
+.presets-wrapper > * {
+  margin-bottom: 2rem;
 }

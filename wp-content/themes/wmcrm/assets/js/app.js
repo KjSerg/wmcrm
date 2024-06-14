@@ -9056,6 +9056,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ Stopwatch)
 /* harmony export */ });
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_helpers */ "./resources/js/_helpers.js");
+/* harmony import */ var worker_timers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! worker-timers */ "./node_modules/worker-timers/build/es2019/module.js");
 /* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -9063,6 +9064,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
 
 var Stopwatch = /*#__PURE__*/function () {
   function Stopwatch() {
@@ -9172,7 +9174,7 @@ var Stopwatch = /*#__PURE__*/function () {
         if ($t.hasClass('admin-timers')) {
           _this.getTimers();
           clearInterval(_this.timersInterval);
-          _this.timersInterval = setInterval(function () {
+          _this.timersInterval = (0,worker_timers__WEBPACK_IMPORTED_MODULE_1__.setInterval)(function () {
             _this.getTimers();
           }, 60000);
         }
@@ -9213,7 +9215,7 @@ var Stopwatch = /*#__PURE__*/function () {
         var pause = results.pause;
         var pauseSeconds = pause.seconds;
         var workSeconds = work.seconds;
-        setInterval(function () {
+        (0,worker_timers__WEBPACK_IMPORTED_MODULE_1__.setInterval)(function () {
           if (status === 1) {
             workSeconds = workSeconds + 1;
           } else if (status === -1) {
@@ -9242,7 +9244,7 @@ var Stopwatch = /*#__PURE__*/function () {
       } else {
         console.log(_this.interval);
         if (_this.interval === null) {
-          _this.interval = setInterval(function () {
+          _this.interval = (0,worker_timers__WEBPACK_IMPORTED_MODULE_1__.setInterval)(function () {
             _this.renderResults();
           }, 1000);
         }
@@ -9589,54 +9591,12 @@ var Stopwatch = /*#__PURE__*/function () {
         console.log(errorThrown);
         _this.getCurrentData();
       });
-      // sendRequest(adminAjax, data, 'POST', false).then((res) => {
-      //     console.log(res)
-      //     if (res) {
-      //         _this.$doc.find('.timer').removeClass('not-active');
-      //         let pauses = res.pauses || [];
-      //         let costs_data = res.costs_data || [];
-      //         const costs_status = res.costs_status;
-      //         const costs_start = res.costs_start || 0;
-      //         const costs_finish = res.costs_finish || 0;
-      //         const timer_modal_html = res.timer_modal_html;
-      //         const costs_sum_hour = res.costs_sum_hour;
-      //         const costs_sum = res.costs_sum;
-      //         const costs_sum_hour_pause = res.costs_sum_hour_pause;
-      //         const costs_sum_pause = res.costs_sum_pause;
-      //         if (isJsonString(pauses)) pauses = JSON.parse(pauses);
-      //         if (isJsonString(costs_data)) costs_data = JSON.parse(costs_data);
-      //         _this.stopwatches = pauses;
-      //         _this.workTimes = costs_data;
-      //         if (costs_status) {
-      //             _this.status = Number(costs_status);
-      //         }
-      //         _this.startTimestamp = Number(costs_start || 0);
-      //         _this.finishTimestamp = Number(costs_finish || 0);
-      //         _this.renderResults();
-      //         if (_this.status === 1) {
-      //             _this.$doc.find('.timer').removeClass('pause');
-      //             _this.$doc.find('.timer').addClass('play');
-      //             _this.runTick();
-      //         } else if (_this.status === -1) {
-      //             _this.$doc.find('.timer').addClass('pause');
-      //             _this.$doc.find('.timer').removeClass('play');
-      //             _this.runTick();
-      //         } else {
-      //             _this.$doc.find('.timer').removeClass('pause');
-      //             _this.$doc.find('.timer').removeClass('play');
-      //         }
-      //         if (res.reload) window.location.reload();
-      //     } else {
-      //         window.location.reload();
-      //     }
-      //
-      // });
     }
   }, {
     key: "cyclicallyUpdated",
     value: function cyclicallyUpdated() {
       var _this = this;
-      setInterval(function () {
+      (0,worker_timers__WEBPACK_IMPORTED_MODULE_1__.setInterval)(function () {
         _this.getCurrentData(true);
       }, 60000);
     }
@@ -9677,11 +9637,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   setNotificationsNumber: () => (/* binding */ setNotificationsNumber)
 /* harmony export */ });
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_helpers */ "./resources/js/_helpers.js");
+/* harmony import */ var worker_timers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! worker-timers */ "./node_modules/worker-timers/build/es2019/module.js");
 /* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+
 
 function checkingNotifications() {
   setNotificationsNumber();
-  setInterval(setNotificationsNumber, 20000);
+  (0,worker_timers__WEBPACK_IMPORTED_MODULE_1__.setInterval)(setNotificationsNumber, 20000);
 }
 var setNotificationsNumber = function setNotificationsNumber() {
   var $selector = $(document).find('.header-notification-button span');
@@ -9727,10 +9689,15 @@ function newMessageSoundPlay() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isValidForm: () => (/* binding */ isValidForm)
+/* harmony export */ });
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_helpers */ "./resources/js/_helpers.js");
 /* harmony import */ var _quill_init__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_quill-init */ "./resources/js/_quill-init.js");
 /* harmony import */ var _Invite__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Invite */ "./resources/js/Invite.js");
+/* harmony import */ var _js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./_js */ "./resources/js/_js.js");
 /* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+
 
 
 
@@ -9740,148 +9707,7 @@ $doc.ready(function () {
     e.preventDefault();
     var $form = $(this);
     var this_form = $form.attr('id');
-    var test = true,
-      thsInputs = $form.find('input, textarea'),
-      $select = $form.find('select[required]');
-    var $address = $form.find('input.address-js[required]');
-    $select.each(function () {
-      var $ths = $(this);
-      var $label = $ths.closest('.form-group');
-      var val = $ths.val();
-      console.log(val);
-      if (Array.isArray(val) && val.length === 0) {
-        console.log(1);
-        test = false;
-        $label.addClass('error');
-      } else {
-        console.log(2);
-        $label.removeClass('error');
-        if (val === null || val === undefined) {
-          console.log(3);
-          test = false;
-          $label.addClass('error');
-        }
-      }
-    });
-    thsInputs.each(function () {
-      var thsInput = $(this),
-        $label = thsInput.closest('.form_element'),
-        thsInputType = thsInput.attr('type'),
-        thsInputVal = thsInput.val().trim(),
-        inputReg = new RegExp(thsInput.data('reg')),
-        inputTest = inputReg.test(thsInputVal);
-      if (thsInput.attr('required')) {
-        if (thsInputVal.length <= 0) {
-          test = false;
-          thsInput.addClass('error');
-          $label.addClass('error');
-          thsInput.focus();
-          if (thsInputType === 'file') {
-            $form.find('.cabinet-item__photo-item').eq(0).addClass('error');
-            $('html, body').animate({
-              scrollTop: $form.find('.cabinet-item__photo-item').eq(0).offset().top
-            });
-          }
-        } else {
-          thsInput.removeClass('error');
-          $label.removeClass('error');
-          if (thsInput.data('reg')) {
-            if (inputTest === false) {
-              test = false;
-              thsInput.addClass('error');
-              $label.addClass('error');
-              thsInput.focus();
-            } else {
-              thsInput.removeClass('error');
-              $label.removeClass('error');
-            }
-          }
-          if (thsInputType === 'file') {
-            $form.find('.cabinet-item__photo-item').eq(0).removeClass('error');
-          }
-        }
-      }
-      if (thsInput.hasClass('time-input')) {
-        if (validateTime(thsInputVal)) {
-          thsInput.removeClass('error');
-          $label.removeClass('error');
-        } else {
-          test = false;
-          thsInput.addClass('error');
-          $label.addClass('error');
-          thsInput.focus();
-        }
-      }
-    });
-    var $password = $form.find('input[name="password"]');
-    var $passwordRepeat = $form.find('input[name="repeat_password"]');
-    var $passwordOld = $form.find('input[name="old_password"]');
-    var $passwordNew = $form.find('input[name="new_password"]');
-    if (!$form.hasClass('login-form')) {
-      if ($password.length > 0 && $passwordRepeat.length > 0) {
-        if ($password.val() !== $passwordRepeat.val()) {
-          $password.addClass('error');
-          $passwordRepeat.addClass('error');
-          return;
-        }
-        if (!isValidPassword($password.val())) {
-          (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showMassage)(errorPswMsg);
-          $password.addClass('error');
-          $passwordRepeat.addClass('error');
-          return;
-        }
-        $password.removeClass('error');
-        $passwordRepeat.removeClass('error');
-      } else if ($password.length > 0 && $password.val().length > 0) {
-        if (!isValidPassword($password.val())) {
-          (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showMassage)(errorPswMsg);
-          $password.addClass('error');
-          $passwordRepeat.addClass('error');
-          return;
-        }
-        $password.removeClass('error');
-        $passwordRepeat.removeClass('error');
-      }
-      if ($passwordOld.length > 0 && $passwordNew.length > 0) {
-        if (!isValidPassword($passwordNew.val())) {
-          (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showMassage)(errorPswMsg);
-          $passwordNew.addClass('error');
-          return;
-        }
-        $passwordNew.removeClass('error');
-      }
-    }
-    var $inp = $form.find('input[name="consent"]');
-    if ($inp.length > 0) {
-      if ($inp.prop('checked') === false) {
-        $inp.closest('.form-consent').addClass('error');
-        return;
-      }
-      $inp.closest('.form-consent').removeClass('error');
-    }
-    if ($address.length > 0) {
-      var addressTest = true;
-      $address.each(function (index) {
-        var $el = $(this);
-        var val = $el.val() || '';
-        var selected = $el.attr('data-selected') || '';
-        if (selected.trim() !== val.trim()) {
-          test = false;
-          addressTest = false;
-          $el.addClass('error');
-        } else {
-          $el.removeClass('error');
-        }
-        if (val.length === 0) {
-          test = false;
-          $el.addClass('error');
-        }
-      });
-      if (!addressTest) (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showMassage)(locationErrorString);
-    }
-    if ($form.hasClass('comment-form')) {
-      if ($form.find('.value-field').val().trim().length === 0) return;
-    }
+    var test = isValidForm($form);
     if (test) {
       var thisForm = document.getElementById(this_form);
       var formData = new FormData(thisForm);
@@ -9956,7 +9782,7 @@ $doc.ready(function () {
             }
             if ($form.hasClass('login-form') && res.type === 'success' || res.is_reload === 'true') {
               window.location.reload();
-              return;
+              return false;
             }
             if (res.comment_html !== '' && res.comment_html !== undefined) {
               $doc.find('.section-comments-list').prepend(res.comment_html);
@@ -10003,6 +9829,151 @@ $doc.ready(function () {
     $(this).closest('form').trigger('submit');
   });
 });
+function isValidForm($form) {
+  var test = true,
+    thsInputs = $form.find('input, textarea'),
+    $select = $form.find('select[required]');
+  var $address = $form.find('input.address-js[required]');
+  $select.each(function () {
+    var $ths = $(this);
+    var $label = $ths.closest('.form-group');
+    var val = $ths.val();
+    console.log(val);
+    if (Array.isArray(val) && val.length === 0) {
+      console.log(1);
+      test = false;
+      $label.addClass('error');
+    } else {
+      console.log(2);
+      $label.removeClass('error');
+      if (val === null || val === undefined) {
+        console.log(3);
+        test = false;
+        $label.addClass('error');
+      }
+    }
+  });
+  thsInputs.each(function () {
+    var thsInput = $(this),
+      $label = thsInput.closest('.form_element'),
+      thsInputType = thsInput.attr('type'),
+      thsInputVal = thsInput.val().trim(),
+      inputReg = new RegExp(thsInput.data('reg')),
+      inputTest = inputReg.test(thsInputVal);
+    if (thsInput.attr('required')) {
+      if (thsInputVal.length <= 0) {
+        test = false;
+        thsInput.addClass('error');
+        $label.addClass('error');
+        thsInput.focus();
+        if (thsInputType === 'file') {
+          $form.find('.cabinet-item__photo-item').eq(0).addClass('error');
+          $('html, body').animate({
+            scrollTop: $form.find('.cabinet-item__photo-item').eq(0).offset().top
+          });
+        }
+      } else {
+        thsInput.removeClass('error');
+        $label.removeClass('error');
+        if (thsInput.data('reg')) {
+          if (inputTest === false) {
+            test = false;
+            thsInput.addClass('error');
+            $label.addClass('error');
+            thsInput.focus();
+          } else {
+            thsInput.removeClass('error');
+            $label.removeClass('error');
+          }
+        }
+        if (thsInputType === 'file') {
+          $form.find('.cabinet-item__photo-item').eq(0).removeClass('error');
+        }
+      }
+    }
+    if (thsInput.hasClass('time-input')) {
+      if (validateTime(thsInputVal)) {
+        thsInput.removeClass('error');
+        $label.removeClass('error');
+      } else {
+        test = false;
+        thsInput.addClass('error');
+        $label.addClass('error');
+        thsInput.focus();
+      }
+    }
+  });
+  var $password = $form.find('input[name="password"]');
+  var $passwordRepeat = $form.find('input[name="repeat_password"]');
+  var $passwordOld = $form.find('input[name="old_password"]');
+  var $passwordNew = $form.find('input[name="new_password"]');
+  if (!$form.hasClass('login-form')) {
+    if ($password.length > 0 && $passwordRepeat.length > 0) {
+      if ($password.val() !== $passwordRepeat.val()) {
+        $password.addClass('error');
+        $passwordRepeat.addClass('error');
+        return false;
+      }
+      if (!isValidPassword($password.val())) {
+        (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showMassage)(errorPswMsg);
+        $password.addClass('error');
+        $passwordRepeat.addClass('error');
+        return false;
+      }
+      $password.removeClass('error');
+      $passwordRepeat.removeClass('error');
+    } else if ($password.length > 0 && $password.val().length > 0) {
+      if (!isValidPassword($password.val())) {
+        (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showMassage)(errorPswMsg);
+        $password.addClass('error');
+        $passwordRepeat.addClass('error');
+        return false;
+      }
+      $password.removeClass('error');
+      $passwordRepeat.removeClass('error');
+    }
+    if ($passwordOld.length > 0 && $passwordNew.length > 0) {
+      if (!isValidPassword($passwordNew.val())) {
+        (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showMassage)(errorPswMsg);
+        $passwordNew.addClass('error');
+        return false;
+      }
+      $passwordNew.removeClass('error');
+    }
+  }
+  var $inp = $form.find('input[name="consent"]');
+  if ($inp.length > 0) {
+    if ($inp.prop('checked') === false) {
+      $inp.closest('.form-consent').addClass('error');
+      return false;
+    }
+    $inp.closest('.form-consent').removeClass('error');
+  }
+  if ($address.length > 0) {
+    var addressTest = true;
+    $address.each(function (index) {
+      var $el = $(this);
+      var val = $el.val() || '';
+      var selected = $el.attr('data-selected') || '';
+      if (selected.trim() !== val.trim()) {
+        test = false;
+        addressTest = false;
+        $el.addClass('error');
+      } else {
+        $el.removeClass('error');
+      }
+      if (val.length === 0) {
+        test = false;
+        $el.addClass('error');
+      }
+    });
+    if (!addressTest) (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showMassage)(locationErrorString);
+  }
+  if ($form.hasClass('comment-form')) {
+    if ($form.find('.value-field').val().trim().length === 0) return false;
+  }
+  return test;
+}
 
 /***/ }),
 
@@ -10394,8 +10365,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _BulkEdit__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./BulkEdit */ "./resources/js/BulkEdit.js");
 /* harmony import */ var _forms__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./_forms */ "./resources/js/_forms.js");
 /* harmony import */ var _profile__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./_profile */ "./resources/js/_profile.js");
-/* harmony import */ var _Autocomplete__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Autocomplete */ "./resources/js/Autocomplete.js");
+/* harmony import */ var _notice__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./_notice */ "./resources/js/_notice.js");
+/* harmony import */ var _Autocomplete__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Autocomplete */ "./resources/js/Autocomplete.js");
 /* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+
 
 
 
@@ -10603,6 +10576,55 @@ $(document).ready(function () {
     e.preventDefault();
     var $t = $(this);
     $t.find('span').text(0);
+    $.ajax({
+      type: "POST",
+      url: adminAjax,
+      data: {
+        action: 'delete_user_notifications'
+      }
+    }).done(function (r) {
+      console.log(r);
+    });
+  });
+  $doc.on('click', '.calendar-table-item', function (e) {
+    e.preventDefault();
+    var $t = $(this);
+    var id = $t.attr('data-id');
+    if (id === undefined) return;
+    $doc.find('.delete-absence').attr('data-id', id);
+    $doc.find('.delete-absence').addClass('active');
+  });
+  $doc.on('click', '.delete-absence', function (e) {
+    e.preventDefault();
+    var $t = $(this);
+    var id = $t.attr('data-id');
+    if (id === undefined) return;
+    (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showPreloader)();
+    $.ajax({
+      type: "POST",
+      url: adminAjax,
+      data: {
+        action: 'delete_user_absence',
+        id: id
+      }
+    }).done(function (r) {
+      (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.hidePreloader)();
+      $t.removeClass('active');
+      $t.removeAttr('data-id');
+      if ((0,_helpers__WEBPACK_IMPORTED_MODULE_2__.isJsonString)(r)) {
+        var res = JSON.parse(r);
+        if (res) {
+          if (res.deleted_id !== undefined && res.deleted_id !== '') {
+            $doc.find(".calendar-table-item[data-id=\"".concat(res.deleted_id, "\"]")).remove();
+          }
+          if (res.msg !== undefined && res.msg !== '') {
+            (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showMassage)(res.msg);
+          }
+        }
+      } else {
+        (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showMassage)(r);
+      }
+    });
   });
   $doc.on('click', '.vote-js', function (e) {
     e.preventDefault();
@@ -10731,6 +10753,7 @@ $(document).ready(function () {
     //modal-window
     //window-main
     if (e.key === "Escape") {
+      $doc.find('.delete-absence').removeClass('active');
       var $window = $doc.find('.modal-window.active');
       if ($window.length > 0) {
         $window.removeClass('active');
@@ -10799,7 +10822,7 @@ $(document).ready(function () {
   var shadow = new _Shadow__WEBPACK_IMPORTED_MODULE_6__["default"]();
   var commentObserver = new _CommentObserver__WEBPACK_IMPORTED_MODULE_7__["default"]();
   var bulkEditor = new _BulkEdit__WEBPACK_IMPORTED_MODULE_9__["default"]();
-  var autocomplete = new _Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"]();
+  var autocomplete = new _Autocomplete__WEBPACK_IMPORTED_MODULE_13__["default"]();
 });
 document.addEventListener('visibilitychange', function () {
   if (!document.hidden) {
@@ -10815,6 +10838,67 @@ window.onpopstate = function (event) {
     url: document.location
   });
 };
+
+/***/ }),
+
+/***/ "./resources/js/_notice.js":
+/*!*********************************!*\
+  !*** ./resources/js/_notice.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getNotice: () => (/* binding */ getNotice)
+/* harmony export */ });
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_helpers */ "./resources/js/_helpers.js");
+/* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+
+$(document).ready(function () {
+  getNotice();
+  updateNotice();
+  $(document).on('click', '.close-notice', function (e) {
+    e.preventDefault();
+    var $t = $(this);
+    var id = $t.attr('data-id');
+    console.log(id);
+    if (id === undefined) {
+      return;
+    }
+    $t.closest('div').slideUp();
+    $.ajax({
+      type: "POST",
+      url: adminAjax,
+      data: {
+        action: 'remove_user_notice',
+        id: id
+      }
+    }).done(function (r) {
+      if (r) {
+        $(document).find('.notifications').html(r);
+      }
+    });
+  });
+});
+function updateNotice() {
+  var minute = 60000;
+  var time = minute * 60;
+  setInterval(getNotice, time);
+}
+function getNotice() {
+  $.ajax({
+    type: "POST",
+    url: adminAjax,
+    data: {
+      action: 'get_user_notice'
+    }
+  }).done(function (r) {
+    if (r) {
+      $(document).find('.notifications').html(r);
+    }
+  });
+}
 
 /***/ }),
 
@@ -10872,9 +10956,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   renderContainer: () => (/* binding */ renderContainer)
 /* harmony export */ });
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_helpers */ "./resources/js/_helpers.js");
-/* harmony import */ var _CommentObserver__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CommentObserver */ "./resources/js/CommentObserver.js");
+/* harmony import */ var selectric__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! selectric */ "./node_modules/selectric/public/jquery.selectric.js");
+/* harmony import */ var selectric__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(selectric__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_helpers */ "./resources/js/_helpers.js");
+/* harmony import */ var _CommentObserver__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CommentObserver */ "./resources/js/CommentObserver.js");
+/* harmony import */ var _js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./_js */ "./resources/js/_js.js");
+/* harmony import */ var _Invite__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Invite */ "./resources/js/Invite.js");
+/* harmony import */ var _forms__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./_forms */ "./resources/js/_forms.js");
+/* harmony import */ var _quill_init__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./_quill-init */ "./resources/js/_quill-init.js");
 /* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+
+
+
+
+
 
 
 var $doc = $(document);
@@ -10896,6 +10991,130 @@ $doc.ready(function () {
     var serialize = $form.serialize();
     renderContainer(url + '?' + serialize);
   });
+  $doc.on('click', '.save-preset', function (e) {
+    e.preventDefault();
+    var $t = $(this);
+    var $form = $t.closest('form');
+    if ((0,_forms__WEBPACK_IMPORTED_MODULE_5__.isValidForm)($form)) {
+      var this_form = $form.attr('id');
+      var thisForm = document.getElementById(this_form);
+      var formData = new FormData(thisForm);
+      formData.append('type', 'preset');
+      (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.showPreloader)();
+      $.ajax({
+        type: $form.attr('method'),
+        url: adminAjax,
+        processData: false,
+        contentType: false,
+        data: formData
+      }).done(function (r) {
+        if (r) {
+          if ((0,_helpers__WEBPACK_IMPORTED_MODULE_1__.isJsonString)(r)) {
+            var res = JSON.parse(r);
+            if (res.presets_select_html !== undefined && res.presets_select_html !== '') {
+              $doc.find('.presets-wrapper').html(res.presets_select_html);
+              (0,_js__WEBPACK_IMPORTED_MODULE_3__.initPlugins)();
+            }
+          } else {
+            (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.showMassage)(r);
+          }
+        }
+        (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.hidePreloader)();
+        var invite = new _Invite__WEBPACK_IMPORTED_MODULE_4__["default"]();
+      });
+    }
+  });
+  $doc.on('change', '.presets-select', function (e) {
+    var $t = $(this);
+    var val = $t.val();
+    var $form = $doc.find('.create-form');
+    $form.trigger('reset');
+    $form.find('.autocomplete-value').val('');
+    (0,_quill_init__WEBPACK_IMPORTED_MODULE_6__.setProjectQuillText)('Опис');
+    var $select = $form.find('select.selectric');
+    $select.each(function () {
+      $(this).prop('selectedIndex', 0).selectric('refresh');
+    });
+    if (val === undefined || val === "") return;
+    (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.showPreloader)();
+    $.ajax({
+      type: "POST",
+      url: adminAjax,
+      data: {
+        action: 'get_preset_data',
+        id: val
+      }
+    }).done(function (r) {
+      if (r) {
+        if ((0,_helpers__WEBPACK_IMPORTED_MODULE_1__.isJsonString)(r)) {
+          var res = JSON.parse(r);
+          if (res) {
+            if (res.title !== undefined) $form.find('input[name="title"]').val(res.title);
+            if (res.text !== undefined) {
+              var html = res.text;
+              var $html = $('<div>').html(html);
+              $html.find('.invite').removeAttr('data-user-id');
+              $html.find('.invite__image').remove();
+              html = $html.html();
+              html = html.replaceAll('<span class="invite">', '@[');
+              html = html.replaceAll('</span>', ']@');
+              $doc.find('#project-editor').html(html);
+              $doc.find('.ql-toolbar').remove();
+              $doc.find('#project-editor').removeClass('ql-container').removeClass('ql-snow');
+              $form.find('#project-editor').html(html);
+              $form.find('.value-field').val(html);
+              (0,_quill_init__WEBPACK_IMPORTED_MODULE_6__.initProjectQuill)();
+            }
+            if (res.parent_id !== undefined) {
+              $form.find('.autocomplete-value').val(res.parent_id);
+              $form.find('.autocomplete-input').val(res.parent_title);
+            }
+            if (res.observers !== undefined) {
+              var _$select = $form.find('select[name="observers[]"]');
+              if (_$select.length > 0) {
+                _$select.find('option').removeAttr('selected');
+                res.observers.forEach(function (item) {
+                  _$select.find("option[value=\"".concat(item, "\"]")).attr('selected', 'selected');
+                });
+                _$select.selectric('refresh');
+              }
+            }
+            if (res.performers !== undefined) {
+              var _$select2 = $form.find('select[name="responsible[]"]');
+              if (_$select2.length > 0) {
+                _$select2.find('option').removeAttr('selected');
+                res.performers.forEach(function (item) {
+                  _$select2.find("option[value=\"".concat(item, "\"]")).attr('selected', 'selected');
+                });
+                _$select2.selectric('refresh');
+              }
+            }
+            if (res.tags !== undefined) {
+              var _$select3 = $form.find('select[name="tags[]"]');
+              if (_$select3.length > 0) {
+                _$select3.find('option').removeAttr('selected');
+                res.tags.forEach(function (item) {
+                  _$select3.find("option[value=\"".concat(item, "\"]")).attr('selected', 'selected');
+                });
+                _$select3.selectric('refresh');
+              }
+            }
+            if (res.status !== undefined) {
+              var _$select4 = $form.find('select[name="post_status"]');
+              if (_$select4.length > 0) {
+                _$select4.find('option').removeAttr('selected');
+                _$select4.find("option[value=\"".concat(res.status, "\"]")).attr('selected', 'selected');
+                _$select4.selectric('refresh');
+              }
+            }
+          }
+        } else {
+          (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.showMassage)(r);
+        }
+      }
+      (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.hidePreloader)();
+    });
+  });
 });
 function appendContainer(href) {
   var $container = $doc.find('.container-js');
@@ -10903,7 +11122,7 @@ function appendContainer(href) {
   if (href === undefined) return;
   if (loading) return;
   loading = true;
-  (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showPreloader)();
+  (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.showPreloader)();
   var hrefHasType = href.indexOf('next_project_page');
   var param = {
     type: 'GET',
@@ -10915,7 +11134,7 @@ function appendContainer(href) {
     };
   }
   $.ajax(param).done(function (r) {
-    (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.hidePreloader)();
+    (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.hidePreloader)();
     loading = false;
     if (r) {
       var $requestBody = $(parser.parseFromString(r, "text/html"));
@@ -10924,7 +11143,7 @@ function appendContainer(href) {
     } else {
       $pagination.html('');
     }
-    var commentObserver = new _CommentObserver__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    var commentObserver = new _CommentObserver__WEBPACK_IMPORTED_MODULE_2__["default"]();
   }).fail(function (jqXHR, textStatus, errorThrown) {
     appendContainer(href);
   });
@@ -10936,13 +11155,13 @@ function renderContainer(url) {
   if (url === undefined) return;
   if (loading) return;
   loading = true;
-  (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showPreloader)();
+  (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.showPreloader)();
   var param = {
     type: 'GET',
     url: url
   };
   $.ajax(param).done(function (r) {
-    (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.hidePreloader)();
+    (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.hidePreloader)();
     loading = false;
     if (r) {
       var $requestBody = $(parser.parseFromString(r, "text/html"));
@@ -10952,7 +11171,7 @@ function renderContainer(url) {
     } else {
       $pagination.html('');
     }
-    var commentObserver = new _CommentObserver__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    var commentObserver = new _CommentObserver__WEBPACK_IMPORTED_MODULE_2__["default"]();
   }).fail(function (jqXHR, textStatus, errorThrown) {
     renderContainer(url);
   });
@@ -10970,6 +11189,7 @@ function renderContainer(url) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ initQuill),
+/* harmony export */   initProjectQuill: () => (/* binding */ initProjectQuill),
 /* harmony export */   setProjectQuillText: () => (/* binding */ setProjectQuillText),
 /* harmony export */   setQiullText: () => (/* binding */ setQiullText)
 /* harmony export */ });
@@ -31060,6 +31280,91 @@ module.exports = function (data, opts) {
         return '{' + out + '}';
     })(data);
 };
+
+
+/***/ }),
+
+/***/ "./node_modules/fast-unique-numbers/build/es5/bundle.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/fast-unique-numbers/build/es5/bundle.js ***!
+  \**************************************************************/
+/***/ (function(__unused_webpack_module, exports) {
+
+(function (global, factory) {
+     true ? factory(exports) :
+    0;
+})(this, (function (exports) { 'use strict';
+
+    var createAddUniqueNumber = function createAddUniqueNumber(generateUniqueNumber) {
+      return function (set) {
+        var number = generateUniqueNumber(set);
+        set.add(number);
+        return number;
+      };
+    };
+
+    var createCache = function createCache(lastNumberWeakMap) {
+      return function (collection, nextNumber) {
+        lastNumberWeakMap.set(collection, nextNumber);
+        return nextNumber;
+      };
+    };
+
+    /*
+     * The value of the constant Number.MAX_SAFE_INTEGER equals (2 ** 53 - 1) but it
+     * is fairly new.
+     */
+    var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER === undefined ? 9007199254740991 : Number.MAX_SAFE_INTEGER;
+    var TWO_TO_THE_POWER_OF_TWENTY_NINE = 536870912;
+    var TWO_TO_THE_POWER_OF_THIRTY = TWO_TO_THE_POWER_OF_TWENTY_NINE * 2;
+    var createGenerateUniqueNumber = function createGenerateUniqueNumber(cache, lastNumberWeakMap) {
+      return function (collection) {
+        var lastNumber = lastNumberWeakMap.get(collection);
+        /*
+         * Let's try the cheapest algorithm first. It might fail to produce a new
+         * number, but it is so cheap that it is okay to take the risk. Just
+         * increase the last number by one or reset it to 0 if we reached the upper
+         * bound of SMIs (which stands for small integers). When the last number is
+         * unknown it is assumed that the collection contains zero based consecutive
+         * numbers.
+         */
+        var nextNumber = lastNumber === undefined ? collection.size : lastNumber < TWO_TO_THE_POWER_OF_THIRTY ? lastNumber + 1 : 0;
+        if (!collection.has(nextNumber)) {
+          return cache(collection, nextNumber);
+        }
+        /*
+         * If there are less than half of 2 ** 30 numbers stored in the collection,
+         * the chance to generate a new random number in the range from 0 to 2 ** 30
+         * is at least 50%. It's benifitial to use only SMIs because they perform
+         * much better in any environment based on V8.
+         */
+        if (collection.size < TWO_TO_THE_POWER_OF_TWENTY_NINE) {
+          while (collection.has(nextNumber)) {
+            nextNumber = Math.floor(Math.random() * TWO_TO_THE_POWER_OF_THIRTY);
+          }
+          return cache(collection, nextNumber);
+        }
+        // Quickly check if there is a theoretical chance to generate a new number.
+        if (collection.size > MAX_SAFE_INTEGER) {
+          throw new Error('Congratulations, you created a collection of unique numbers which uses all available integers!');
+        }
+        // Otherwise use the full scale of safely usable integers.
+        while (collection.has(nextNumber)) {
+          nextNumber = Math.floor(Math.random() * MAX_SAFE_INTEGER);
+        }
+        return cache(collection, nextNumber);
+      };
+    };
+
+    var LAST_NUMBER_WEAK_MAP = new WeakMap();
+    var cache = createCache(LAST_NUMBER_WEAK_MAP);
+    var generateUniqueNumber = createGenerateUniqueNumber(cache, LAST_NUMBER_WEAK_MAP);
+    var addUniqueNumber = createAddUniqueNumber(generateUniqueNumber);
+
+    exports.addUniqueNumber = addUniqueNumber;
+    exports.generateUniqueNumber = generateUniqueNumber;
+
+}));
 
 
 /***/ }),
@@ -94874,6 +95179,281 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
+
+/***/ }),
+
+/***/ "./node_modules/worker-timers-broker/build/es2019/guards/call-notification.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/worker-timers-broker/build/es2019/guards/call-notification.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isCallNotification: () => (/* binding */ isCallNotification)
+/* harmony export */ });
+const isCallNotification = (message) => {
+    return message.method !== undefined && message.method === 'call';
+};
+//# sourceMappingURL=call-notification.js.map
+
+/***/ }),
+
+/***/ "./node_modules/worker-timers-broker/build/es2019/guards/clear-response.js":
+/*!*********************************************************************************!*\
+  !*** ./node_modules/worker-timers-broker/build/es2019/guards/clear-response.js ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isClearResponse: () => (/* binding */ isClearResponse)
+/* harmony export */ });
+const isClearResponse = (message) => {
+    return typeof message.id === 'number' && typeof message.result === 'boolean';
+};
+//# sourceMappingURL=clear-response.js.map
+
+/***/ }),
+
+/***/ "./node_modules/worker-timers-broker/build/es2019/module.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/worker-timers-broker/build/es2019/module.js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   load: () => (/* binding */ load)
+/* harmony export */ });
+/* harmony import */ var fast_unique_numbers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! fast-unique-numbers */ "./node_modules/fast-unique-numbers/build/es5/bundle.js");
+/* harmony import */ var fast_unique_numbers__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(fast_unique_numbers__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _guards_call_notification__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./guards/call-notification */ "./node_modules/worker-timers-broker/build/es2019/guards/call-notification.js");
+/* harmony import */ var _guards_clear_response__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./guards/clear-response */ "./node_modules/worker-timers-broker/build/es2019/guards/clear-response.js");
+
+
+
+const load = (url) => {
+    // Prefilling the Maps with a function indexed by zero is necessary to be compliant with the specification.
+    const scheduledIntervalFunctions = new Map([[0, () => { }]]); // tslint:disable-line no-empty
+    const scheduledTimeoutFunctions = new Map([[0, () => { }]]); // tslint:disable-line no-empty
+    const unrespondedRequests = new Map();
+    const worker = new Worker(url);
+    worker.addEventListener('message', ({ data }) => {
+        if ((0,_guards_call_notification__WEBPACK_IMPORTED_MODULE_1__.isCallNotification)(data)) {
+            const { params: { timerId, timerType } } = data;
+            if (timerType === 'interval') {
+                const idOrFunc = scheduledIntervalFunctions.get(timerId);
+                if (typeof idOrFunc === undefined) {
+                    throw new Error('The timer is in an undefined state.');
+                }
+                if (typeof idOrFunc === 'number') {
+                    const timerIdAndTimerType = unrespondedRequests.get(idOrFunc);
+                    if (timerIdAndTimerType === undefined ||
+                        timerIdAndTimerType.timerId !== timerId ||
+                        timerIdAndTimerType.timerType !== timerType) {
+                        throw new Error('The timer is in an undefined state.');
+                    }
+                }
+                else if (typeof idOrFunc === 'function') {
+                    idOrFunc();
+                }
+            }
+            else if (timerType === 'timeout') {
+                const idOrFunc = scheduledTimeoutFunctions.get(timerId);
+                if (typeof idOrFunc === undefined) {
+                    throw new Error('The timer is in an undefined state.');
+                }
+                if (typeof idOrFunc === 'number') {
+                    const timerIdAndTimerType = unrespondedRequests.get(idOrFunc);
+                    if (timerIdAndTimerType === undefined ||
+                        timerIdAndTimerType.timerId !== timerId ||
+                        timerIdAndTimerType.timerType !== timerType) {
+                        throw new Error('The timer is in an undefined state.');
+                    }
+                }
+                else if (typeof idOrFunc === 'function') {
+                    idOrFunc();
+                    // A timeout can be savely deleted because it is only called once.
+                    scheduledTimeoutFunctions.delete(timerId);
+                }
+            }
+        }
+        else if ((0,_guards_clear_response__WEBPACK_IMPORTED_MODULE_2__.isClearResponse)(data)) {
+            const { id } = data;
+            const timerIdAndTimerType = unrespondedRequests.get(id);
+            if (timerIdAndTimerType === undefined) {
+                throw new Error('The timer is in an undefined state.');
+            }
+            const { timerId, timerType } = timerIdAndTimerType;
+            unrespondedRequests.delete(id);
+            if (timerType === 'interval') {
+                scheduledIntervalFunctions.delete(timerId);
+            }
+            else {
+                scheduledTimeoutFunctions.delete(timerId);
+            }
+        }
+        else {
+            const { error: { message } } = data;
+            throw new Error(message);
+        }
+    });
+    const clearInterval = (timerId) => {
+        if (typeof scheduledIntervalFunctions.get(timerId) === 'function') {
+            const id = (0,fast_unique_numbers__WEBPACK_IMPORTED_MODULE_0__.generateUniqueNumber)(unrespondedRequests);
+            unrespondedRequests.set(id, { timerId, timerType: 'interval' });
+            scheduledIntervalFunctions.set(timerId, id);
+            worker.postMessage({
+                id,
+                method: 'clear',
+                params: { timerId, timerType: 'interval' }
+            });
+        }
+    };
+    const clearTimeout = (timerId) => {
+        if (typeof scheduledTimeoutFunctions.get(timerId) === 'function') {
+            const id = (0,fast_unique_numbers__WEBPACK_IMPORTED_MODULE_0__.generateUniqueNumber)(unrespondedRequests);
+            unrespondedRequests.set(id, { timerId, timerType: 'timeout' });
+            scheduledTimeoutFunctions.set(timerId, id);
+            worker.postMessage({
+                id,
+                method: 'clear',
+                params: { timerId, timerType: 'timeout' }
+            });
+        }
+    };
+    const setInterval = (func, delay = 0) => {
+        const timerId = (0,fast_unique_numbers__WEBPACK_IMPORTED_MODULE_0__.generateUniqueNumber)(scheduledIntervalFunctions);
+        scheduledIntervalFunctions.set(timerId, () => {
+            func();
+            // Doublecheck if the interval should still be rescheduled because it could have been cleared inside of func().
+            if (typeof scheduledIntervalFunctions.get(timerId) === 'function') {
+                worker.postMessage({
+                    id: null,
+                    method: 'set',
+                    params: {
+                        delay,
+                        now: performance.timeOrigin + performance.now(),
+                        timerId,
+                        timerType: 'interval'
+                    }
+                });
+            }
+        });
+        worker.postMessage({
+            id: null,
+            method: 'set',
+            params: {
+                delay,
+                now: performance.timeOrigin + performance.now(),
+                timerId,
+                timerType: 'interval'
+            }
+        });
+        return timerId;
+    };
+    const setTimeout = (func, delay = 0) => {
+        const timerId = (0,fast_unique_numbers__WEBPACK_IMPORTED_MODULE_0__.generateUniqueNumber)(scheduledTimeoutFunctions);
+        scheduledTimeoutFunctions.set(timerId, func);
+        worker.postMessage({
+            id: null,
+            method: 'set',
+            params: {
+                delay,
+                now: performance.timeOrigin + performance.now(),
+                timerId,
+                timerType: 'timeout'
+            }
+        });
+        return timerId;
+    };
+    return {
+        clearInterval,
+        clearTimeout,
+        setInterval,
+        setTimeout
+    };
+};
+//# sourceMappingURL=module.js.map
+
+/***/ }),
+
+/***/ "./node_modules/worker-timers/build/es2019/factories/load-or-return-broker.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/worker-timers/build/es2019/factories/load-or-return-broker.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createLoadOrReturnBroker: () => (/* binding */ createLoadOrReturnBroker)
+/* harmony export */ });
+const createLoadOrReturnBroker = (loadBroker, worker) => {
+    let broker = null;
+    return () => {
+        if (broker !== null) {
+            return broker;
+        }
+        const blob = new Blob([worker], { type: 'application/javascript; charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        broker = loadBroker(url);
+        // Bug #1: Edge up until v18 didn't like the URL to be revoked directly.
+        setTimeout(() => URL.revokeObjectURL(url));
+        return broker;
+    };
+};
+//# sourceMappingURL=load-or-return-broker.js.map
+
+/***/ }),
+
+/***/ "./node_modules/worker-timers/build/es2019/module.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/worker-timers/build/es2019/module.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   clearInterval: () => (/* binding */ clearInterval),
+/* harmony export */   clearTimeout: () => (/* binding */ clearTimeout),
+/* harmony export */   setInterval: () => (/* binding */ setInterval),
+/* harmony export */   setTimeout: () => (/* binding */ setTimeout)
+/* harmony export */ });
+/* harmony import */ var worker_timers_broker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! worker-timers-broker */ "./node_modules/worker-timers-broker/build/es2019/module.js");
+/* harmony import */ var _factories_load_or_return_broker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./factories/load-or-return-broker */ "./node_modules/worker-timers/build/es2019/factories/load-or-return-broker.js");
+/* harmony import */ var _worker_worker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./worker/worker */ "./node_modules/worker-timers/build/es2019/worker/worker.js");
+
+
+
+const loadOrReturnBroker = (0,_factories_load_or_return_broker__WEBPACK_IMPORTED_MODULE_1__.createLoadOrReturnBroker)(worker_timers_broker__WEBPACK_IMPORTED_MODULE_0__.load, _worker_worker__WEBPACK_IMPORTED_MODULE_2__.worker);
+const clearInterval = (timerId) => loadOrReturnBroker().clearInterval(timerId);
+const clearTimeout = (timerId) => loadOrReturnBroker().clearTimeout(timerId);
+const setInterval = (...args) => loadOrReturnBroker().setInterval(...args);
+const setTimeout = (...args) => loadOrReturnBroker().setTimeout(...args);
+//# sourceMappingURL=module.js.map
+
+/***/ }),
+
+/***/ "./node_modules/worker-timers/build/es2019/worker/worker.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/worker-timers/build/es2019/worker/worker.js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   worker: () => (/* binding */ worker)
+/* harmony export */ });
+// This is the minified and stringified code of the worker-timers-worker package.
+const worker = `(()=>{"use strict";const e=new Map,t=new Map,r=t=>{const r=e.get(t);return void 0!==r&&(clearTimeout(r),e.delete(t),!0)},s=e=>{const r=t.get(e);return void 0!==r&&(clearTimeout(r),t.delete(e),!0)},o=(e,t)=>{const r=performance.now(),s=e+t-r-performance.timeOrigin;return{expected:r+s,remainingDelay:s}},i=(e,t,r,s)=>{const o=r-performance.now();o>0?e.set(t,setTimeout(i,o,e,t,r,s)):(e.delete(t),postMessage({id:null,method:"call",params:{timerId:t,timerType:s}}))};addEventListener("message",(n=>{let{data:a}=n;try{if("clear"===a.method){const{id:e,params:{timerId:t,timerType:o}}=a;if("interval"===o)postMessage({id:e,result:r(t)});else{if("timeout"!==o)throw new Error('The given type "'.concat(o,'" is not supported'));postMessage({id:e,result:s(t)})}}else{if("set"!==a.method)throw new Error('The given method "'.concat(a.method,'" is not supported'));{const{params:{delay:r,now:s,timerId:n,timerType:m}}=a;if("interval"===m)((t,r,s)=>{const{expected:n,remainingDelay:a}=o(t,s);e.set(r,setTimeout(i,a,e,r,n,"interval"))})(r,n,s);else{if("timeout"!==m)throw new Error('The given type "'.concat(m,'" is not supported'));((e,r,s)=>{const{expected:n,remainingDelay:a}=o(e,s);t.set(r,setTimeout(i,a,t,r,n,"timeout"))})(r,n,s)}}}}catch(e){postMessage({error:{message:e.message},id:a.id,result:null})}}))})();`; // tslint:disable-line:max-line-length
+//# sourceMappingURL=worker.js.map
 
 /***/ }),
 

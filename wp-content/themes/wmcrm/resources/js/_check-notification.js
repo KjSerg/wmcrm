@@ -1,4 +1,5 @@
 import {sendRequest} from "./_helpers";
+import {setInterval} from "worker-timers";
 
 export default function checkingNotifications() {
     setNotificationsNumber();

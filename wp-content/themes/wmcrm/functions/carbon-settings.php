@@ -198,6 +198,25 @@ function crb_attach_in_events() {
 	         );
 }
 
+add_action( 'carbon_fields_register_fields', 'crb_attach_in_presets' );
+function crb_attach_in_presets() {
+	$labels = array(
+		'plural_name'   => 'елементи',
+		'singular_name' => 'елемент',
+	);
+	Container::make( 'post_meta', 'Інформація' )
+	         ->show_on_post_type( 'presets' )
+	         ->add_fields(
+		         array(
+			         Field::make( "text", "preset_parent_project", "ID батьківського елемента" ),
+			         Field::make( "text", "preset_observers", "ID спостерігачів" ),
+			         Field::make( "text", "preset_performers", "ID відповідальних осіб" ),
+			         Field::make( "text", "preset_status", "Статус" ),
+			         Field::make( "text", "preset_tags", "ID тегів" ),
+		         )
+	         );
+}
+
 add_action( 'carbon_fields_register_fields', 'crb_attach_in_costs' );
 function crb_attach_in_costs() {
 	$labels = array(
@@ -354,6 +373,13 @@ function crb_attach_in_user() {
 		         array(
 			         Field::make( "text", "notification_project_id", "ID проєкта" ),
 			         Field::make( "text", "notification_comment_id", "ID коментаря" ),
+		         )
+	         );
+	Container::make( 'post_meta', 'Налаштування' )
+	         ->show_on_post_type( 'notice' )
+	         ->add_fields(
+		         array(
+			         Field::make( "text", "notice_type", "Тип" ),
 		         )
 	         );
 }

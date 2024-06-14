@@ -1534,3 +1534,37 @@ function get_absences_list( $get_month, $current_year, $author ) {
 
 	return $res;
 }
+
+function get_notices() {
+	$res = array();
+	if ( $user_id = get_current_user_id() ) {
+		$args  = array(
+			'post_type'     => 'notice',
+			'post_status'   => 'publish',
+			'post_per_page' => - 1,
+			'author__in'    => array( $user_id ),
+		);
+		$query = new WP_Query( $args );
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				$id    = get_the_ID();
+				$title = get_the_title();
+				$type  = 'notification';
+				if ( $t = carbon_get_post_meta( $id, 'notice_type' ) ) {
+					$type = $t;
+				}
+				$res[] = array(
+					'title' => $title,
+					'type'  => $type,
+					'id'    => $id,
+					'html'  => '<div data-id="' . $id . '" class="admin-' . $type . '">' . $title . ' <a href="#" data-id="' . $id . '" class="close-notice">x</a> </div>',
+				);
+			}
+		}
+		wp_reset_postdata();
+		wp_reset_query();
+	}
+
+	return $res;
+}

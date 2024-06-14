@@ -20,6 +20,7 @@ if ( ! $avatar ) {
 } else {
 	$avatar = _u( $avatar, 1 );
 }
+$msg = absences_action();
 ?>
 <!DOCTYPE html>
 <html class="no-js page" <?php language_attributes(); ?>>
@@ -37,6 +38,9 @@ if ( ! $avatar ) {
 	<?php wp_head(); ?>
 </head>
 <body class="<?php echo is_current_user_admin() ? 'user-admin' : ''; ?>">
+<div class="notifications">
+	<?php echo $msg; ?>
+</div>
 <header class="header <?php echo ! is_front_page() ? 'header-inner-page' : ''; ?>">
     <div class="container">
         <div class="header-content">
@@ -73,7 +77,7 @@ if ( ! $avatar ) {
 			<?php if ( $user_id ): ?>
                 <div class="header-bottom">
 					<?php
-					$menu = !$is_admin ? wp_nav_menu( [
+					$menu = ! $is_admin ? wp_nav_menu( [
 						'echo'           => false,
 						'container'      => '',
 						'theme_location' => 'header_menu',

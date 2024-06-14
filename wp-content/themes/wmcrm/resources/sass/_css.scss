@@ -221,6 +221,7 @@ img.cover {
   padding: 1rem 2rem;
   cursor: pointer;
   border-radius: 3rem;
+  border: 1px solid #5C6DF9;
   color: #FFF;
   text-align: center;
   font-family: Montserrat;
@@ -275,16 +276,10 @@ img.cover {
   }
 
   &--bordered {
-    border-radius: 5rem;
     border: 1px solid #5C6DF9;
     background: #FFF;
     color: #333;
-    text-align: center;
-    font-family: Montserrat;
-    font-size: 1.4rem;
-    font-style: normal;
     font-weight: 600;
-    line-height: 150%;
 
     &:hover {
       background: #5C6DF9;
@@ -447,7 +442,7 @@ img.cover {
   &-row {
     display: flex;
     justify-content: space-between;
-    @media (max-width: 800px){
+    @media (max-width: 800px) {
       flex-wrap: wrap;
     }
   }
@@ -466,12 +461,13 @@ img.cover {
 
     &.quarter {
       width: calc(25% - 0.5rem);
-      @media (max-width: 800px){
+      @media (max-width: 800px) {
         width: 100%;
       }
-      &:not(:last-child){
+
+      &:not(:last-child) {
         margin-right: 0.5rem;
-        @media (max-width: 800px){
+        @media (max-width: 800px) {
           margin-right: 0;
           margin-bottom: 1rem;
         }
@@ -501,11 +497,25 @@ img.cover {
       width: calc(33% - 1rem);
 
     }
+
+    &.error {
+      .selectric {
+        border-color: red;
+      }
+    }
   }
 
   &-buttons {
     display: flex;
     align-items: center;
+
+    & > *:not(:last-child) {
+      margin-right: 1rem;
+    }
+  }
+
+  &-button {
+    border: 1px solid #5C6DF9;
   }
 
   &-files {
@@ -675,12 +685,14 @@ textarea {
 
   &-change-user {
     overflow: visible;
+
     .title {
       margin-bottom: 2rem;
       @media (max-width: 700px) {
         font-size: 1.8rem;
       }
     }
+
     @media (max-width: 700px) {
       width: 100%;
     }
@@ -899,7 +911,7 @@ main.content {
   }
 
   .ql-toolbar.ql-snow + .ql-container.ql-snow {
-    height: 31rem;
+    height: 25rem;
     border-radius: 0px 0px 2rem 2rem;
     @media (max-width: 700px) {
       height: 15rem;
@@ -1231,28 +1243,47 @@ button {
 }
 
 .admin-warning {
+  display: flex;
+  position: relative;
   width: 100%;
   padding: 1rem 2rem;
   background-color: orange;
+  color: white;
 }
 
 .admin-error {
+  display: flex;
+  position: relative;
   width: 100%;
   padding: 1rem 2rem;
-  background-color: red;
+  background-color: #c9085f;
   color: white;
 }
 
 .admin-notification {
+  display: flex;
+  position: relative;
   width: 100%;
   padding: 1rem 2rem;
   background-color: #7BB500;
+  color: white;
+}
+
+.close-notice {
+  display: inline-block;
+  margin-left: auto;
 }
 
 .hidden {
   display: none;
 }
 
-[data-cost-id]{
+[data-cost-id] {
   cursor: pointer;
+}
+
+.presets-wrapper {
+  & > * {
+    margin-bottom: 2rem;
+  }
 }

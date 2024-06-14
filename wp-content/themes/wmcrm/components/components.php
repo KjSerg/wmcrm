@@ -361,7 +361,8 @@ function the_timer_html() {
                         <div class="timer-pause-time">
                             Тривалість перерви: <span><?php echo $costs_sum_pause_hour ?></span>
                         </div>
-                        <a href="<?php echo $selected_project_id ? get_the_permalink( $selected_project_id ) : '#' ?>" class="timer-project link-js">
+                        <a href="<?php echo $selected_project_id ? get_the_permalink( $selected_project_id ) : '#' ?>"
+                           class="timer-project link-js">
                             Проєкт:
                             <span><?php echo $selected_project_id ? get_the_title( $selected_project_id ) : 'Не вибрано'; ?></span>
                         </a>
@@ -627,10 +628,10 @@ function the_absences( $id = false ) {
              id="absences-<?php echo $id ?>">
             <div class="comment-head">
                 <div class="comment-author">
-					<?php echo $user->display_name ?>
 					<?php if ( $avatar ) {
 						echo "<div class='comment-author__avatar'><img class='cover' src='$avatar' alt=''/></div>";
 					} ?>
+					<?php echo $user->display_name ?>
                 </div>
                 <div class="comment-date">
 					<?php echo get_the_date( 'd-m-Y H:i', $id ); ?>
@@ -654,3 +655,30 @@ function the_absences( $id = false ) {
 	<?php
 	endif;
 }
+
+function the_presets_select() {
+	$args  = array(
+		'post_type'      => 'presets',
+		'posts_per_page' => - 1,
+		'post_status'    => 'publish'
+	);
+	$query = new WP_Query( $args );
+	if ( $query->have_posts() ) {
+		?>
+        <select name="presets" class="presets-select selectric" id="presets-select">
+        <option value="">Виберіть шаблон проєкта</option>
+		<?php
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			$id    = get_the_ID();
+			$title = get_the_title();
+			?>
+            <option value="<?php echo $id; ?>"><?php echo $title; ?></option>
+			<?php
+		}
+		?></select><?php
+	}
+	wp_reset_postdata();
+	wp_reset_query();
+}
+
