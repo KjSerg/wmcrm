@@ -1,5 +1,5 @@
 import 'selectric';
-import {showPreloader, hidePreloader, isJsonString, showMassage} from "./_helpers";
+import {showPreloader, hidePreloader, isJsonString, showMassage, closeWindow} from "./_helpers";
 import CommentObserver from "./CommentObserver";
 import {initPlugins} from "./_js";
 import Invite from "./Invite";
@@ -153,7 +153,7 @@ $doc.ready(function () {
             hidePreloader();
         });
     });
-    $doc.on('click', '.project-item__remove', function (e) {
+    $doc.on('click', '.deleting-project', function (e) {
         e.preventDefault();
         let $t = $(this);
         const $wrapper = $t.closest('.project-item');
@@ -177,6 +177,7 @@ $doc.ready(function () {
                         }
                         if (res.deleted !== undefined) {
                             $doc.find('.project-item[data-id="' + res.deleted + '"]').remove();
+                            closeWindow($doc.find('.deleting-window'));
                         }
                     }
                 } else {

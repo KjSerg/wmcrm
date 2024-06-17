@@ -90,16 +90,20 @@ require_once ABSPATH . 'wp-admin/includes/media.php';
                         </a>
                     </div>
 				<?php endif; ?>
-
                 <div class="project-control">
-					<?php if ( $is_performer && $current_project != $id ): ?>
-						<?php if ( $post_status == 'pending' || $post_status == 'publish' ): ?>
-                            <a href="#" data-id="<?php echo $id ?>"
-                               data-title="<?php echo get_the_title( $id ) ?>"
-                               data-permalink="<?php echo get_the_permalink( $id ) ?>"
-                               class="project-control__user-button project-start button button-green ">
-                                Розпочати задачу
-                            </a>
+                    <div class="project-control__time">
+                        <?php echo get_project_time($id); ?>
+                    </div>
+					<?php if ( ! $is_admin ): ?>
+						<?php if ( $is_performer && $current_project != $id ): ?>
+							<?php if ( $post_status == 'pending' || $post_status == 'publish' ): ?>
+                                <a href="#" data-id="<?php echo $id ?>"
+                                   data-title="<?php echo get_the_title( $id ) ?>"
+                                   data-permalink="<?php echo get_the_permalink( $id ) ?>"
+                                   class="project-control__user-button project-start button button-green ">
+                                    Розпочати задачу
+                                </a>
+							<?php endif; ?>
 						<?php endif; ?>
 					<?php endif; ?>
 					<?php if ( $is_admin ): ?>

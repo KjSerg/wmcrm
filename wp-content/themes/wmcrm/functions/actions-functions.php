@@ -121,3 +121,40 @@ function change_user_time_event() {
 		}
 	}
 }
+
+function save_project_costs( $project_id, $args = array() ) {
+	$time           = time();
+	$old_project_id = $args['old_project_id'] ?? 0;
+	$status         = $args['status'] ?? 1;
+	$user_id        = get_current_user_id();
+	if ( $project_id && get_post( $project_id ) && $user_id ) {
+		$cost_id = get_project_cost_id( $project_id, $user_id );
+		if ( $cost_id ) {
+			$list = carbon_get_post_meta( $cost_id, 'project_costs_list' ) ?: array();
+			if ( $list ) {
+				if ( $list[ array_key_last( $list ) ]['finish'] == $list[ array_key_last( $list ) ]['start'] ) {
+					$list[ array_key_last( $list ) ]['finish'] = $time;
+				}
+			}
+			if ( $status === 1 ) {
+				$list[] = array(
+					'start'  => $time,
+					'finish' => $time,
+				);
+			}
+			carbon_set_post_meta( $cost_id, 'project_costs_list', $list );
+		}
+		if ( $old_project_id && get_post( $old_project_id ) ) {
+			$cost_id = get_project_cost_id( $old_project_id, $user_id );
+			if ( $cost_id ) {
+				$list = carbon_get_post_meta( $cost_id, 'project_costs_list' ) ?: array();
+				if ( $list ) {
+					if ( $list[ array_key_last( $list ) ]['finish'] == $list[ array_key_last( $list ) ]['start'] ) {
+						$list[ array_key_last( $list ) ]['finish'] = $time;
+					}
+					carbon_set_post_meta( $cost_id, 'project_costs_list', $list );
+				}
+			}
+		}
+	}
+}

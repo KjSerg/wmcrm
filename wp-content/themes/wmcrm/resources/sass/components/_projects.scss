@@ -436,3 +436,17 @@
 .user-admin .select-edit {
 
 }
+
+.deleting-window {
+  flex-direction: column;
+  pointer-events: auto;
+  &-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2rem;
+    &>*:not(:last-child){
+      margin-right: 1rem;
+    }
+  }
+}

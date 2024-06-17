@@ -35,9 +35,20 @@ function the_project( $id = false, $cls = '' ) {
         </div>
 		<?php the_project_performers( $id ) ?>
         <?php if($current_user_admin): ?>
-            <a href="#" data-id="<?php echo $id ?>" class="project-item__remove">
+            <a href="#deleting-window-<?php echo $id ?>" class="project-item__remove modal-open">
                 <?php _s(_i('remove')) ?>
             </a>
+            <div class="dialog-window deleting-window" id="deleting-window-<?php echo $id ?>">
+                <div class="dialog-title">Видалити "<?php echo get_the_title( $id ); ?>" ?</div>
+                <div class="deleting-window-controls">
+                    <a href="#" data-id="<?php echo $id ?>" class="button deleting-project">
+                        Видалити
+                    </a>
+                    <a href="#"  class="button button--bordered window-close">
+                        Закрити вікно
+                    </a>
+                </div>
+            </div>
         <?php endif; ?>
     </div>
 	<?php

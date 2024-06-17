@@ -1589,3 +1589,95 @@ function get_next_work_timestamp() {
 
 	return $next9AM;
 }
+
+function get_project_cost_id( $project_id, $user_id = 0 ) {
+	$time    = time();
+	$res     = 0;
+	$user_id = $user_id ?: get_current_user_id();
+	if ( ! $user_id ) {
+		return 0;
+	}
+	$args               = array(
+		'post_type'     => 'project_costs',
+		'post_status'   => 'publish',
+		'post_per_page' => 1,
+		'author__in'    => array( $user_id ),
+	);
+	$meta_query         = array(
+		array(
+			'key'   => '_project_costs',
+			'value' => $project_id,
+		),
+	);
+	$args['meta_query'] = $meta_query;
+	$query              = new WP_Query( $args );
+	if ( $query->have_posts() ) {
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			$res = get_the_ID();
+		}
+	} else {
+		$post_data                = array(
+			'post_type'   => 'project_costs',
+			'post_title'  => get_the_title( $project_id ),
+			'post_status' => 'publish',
+		);
+		$post_data['post_author'] = $user_id;
+		$id                       = wp_insert_post( $post_data );
+		if ( $id ) {
+			carbon_set_post_meta( $id, 'project_costs', $project_id );
+			$res = $id;
+		}
+	}
+	wp_reset_postdata();
+	wp_reset_query();
+
+	return $res;
+}
+
+function get_project_time( $id ) {
+	$res                = 0;
+	$time               = time();
+	$date               = date( 'd-m-Y', $time );
+	$id                 = $id ?: get_the_ID();
+	$user_id            = get_current_user_id();
+	$args               = array(
+		'post_type'     => 'project_costs',
+		'post_status'   => 'publish',
+		'post_per_page' => - 1,
+	);
+	$meta_query         = array(
+		array(
+			'key'   => '_project_costs',
+			'value' => $id,
+		),
+	);
+	$args['meta_query'] = $meta_query;
+	$query              = new WP_Query( $args );
+	if ( $query->have_posts() ) {
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			$cost_id   = get_the_ID();
+			$author_id = get_post_author_id( $cost_id );
+			$list      = carbon_get_post_meta( $cost_id, 'project_costs_list' );
+			if ( $list ) {
+				$sub_sum    = 0;
+				$last_index = array_key_last( $list );
+				foreach ( $list as $index => $item ) {
+					$finish = (int) $item['finish'];
+					$start  = (int) $item['start'];
+					if ( $index === $last_index && $start === $finish ) {
+						$finish = $time;
+					}
+					$diff    = $finish - $start;
+					$sub_sum = $sub_sum + $diff;
+				}
+				$res = $res + $sub_sum;
+			}
+		}
+	}
+	wp_reset_postdata();
+	wp_reset_query();
+    $res = secondsToTimeFormat( $res );
+	return $res;
+}

@@ -27,7 +27,7 @@ $statuses       = array(
 
 <div class="sounds" style="display:none;">
     <audio id="new-message-sound" autoplay type="audio/mp3" muted
-           src="<?php echo $assets ?>/sounds/tone.wav"></audio>
+           src="<?php echo $assets ?>/sounds/tone.mp3"></audio>
 </div>
 
 <?php if ( $is_admin ): ?>

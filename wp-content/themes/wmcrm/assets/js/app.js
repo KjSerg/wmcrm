@@ -10484,6 +10484,11 @@ $(document).ready(function () {
       addToHistory: true
     });
   });
+  $doc.on('click', '.window-close', function (e) {
+    e.preventDefault();
+    var $t = $(this);
+    (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.closeWindow)($t.closest('.dialog-window'));
+  });
   $doc.on('click', '.dismiss-user__button', function (e) {
     e.preventDefault();
     var $t = $(this);
@@ -11115,7 +11120,7 @@ $doc.ready(function () {
       (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.hidePreloader)();
     });
   });
-  $doc.on('click', '.project-item__remove', function (e) {
+  $doc.on('click', '.deleting-project', function (e) {
     e.preventDefault();
     var $t = $(this);
     var $wrapper = $t.closest('.project-item');
@@ -11140,6 +11145,7 @@ $doc.ready(function () {
             }
             if (res.deleted !== undefined) {
               $doc.find('.project-item[data-id="' + res.deleted + '"]').remove();
+              (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.closeWindow)($doc.find('.deleting-window'));
             }
           }
         } else {

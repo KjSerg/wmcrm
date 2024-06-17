@@ -494,9 +494,10 @@ function get_data_users() {
 add_action( 'wp_ajax_nopriv_starting_project', 'starting_project' );
 add_action( 'wp_ajax_starting_project', 'starting_project' );
 function starting_project() {
-	$res        = array();
-	$user_id    = get_current_user_id();
-	$project_id = $_POST['project_id'] ?? '';
+	$res            = array();
+	$user_id        = get_current_user_id();
+	$project_id     = $_POST['project_id'] ?? '';
+	$old_project_id = carbon_get_user_meta( $user_id, 'current_project' );
 	if ( $project_id && get_post( $project_id ) && $user_id ) {
 		carbon_set_user_meta( $user_id, 'current_project', $project_id );
 		$post_status = get_post_status( $project_id );
@@ -513,6 +514,7 @@ function starting_project() {
 				$res['type'] = 'error';
 				$res['msg']  = $project_id->get_error_message();
 			}
+			save_project_costs( $project_id, array( 'old_project_id' => $old_project_id ) );
 		}
 	}
 	echo json_encode( $res );
@@ -539,7 +541,8 @@ function save_user_time() {
 	$user_id          = get_current_user_id();
 	$user_ip          = get_the_user_ip();
 	if ( $user_id && $date && $work_times ) {
-		$user = get_user_by( 'id', $user_id );
+		$project_id = carbon_get_user_meta( $user_id, 'current_project' );
+		$user       = get_user_by( 'id', $user_id );
 		date_default_timezone_set( "Europe/Kiev" );
 		$cost_id   = get_cost_id( array(
 			'user_id' => $user_id,
@@ -640,6 +643,7 @@ function save_user_time() {
 						$costs_pause_list[ array_key_last( $costs_pause_list ) ]['finish'] = $time;
 					}
 				}
+				save_project_costs( $project_id, array( 'status' => $status ) );
 			}
 			carbon_set_post_meta( $id, 'costs_work_list', $costs_work_list );
 			carbon_set_post_meta( $id, 'costs_pause_list', $costs_pause_list );
@@ -783,8 +787,9 @@ add_action( 'wp_ajax_nopriv_get_user_time', 'get_user_time' );
 add_action( 'wp_ajax_get_user_time', 'get_user_time' );
 function get_user_time() {
 	$res     = array();
+	$time    = time();
 	$user_id = get_current_user_id();
-	$date    = $_POST['date'] ?? '';
+	$date    = date( 'd-m-Y', $time );
 	if ( $user_id && $date ) {
 		$cost_id        = get_cost_id( array(
 			'user_id' => $user_id,

@@ -127,6 +127,11 @@ $(document).ready(function () {
             addToHistory: true
         });
     });
+    $doc.on('click', '.window-close', function (e) {
+        e.preventDefault();
+        let $t = $(this);
+        closeWindow($t.closest('.dialog-window'));
+    });
     $doc.on('click', '.dismiss-user__button', function (e) {
         e.preventDefault();
         let $t = $(this);

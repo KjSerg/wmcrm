@@ -290,6 +290,20 @@ function crb_attach_in_costs() {
 			              ) ),
 		         )
 	         );
+
+	Container::make( 'post_meta', 'Проєкт' )
+	         ->show_on_post_type( 'project_costs' )
+	         ->add_tab( 'Інформація',
+		         array(
+			         Field::make( "text", "project_costs", "ID проєкту" ),
+			         Field::make( "complex", "project_costs_list", "Затрати" )
+			              ->setup_labels( $labels )
+			              ->add_fields( array(
+				              Field::make( "text", "start", "Початок" )->set_width( 50 )->set_attribute( 'type', 'number' ),
+				              Field::make( "text", "finish", "Кінець" )->set_width( 50 )->set_attribute( 'type', 'number' ),
+			              ) ),
+		         )
+	         );
 }
 
 add_action( 'carbon_fields_register_fields', 'crb_attach_in_tags' );

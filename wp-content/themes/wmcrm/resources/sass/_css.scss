@@ -221,6 +221,7 @@ img.cover {
   padding: 1rem 2rem;
   cursor: pointer;
   border-radius: 3rem;
+
   border: 1px solid #5C6DF9;
   color: #FFF;
   text-align: center;
@@ -231,7 +232,6 @@ img.cover {
   line-height: normal;
   background-color: #5C6DF9;
   outline: none;
-  border: none;
 
 
   &-green {
@@ -288,6 +288,9 @@ img.cover {
     }
 
   }
+}
+b.button{
+  border: none;
 }
 
 .text, .ql-snow .ql-editor {
