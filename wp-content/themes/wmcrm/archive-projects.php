@@ -32,23 +32,28 @@ $orderby        = $_GET['orderby'] ?? '';
 $order          = $_GET['order'] ?? '';
 $tag_get        = $_GET['project-tag'] ?? '';
 $status_get     = $_GET['project-status'] ?? '';
+$color_get      = $_GET['color'] ?? '';
 $cockie         = $_COOKIE['selected_project'] ?? '';
 if ( $cockie ) {
 	$cockie = explode( ',', $cockie );
 } else {
 	$cockie = [];
 }
-$users    = get_active_users();
-$tags     = get_terms( array(
+$users              = get_active_users();
+$tags               = get_terms( array(
 	'taxonomy'   => 'tags',
 	'hide_empty' => false,
 ) );
-$statuses = array(
+$colors             = get_terms( array(
+	'taxonomy'   => 'colors',
+	'hide_empty' => false,
+) );
+$statuses           = array(
 	'publish' => 'В роботі',
 	'archive' => 'Завершена',
 	'pending' => 'В черзі'
 );
-
+$current_user_admin = is_current_user_admin();
 ?>
 
 <section class="section section-projects" id="list">
@@ -146,6 +151,32 @@ $statuses = array(
                 </div>
                 <div class="projects-head__column projects-head__title">
                     Назва проекту
+					<?php if ( $current_user_admin && $colors ): ?>
+                        <div class="project-colors">
+                            <div class="project-colors-active"
+                                 style="background-color:<?php echo $color_get ? carbon_get_term_meta( $color_get, 'color_hex' ) : ''; ?>;">
+                                <div class="icon">
+									<?php _s( _i( 'arr-down' ) ) ?>
+                                </div>
+                            </div>
+                            <div class="project-colors-list">
+                                <a href="<?php echo $projects_url . '?color'; ?>"
+                                   class="project-colors__item  link-js"
+                                   style="background-color: #fff;">
+                                </a>
+								<?php foreach ( $colors as $color ):
+									$color_id = $color->term_id;
+									?>
+                                    <a href="<?php echo $projects_url . '?color=' . $color_id; ?>"
+                                       class="project-colors__item  link-js"
+                                       data-tag-id="<?php echo $color_id ?>"
+                                       data-color="<?php echo carbon_get_term_meta( $color_id, 'color_hex' ) ?>"
+                                       style="background-color: <?php echo carbon_get_term_meta( $color_id, 'color_hex' ) ?>;">
+                                    </a>
+								<?php endforeach; ?>
+                            </div>
+                        </div>
+					<?php endif; ?>
                 </div>
                 <div class="projects-head__column projects-head__performer">
                     Виконавець
@@ -158,7 +189,9 @@ $statuses = array(
 					while ( have_posts() ) {
 						the_post();
 						$id = get_the_ID();
-						the_project();
+						the_project( $id, '', array(
+							'colors' => $colors
+						) );
 					}
 				} else {
 					?>

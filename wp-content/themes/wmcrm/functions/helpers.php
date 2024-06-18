@@ -625,6 +625,7 @@ function set_query_data() {
 	$status    = $_GET['project-status'] ?? '';
 	$order     = $_GET['order'] ?? '';
 	$orderby   = $_GET['orderby'] ?? '';
+	$color     = $_GET['color'] ?? '';
 	if ( $orderby == 'activity' ) {
 		$args['orderby'] = 'modified';
 	}
@@ -659,6 +660,21 @@ function set_query_data() {
 					'taxonomy' => 'tags',
 					'field'    => 'id',
 					'terms'    => array( $tag )
+				),
+			);
+			if ( isset( $args['meta_query'] ) ) {
+				$args['tax_query'][] = $tax_query;
+			} else {
+				$args['tax_query'] = array( $tax_query );
+			}
+		}
+		if ( $color ) {
+			$color     = (int) $color;
+			$tax_query = array(
+				array(
+					'taxonomy' => 'colors',
+					'field'    => 'id',
+					'terms'    => array( $color )
 				),
 			);
 			if ( isset( $args['meta_query'] ) ) {
@@ -718,6 +734,7 @@ function set_sub_query_data() {
 
 function is_empty_query() {
 	$search         = $_GET['s'] ?? '';
+	$color          = $_GET['color'] ?? '';
 	$tag            = $_GET['project-tag'] ?? '';
 	$status         = $_GET['project-status'] ?? '';
 	$orderby        = $_GET['orderby'] ?? '';
@@ -727,7 +744,7 @@ function is_empty_query() {
 	$user           = $_GET['user'] ?? "";
 	$user_id        = $_GET['user_id'] ?? "";
 
-	return ! $search && ! $tag && ! $status && ! $performer && ! $user && ! $orderby && ! $user_id;
+	return ! $search && ! $tag && ! $status && ! $performer && ! $user && ! $orderby && ! $user_id && ! $color;
 }
 
 function get_children_projects( $id ) {
@@ -1678,6 +1695,7 @@ function get_project_time( $id ) {
 	}
 	wp_reset_postdata();
 	wp_reset_query();
-    $res = secondsToTimeFormat( $res );
+	$res = secondsToTimeFormat( $res );
+
 	return $res;
 }

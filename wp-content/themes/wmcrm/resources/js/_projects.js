@@ -13,6 +13,65 @@ let parser = new DOMParser();
 let $body = $('body');
 
 $doc.ready(function () {
+    $doc.on('click', '.project-colors-active', function (e) {
+        e.preventDefault();
+        let $this = $(this);
+        let $wrapper = $this.closest('.project-colors');
+        let $list = $wrapper.find('.project-colors-list');
+        $list.slideDown();
+    });
+    $doc.on('click', '.project-colors__item', function (e) {
+        e.preventDefault();
+        let $this = $(this);
+        let isActive = $this.hasClass('active');
+        let $wrapper = $this.closest('.project-colors');
+        let $active = $wrapper.find('.project-colors-active');
+        let $list = $wrapper.find('.project-colors-list');
+        let id = $this.attr('data-id');
+        let tagID = $this.attr('data-tag-id');
+        let color = $this.attr('data-color');
+        $wrapper.find('.project-colors__item').removeClass('active');
+        $wrapper.find('.project-colors__item').text('+');
+        if(isActive) {
+            $this.removeClass('active');
+            $this.text('+');
+            $active.css('background-color', '#fff');
+        }else {
+            $this.addClass('active');
+            $this.text('✕');
+            if (color !== undefined) $active.css('background-color', color);
+        }
+        $list.slideUp();
+        console.table(id,tagID)
+        if (id === undefined) return;
+        if (tagID === undefined) return;
+        $.ajax({
+            type: "POST",
+            url: adminAjax,
+            data: {
+                action: 'change_color_tag', id, tagID,
+                'type': isActive ? 'remove' : 'add'
+            },
+        }).done(function (r) {
+            hidePreloader();
+            if (r) {
+                if (isJsonString(r)) {
+                    const res = JSON.parse(r);
+                    if (res) {
+                        console.log(res.color)
+                        if (res.msg !== undefined && res.msg !== '') {
+                            showMassage(res.msg);
+                        }
+                        if (res.color !== undefined && res.color !== '') {
+                            $active.css('background-color', res.color);
+                        }
+                    }
+                } else {
+                    showMassage(r);
+                }
+            }
+        });
+    })
     $doc.on('click', '.next-post-link', function (e) {
         e.preventDefault();
         let $button = $(this);

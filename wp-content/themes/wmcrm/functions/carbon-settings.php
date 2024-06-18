@@ -336,6 +336,21 @@ function crb_attach_in_reasons() {
 	         );
 }
 
+add_action( 'carbon_fields_register_fields', 'crb_attach_in_colors' );
+function crb_attach_in_colors() {
+	$labels = array(
+		'plural_name'   => 'елементи',
+		'singular_name' => 'елемент',
+	);
+	Container::make( 'term_meta', 'Налаштування' )
+	         ->show_on_taxonomy( 'colors' )
+	         ->add_fields(
+		         array(
+			         Field::make( "color", "color_hex", "Колір" )->set_required( true )
+		         )
+	         );
+}
+
 add_action( 'carbon_fields_register_fields', 'crb_attach_in_user' );
 function crb_attach_in_user() {
 	Container::make( 'user_meta', 'Користувач' )

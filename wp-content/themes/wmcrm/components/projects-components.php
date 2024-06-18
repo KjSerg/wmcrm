@@ -1,5 +1,5 @@
 <?php
-function the_project( $id = false, $cls = '' ) {
+function the_project( $id = false, $cls = '', $args = array() ) {
 	$cockie             = $_COOKIE['selected_project'] ?? '';
 	$current_user_admin = is_current_user_admin();
 	$id                 = $id ?: get_the_ID();
@@ -9,6 +9,8 @@ function the_project( $id = false, $cls = '' ) {
 	$post_status        = get_post_status( $id );
 	$tags               = get_the_terms( $id, 'tags' );
 	$edit_cls           = $current_user_admin ? 'select-edit' : '';
+	$colors             = $args['colors'] ?? array();
+	$current_colors     = get_the_terms( $id, 'colors' );
 	if ( $cockie ) {
 		$cockie = explode( ',', $cockie );
 		if ( in_array( $id, $cockie ) || in_array( - 1, $cockie ) ) {
@@ -32,11 +34,35 @@ function the_project( $id = false, $cls = '' ) {
 				<?php echo get_the_title( $id ); ?>
             </a>
 			<?php the_project_tags_html( $tags ); ?>
+			<?php if ( $current_user_admin && $colors ): ?>
+                <div class="project-colors">
+                    <div class="project-colors-active"
+                         style="background-color:<?php echo $current_colors ? carbon_get_term_meta( $current_colors[0]->term_id, 'color_hex' ) : ''; ?>;">
+                        <div class="icon">
+							<?php _s( _i( 'arr-down' ) ) ?>
+                        </div>
+                    </div>
+                    <ul class="project-colors-list">
+						<?php foreach ( $colors as $color ):
+							$color_id = $color->term_id;
+							$is_active = $current_colors && in_array( $color, $current_colors );
+							?>
+                            <li class="project-colors__item <?php echo $is_active ? 'active' : ''; ?>"
+                                data-id="<?php echo $id ?>"
+                                data-tag-id="<?php echo $color_id ?>"
+                                data-color="<?php echo carbon_get_term_meta( $color_id, 'color_hex' ) ?>"
+                                style="background-color: <?php echo carbon_get_term_meta( $color_id, 'color_hex' ) ?>;">
+								<?php echo ( $is_active ) ? '✕' : '+'; ?>
+                            </li>
+						<?php endforeach; ?>
+                    </ul>
+                </div>
+			<?php endif; ?>
         </div>
 		<?php the_project_performers( $id ) ?>
-        <?php if($current_user_admin): ?>
+		<?php if ( $current_user_admin ): ?>
             <a href="#deleting-window-<?php echo $id ?>" class="project-item__remove modal-open">
-                <?php _s(_i('remove')) ?>
+				<?php _s( _i( 'remove' ) ) ?>
             </a>
             <div class="dialog-window deleting-window" id="deleting-window-<?php echo $id ?>">
                 <div class="dialog-title">Видалити "<?php echo get_the_title( $id ); ?>" ?</div>
@@ -44,12 +70,12 @@ function the_project( $id = false, $cls = '' ) {
                     <a href="#" data-id="<?php echo $id ?>" class="button deleting-project">
                         Видалити
                     </a>
-                    <a href="#"  class="button button--bordered window-close">
+                    <a href="#" class="button button--bordered window-close">
                         Закрити вікно
                     </a>
                 </div>
             </div>
-        <?php endif; ?>
+		<?php endif; ?>
     </div>
 	<?php
 	if ( is_empty_query() ) {

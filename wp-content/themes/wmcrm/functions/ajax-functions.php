@@ -2012,6 +2012,36 @@ function remove_project() {
 	die();
 }
 
+add_action( 'wp_ajax_nopriv_change_color_tag', 'change_color_tag' );
+add_action( 'wp_ajax_change_color_tag', 'change_color_tag' );
+function change_color_tag() {
+	$id     = $_POST['id'] ?? '';
+	$tag_id = $_POST['tagID'] ?? '';
+	$type   = $_POST['type'] ?? 'add';
+	$res    = array();
+	if ( $tag_id && $id ) {
+		$tag_id = (int) $tag_id;
+		$id     = (int) $id;
+		$tag    = get_term_by( 'id', $tag_id, 'colors' );
+		$post   = get_post( $id );
+		if ( $tag && $post ) {
+			if ( $type == 'add' ) {
+				wp_set_post_terms( $id, array( $tag_id ), 'colors', false );
+			} else {
+				wp_remove_object_terms( $id, array( $tag_id ), 'colors' );
+			}
+			$current_colors = get_the_terms( $id, 'colors' );
+			if ( $current_colors ) {
+				$res['color'] = carbon_get_term_meta( $current_colors[0]->term_id, 'color_hex' );
+			}
+		} else {
+			$res['msg'] = 'Виникла помилка! Оновіть сторінку і спробуйте ще раз!';
+		}
+	}
+	echo json_encode( $res );
+	die();
+}
+
 function get_cost_id( $arr = array() ) {
 	$res     = 0;
 	$user_id = $arr['user_id'] ?? false;

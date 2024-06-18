@@ -108,7 +108,6 @@ get_header();
                                 <option
                                         value="<?php echo $m; ?>" <?php echo $attr; ?>>
 									<?php echo get_localized_month_name( $m ); ?>
-
                                 </option>
 							<?php endfor; ?>
                         </select>
@@ -186,6 +185,7 @@ get_header();
 														$item_reason      = $item['reasons'][0];
 														$diff             = $item['diff'];
 														$first_date       = $item['date_start'] == $_day_date;
+														$last_date        = $item['finish_date'] == $_day_date;
 														$item_reason_slug = $item_reason->slug;
 														$item_reason_name = $item_reason->name;
 														$item_reason_id   = $item_reason->term_id;
@@ -195,14 +195,17 @@ get_header();
 														$str              = $item_reason_name . ' (від ' . $item['date_start'] . ' до ' . $item['finish_date'] . ')';
 														if ( $first_date ) {
 															$attr .= ' data-first ';
-															if ( $reason_color ) {
-																$width = 100 + ( 100 * $diff );
-																$width = "calc($width% + " . $diff . "px)";
-																$attr  .= "style='background:$reason_color; width: $width'";
-															}
-															$html .= '<div ' . $attr . ' data-date=' . $_day_date . ' title="' . $str . '" class="calendar-table-item">' . $str . '</div>';
+														}elseif ($last_date){
+															$attr .= ' data-last ';
 														}
-
+                                                        if($first_date || $last_date){
+	                                                        if ( $reason_color ) {
+		                                                        $width = 100 + ( 100 * $diff );
+		                                                        $width = "calc($width% + " . $diff . "px)";
+		                                                        $attr  .= "style='background:$reason_color; width: $width'";
+	                                                        }
+	                                                        $html .= '<div ' . $attr . ' data-date=' . $_day_date . ' title="' . $str . '" class="calendar-table-item">' . $str . '</div>';
+                                                        }
 													}
 												}
 											}

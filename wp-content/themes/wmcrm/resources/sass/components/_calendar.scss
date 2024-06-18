@@ -28,6 +28,7 @@
       position: relative;
       display: flex;
       border-bottom: 1px solid #E2E3EE;
+      overflow: hidden;
     }
 
     &-column {
@@ -44,11 +45,14 @@
       }
 
       &:nth-child(1) {
+        position: relative;
+        z-index: 2;
         width: 23rem;
         flex-grow: 0;
         flex-shrink: 0;
         justify-content: flex-start;
         padding: 0 2rem;
+        background-color: #fff;
       }
 
       &:not(:last-child) {
@@ -75,6 +79,10 @@
       font-weight: 500;
       line-height: 140%;
       white-space: nowrap;
+      &[data-last]{
+        left: auto;
+        right: 0;
+      }
     }
   }
   &-button {
