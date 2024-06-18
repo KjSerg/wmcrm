@@ -112,6 +112,7 @@ $(document).ready(function () {
             $t.removeClass('project-close');
         }
     });
+
     $doc.on('click', '.link-js', function (e) {
         e.preventDefault();
         let $t = $(this);
