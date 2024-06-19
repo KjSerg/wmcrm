@@ -1692,8 +1692,16 @@ function add_absences() {
 			$link        = get_post_type_archive_link( 'absences' ) . '?confirm_absences=' . $absences_id;
 			$message_txt = $title . ' - ' . ( $date_finish ?: $date_start );
 			$message_txt .= '<hr>' . $reason_obj->name;
-			$message_txt .= '<br>"' . $text . '"';
-			$message_txt .= '<hr>' . '<a target="_blank" href="' . $link . '">Підтвердити</a>';
+			$message_txt .= '<br>' . $text . '"';
+//			$message_txt .= '<hr>' . '<a target="_blank" href="' . $link . '">Підтвердити</a>';
+			$keyboard = [
+				'inline_keyboard' => [
+					[
+						[ 'text' => 'Підтвердити', 'callback_data' => 'confirm_absences:id:' . $absences_id ],
+
+					]
+				]
+			];
 			carbon_set_post_meta( $absences_id, "absences_start_date", $date_start );
 			carbon_set_post_meta( $absences_id, "absences_finish_date", $date_finish ?: $date_start );
 			wp_set_post_terms( $absences_id, array(), 'reasons', false );
@@ -1718,13 +1726,15 @@ function add_absences() {
 						}
 						if ( $telegram_notification && $telegram_id ) {
 							$message_txt = str_replace( '<br>', PHP_EOL, $message_txt );
+							$message_txt = str_replace( '<hr>', PHP_EOL, $message_txt );
 							$message_txt .= ': ' . $link;
 							if ( is_working_hours() ) {
-								send_telegram_message( $telegram_id, $message_txt );
+								send_telegram_message( $telegram_id, $message_txt, $keyboard );
 							} else {
 								wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
 									$telegram_id,
 									$message_txt,
+									$keyboard,
 									false,
 									'html'
 								) );
@@ -1871,6 +1881,7 @@ function delete_user_absence() {
 								wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
 									$telegram_id,
 									$text,
+									array(),
 									false,
 									'html'
 								) );
@@ -2012,31 +2023,25 @@ function remove_project() {
 	die();
 }
 
-add_action( 'wp_ajax_nopriv_change_color_tag', 'change_color_tag' );
-add_action( 'wp_ajax_change_color_tag', 'change_color_tag' );
-function change_color_tag() {
-	$id     = $_POST['id'] ?? '';
-	$tag_id = $_POST['tagID'] ?? '';
-	$type   = $_POST['type'] ?? 'add';
-	$res    = array();
-	if ( $tag_id && $id ) {
-		$tag_id = (int) $tag_id;
-		$id     = (int) $id;
-		$tag    = get_term_by( 'id', $tag_id, 'colors' );
-		$post   = get_post( $id );
-		if ( $tag && $post ) {
-			if ( $type == 'add' ) {
-				wp_set_post_terms( $id, array( $tag_id ), 'colors', false );
-			} else {
-				wp_remove_object_terms( $id, array( $tag_id ), 'colors' );
-			}
-			$current_colors = get_the_terms( $id, 'colors' );
-			if ( $current_colors ) {
-				$res['color'] = carbon_get_term_meta( $current_colors[0]->term_id, 'color_hex' );
-			}
-		} else {
-			$res['msg'] = 'Виникла помилка! Оновіть сторінку і спробуйте ще раз!';
+add_action( 'wp_ajax_nopriv_change_project_tag', 'change_project_tag' );
+add_action( 'wp_ajax_change_project_tag', 'change_project_tag' );
+function change_project_tag() {
+	$res         = array();
+	$id          = $_POST['id'] ?? '';
+	$project_tag = $_POST['project_tag'] ?? '';
+	if ( ! is_current_user_admin() ) {
+		$res['msg'] = 'Вам не надано доступ';
+		echo json_encode( $res );
+		die();
+	}
+	if ( $id && get_post( $id ) ) {
+		$id          = (int) $id;
+		$project_tag = (int) $project_tag;
+		wp_set_post_terms( $id, array(), 'tags', false );
+		if ( $project_tag ) {
+			wp_set_post_terms( $id, array( $project_tag ), 'tags', false );
 		}
+		$res['tags'] = get_the_terms( $id, 'tags' );
 	}
 	echo json_encode( $res );
 	die();

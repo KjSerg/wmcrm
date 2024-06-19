@@ -151,32 +151,6 @@ $current_user_admin = is_current_user_admin();
                 </div>
                 <div class="projects-head__column projects-head__title">
                     Назва проекту
-					<?php if ( $current_user_admin && $colors ): ?>
-                        <div class="project-colors">
-                            <div class="project-colors-active"
-                                 style="background-color:<?php echo $color_get ? carbon_get_term_meta( $color_get, 'color_hex' ) : ''; ?>;">
-                                <div class="icon">
-									<?php _s( _i( 'arr-down' ) ) ?>
-                                </div>
-                            </div>
-                            <div class="project-colors-list">
-                                <a href="<?php echo $projects_url . '?color'; ?>"
-                                   class="project-colors__item  link-js"
-                                   style="background-color: #fff;">
-                                </a>
-								<?php foreach ( $colors as $color ):
-									$color_id = $color->term_id;
-									?>
-                                    <a href="<?php echo $projects_url . '?color=' . $color_id; ?>"
-                                       class="project-colors__item  link-js"
-                                       data-tag-id="<?php echo $color_id ?>"
-                                       data-color="<?php echo carbon_get_term_meta( $color_id, 'color_hex' ) ?>"
-                                       style="background-color: <?php echo carbon_get_term_meta( $color_id, 'color_hex' ) ?>;">
-                                    </a>
-								<?php endforeach; ?>
-                            </div>
-                        </div>
-					<?php endif; ?>
                 </div>
                 <div class="projects-head__column projects-head__performer">
                     Виконавець
@@ -189,9 +163,9 @@ $current_user_admin = is_current_user_admin();
 					while ( have_posts() ) {
 						the_post();
 						$id = get_the_ID();
-						the_project( $id, '', array(
-							'colors' => $colors
-						) );
+						the_project($id, '', array(
+                                'tags' => $tags
+                        ));
 					}
 				} else {
 					?>

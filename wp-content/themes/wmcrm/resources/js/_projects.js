@@ -13,12 +13,55 @@ let parser = new DOMParser();
 let $body = $('body');
 
 $doc.ready(function () {
-    $doc.on('click', '.project-colors-active', function (e) {
+    $doc.on('click', '.project-item-status', function (e) {
         e.preventDefault();
         let $this = $(this);
-        let $wrapper = $this.closest('.project-colors');
-        let $list = $wrapper.find('.project-colors-list');
-        $list.slideDown();
+        let status = $this.attr('data-status');
+        let id = $this.attr('data-id');
+        let $wrapper = $this.closest('.project-item-statuses');
+        let $elements = $wrapper.find('.project-item-status');
+        let $showed = $wrapper.find('.project-item-status').not('.active');
+        let $active = $wrapper.find('.project-item-status.active');
+        let activeStatus = $active.attr('data-status');
+        if ($wrapper.hasClass('active')) {
+            $wrapper.removeClass('active');
+            $showed.slideUp();
+        } else {
+            $wrapper.addClass('active');
+            $showed.slideDown();
+        }
+        if (!$this.hasClass('active')) {
+            if (activeStatus !== status) {
+                $active.attr('data-status', status);
+                $active.attr('style', $this.attr('style'));
+                $active.text($this.text());
+                if (status === undefined) return;
+                if (id === undefined) return;
+                showPreloader();
+                $.ajax({
+                    type: "POST",
+                    url: adminAjax,
+                    data: {
+                        action: 'change_project_status',
+                        status, id
+                    },
+                }).done(function (r) {
+                    if (r) {
+                        if (isJsonString(r)) {
+                            let res = JSON.parse(r);
+                            if (res) {
+                                if (res.msg !== undefined && res.msg !== '') {
+                                    showMassage(res.msg);
+                                }
+                            }
+                        } else {
+                            showMassage(r);
+                        }
+                    }
+                    hidePreloader();
+                });
+            }
+        }
     });
     $doc.on('click', '.project-colors__item', function (e) {
         e.preventDefault();
@@ -32,17 +75,17 @@ $doc.ready(function () {
         let color = $this.attr('data-color');
         $wrapper.find('.project-colors__item').removeClass('active');
         $wrapper.find('.project-colors__item').text('+');
-        if(isActive) {
+        if (isActive) {
             $this.removeClass('active');
             $this.text('+');
             $active.css('background-color', '#fff');
-        }else {
+        } else {
             $this.addClass('active');
             $this.text('✕');
             if (color !== undefined) $active.css('background-color', color);
         }
         $list.slideUp();
-        console.table(id,tagID)
+        console.table(id, tagID)
         if (id === undefined) return;
         if (tagID === undefined) return;
         $.ajax({
@@ -76,7 +119,7 @@ $doc.ready(function () {
         e.preventDefault();
         let $button = $(this);
         let href = $button.attr('href');
-        appendContainer(href);
+        appendContainer(href, $button);
     });
     $doc.on('submit', '.filter-project-form', function (e) {
         e.preventDefault();
@@ -247,9 +290,14 @@ $doc.ready(function () {
     });
 });
 
-function appendContainer(href) {
+function appendContainer(href, $button = false) {
     let $container = $doc.find('.container-js');
     let $pagination = $doc.find('.pagination-js');
+    if($button){
+        const $section = $button.closest('section');
+        $container = $section.find('.container-js');
+        $pagination = $section.find('.pagination-js');
+    }
     if (href === undefined) return;
     if (loading) return;
     loading = true;
@@ -274,7 +322,7 @@ function appendContainer(href) {
         }
         const commentObserver = new CommentObserver();
     }).fail(function (jqXHR, textStatus, errorThrown) {
-        appendContainer(href);
+        appendContainer(href, $button);
     });
 }
 

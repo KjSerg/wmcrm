@@ -1699,3 +1699,15 @@ function get_project_time( $id ) {
 
 	return $res;
 }
+
+function is_current_tag( $tag_id, $tags ) {
+	if ( $tags ) {
+		foreach ( $tags as $tag ) {
+			if ( $tag->term_id == $tag_id ) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}

@@ -11016,12 +11016,56 @@ var loading = false;
 var parser = new DOMParser();
 var $body = $('body');
 $doc.ready(function () {
-  $doc.on('click', '.project-colors-active', function (e) {
+  $doc.on('click', '.project-item-status', function (e) {
     e.preventDefault();
     var $this = $(this);
-    var $wrapper = $this.closest('.project-colors');
-    var $list = $wrapper.find('.project-colors-list');
-    $list.slideDown();
+    var status = $this.attr('data-status');
+    var id = $this.attr('data-id');
+    var $wrapper = $this.closest('.project-item-statuses');
+    var $elements = $wrapper.find('.project-item-status');
+    var $showed = $wrapper.find('.project-item-status').not('.active');
+    var $active = $wrapper.find('.project-item-status.active');
+    var activeStatus = $active.attr('data-status');
+    if ($wrapper.hasClass('active')) {
+      $wrapper.removeClass('active');
+      $showed.slideUp();
+    } else {
+      $wrapper.addClass('active');
+      $showed.slideDown();
+    }
+    if (!$this.hasClass('active')) {
+      if (activeStatus !== status) {
+        $active.attr('data-status', status);
+        $active.attr('style', $this.attr('style'));
+        $active.text($this.text());
+        if (status === undefined) return;
+        if (id === undefined) return;
+        (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.showPreloader)();
+        $.ajax({
+          type: "POST",
+          url: adminAjax,
+          data: {
+            action: 'change_project_status',
+            status: status,
+            id: id
+          }
+        }).done(function (r) {
+          if (r) {
+            if ((0,_helpers__WEBPACK_IMPORTED_MODULE_1__.isJsonString)(r)) {
+              var res = JSON.parse(r);
+              if (res) {
+                if (res.msg !== undefined && res.msg !== '') {
+                  (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.showMassage)(res.msg);
+                }
+              }
+            } else {
+              (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.showMassage)(r);
+            }
+          }
+          (0,_helpers__WEBPACK_IMPORTED_MODULE_1__.hidePreloader)();
+        });
+      }
+    }
   });
   $doc.on('click', '.project-colors__item', function (e) {
     e.preventDefault();
@@ -11081,7 +11125,7 @@ $doc.ready(function () {
     e.preventDefault();
     var $button = $(this);
     var href = $button.attr('href');
-    appendContainer(href);
+    appendContainer(href, $button);
   });
   $doc.on('submit', '.filter-project-form', function (e) {
     e.preventDefault();
@@ -11250,8 +11294,14 @@ $doc.ready(function () {
   });
 });
 function appendContainer(href) {
+  var $button = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   var $container = $doc.find('.container-js');
   var $pagination = $doc.find('.pagination-js');
+  if ($button) {
+    var $section = $button.closest('section');
+    $container = $section.find('.container-js');
+    $pagination = $section.find('.pagination-js');
+  }
   if (href === undefined) return;
   if (loading) return;
   loading = true;
@@ -11278,7 +11328,7 @@ function appendContainer(href) {
     }
     var commentObserver = new _CommentObserver__WEBPACK_IMPORTED_MODULE_2__["default"]();
   }).fail(function (jqXHR, textStatus, errorThrown) {
-    appendContainer(href);
+    appendContainer(href, $button);
   });
 }
 function renderContainer(url) {

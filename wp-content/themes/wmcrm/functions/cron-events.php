@@ -13,6 +13,7 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 	$telegram_users            = array();
 	$post_title                = 'notification';
 	$post_type                 = get_post_type( $project_id );
+	$comment_author_id         = $comment_id ? get_post_author_id( $comment_id ) : 0;
 	if ( $comment_id && $project_id ) {
 		$project_title = get_the_title( $project_id );
 		$post_title    = 'Новий коментар до проєкта "' . $project_title . '"';
@@ -24,9 +25,9 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 		$author     = get_user_by( 'id', $author );
 		$post_title .= ' від ' . $author->display_name;
 	}
-	$m          = '<h1>' . $post_title . '</h1> <hr><br>';
-	$m          .= $text;
-	$telegram_m = $m;
+	$m = '<h1>' . $post_title . '</h1> <hr><br>';
+	$m .= $text;
+
 	if ( $project_id ) {
 		if ( $post_type == 'costs' ) {
 			$link     = get_post_type_archive_link( 'discussion' );
@@ -40,12 +41,20 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 			if ( $comment_id ) {
 				$link .= '#comment-' . $comment_id;
 			}
-			$m          .= '<hr><br> <a target="_blank" href="' . $link . '">Перейти до коментаря</a>';
-			$telegram_m .= PHP_EOL . PHP_EOL . $link;
+			$m .= '<hr><br> <a target="_blank" href="' . $link . '">Перейти до коментаря</a>';
+			if ( $comment_author_id ) {
+				$comment_author = get_user_by( 'id', $comment_author_id );
+				$telegram_m     .= '<em>' . $comment_author->display_name . '</em>' . PHP_EOL;
+			}
+			$telegram_m .= "<a href='$link'>$post_title</a>" . PHP_EOL;
+
 		}
 
 	}
-	$users = $users ? explode( ',', $users ) : array();
+	$telegram_m .= PHP_EOL;
+	$telegram_m .= PHP_EOL;
+	$telegram_m .= get_telegram_text_without_link( $text );
+	$users      = $users ? explode( ',', $users ) : array();
 	if ( $worksection_user_to_email ) {
 		$__user_id = email_exists( $worksection_user_to_email );
 		if ( $__user_id ) {
@@ -89,8 +98,8 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 				}
 				$user = get_user_by( 'id', $user_id );
 				if ( $comment_id !== 0 ) {
-					if ( carbon_get_user_meta( $user_id, 'comment_notification' )  ) {
-						if(carbon_get_user_meta( $user_id, 'email_notification' )){
+					if ( carbon_get_user_meta( $user_id, 'comment_notification' ) ) {
+						if ( carbon_get_user_meta( $user_id, 'email_notification' ) ) {
 							send_message( $m, $user->user_email, $post_title );
 						}
 						$telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' );
@@ -110,6 +119,7 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 				wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
 					$telegram_id,
 					$telegram_m,
+					array(),
 					false,
 					'html'
 				) );
@@ -194,7 +204,9 @@ function birthday_notification( $user_id ) {
 											send_telegram_message( $_telegram_id, $m );
 										} else {
 											wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
-												$_telegram_id, $m,
+												$_telegram_id,
+												$m,
+												array(),
 												false,
 												'html'
 											) );

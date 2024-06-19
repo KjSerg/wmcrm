@@ -8,9 +8,8 @@ function the_project( $id = false, $cls = '', $args = array() ) {
 	$title              = get_the_title( $id );
 	$post_status        = get_post_status( $id );
 	$tags               = get_the_terms( $id, 'tags' );
+	$tag_list           = $args['tags'] ?: array();
 	$edit_cls           = $current_user_admin ? 'select-edit' : '';
-	$colors             = $args['colors'] ?? array();
-	$current_colors     = get_the_terms( $id, 'colors' );
 	if ( $cockie ) {
 		$cockie = explode( ',', $cockie );
 		if ( in_array( $id, $cockie ) || in_array( - 1, $cockie ) ) {
@@ -26,38 +25,14 @@ function the_project( $id = false, $cls = '', $args = array() ) {
 			<?php endif; ?>
 			<?php
 			echo get_the_date( 'd.m.Y H:i', $id );
-			the_post_status_html( $post_status );
+			the_post_status_html( $post_status, $id );
 			?>
         </div>
         <div class="project-item-name">
             <a href="<?php echo get_the_permalink( $id ) ?>" class="project-item-title link-js open-in-modal">
 				<?php echo get_the_title( $id ); ?>
             </a>
-			<?php the_project_tags_html( $tags ); ?>
-			<?php if ( $current_user_admin && $colors ): ?>
-                <div class="project-colors">
-                    <div class="project-colors-active"
-                         style="background-color:<?php echo $current_colors ? carbon_get_term_meta( $current_colors[0]->term_id, 'color_hex' ) : ''; ?>;">
-                        <div class="icon">
-							<?php _s( _i( 'arr-down' ) ) ?>
-                        </div>
-                    </div>
-                    <ul class="project-colors-list">
-						<?php foreach ( $colors as $color ):
-							$color_id = $color->term_id;
-							$is_active = $current_colors && in_array( $color, $current_colors );
-							?>
-                            <li class="project-colors__item <?php echo $is_active ? 'active' : ''; ?>"
-                                data-id="<?php echo $id ?>"
-                                data-tag-id="<?php echo $color_id ?>"
-                                data-color="<?php echo carbon_get_term_meta( $color_id, 'color_hex' ) ?>"
-                                style="background-color: <?php echo carbon_get_term_meta( $color_id, 'color_hex' ) ?>;">
-								<?php echo ( $is_active ) ? '✕' : '+'; ?>
-                            </li>
-						<?php endforeach; ?>
-                    </ul>
-                </div>
-			<?php endif; ?>
+			<?php the_project_tags_html( $tags, $tag_list ); ?>
         </div>
 		<?php the_project_performers( $id ) ?>
 		<?php if ( $current_user_admin ): ?>
@@ -223,36 +198,90 @@ function the_performers( $id ) {
 	endif;
 }
 
-function the_project_tags_html( $tags ) {
-	if ( $tags ) {
-		echo '<div class="project-item-tags">';
-		foreach ( $tags as $tag ) {
-			$color     = '#7BB500';
-			$tag_color = carbon_get_term_meta( $tag->term_id, 'tag_color' );
-			$color     = $tag_color ?: $color;
+function the_project_tags_html( $tags, $tag_list ) {
+    $subtype = $_GET['subtype'] ?? '';
+	if ( is_current_user_admin() ) {
+		if ( $tag_list ) {
 			?>
-            <a href="<?php echo get_term_link( $tag->term_id ) ?>"
-               style="background-color: <?php echo $color; ?>;"
-               class="project-item-tag">
-				<?php echo $tag->name; ?>
-            </a>
+            <form class="form-js project-tag-form" method="post" id="project-tag-form-<?php echo get_the_ID() . '-' . $subtype; ?>">
+                <input type="hidden" name="action" value="change_project_tag">
+                <input type="hidden" name="id" value="<?php echo get_the_ID() ?>">
+                <select name="project_tag" class="selectric  submit-on-select">
+                    <option selected value="">
+                        Теги
+                    </option>
+					<?php foreach ( $tag_list as $_tag ): ?>
+                        <option value="<?php echo $_tag->term_id ?>" <?php echo is_current_tag($_tag->term_id , $tags) ? 'selected' : ''; ?> >
+							<?php echo $_tag->name; ?>
+                        </option>
+					<?php endforeach; ?>
+                </select>
+            </form>
 			<?php
 		}
-		echo '</div>';
+	} else {
+		if ( $tags ) {
+			echo '<div class="project-item-tags">';
+			foreach ( $tags as $tag ) {
+				$color     = '#7BB500';
+				$tag_color = carbon_get_term_meta( $tag->term_id, 'tag_color' );
+				$color     = $tag_color ?: $color;
+				?>
+                <div
+                        style="background-color: <?php echo $color; ?>;"
+                        class="project-item-tag">
+					<?php echo $tag->name; ?>
+                </div>
+				<?php
+			}
+			echo '</div>';
+		}
 	}
 }
 
-function the_post_status_html( $post_status ) {
-	$color  = '#7BB500';
-	$string = 'В роботі';
-	if ( $post_status == 'pending' ) {
-		$color  = '#333';
-		$string = 'В черзі';
-	} elseif ( $post_status == 'archive' ) {
-		$color  = '#9B9EBE';
-		$string = 'Завершена';
-	}
-	echo '<span class="project-item-status" style="background-color: ' . $color . ';">' . $string . '</span>';
+function the_post_status_html( $post_status, $id ) {
+	$statuses = array(
+		'publish' => 'В роботі',
+		'archive' => 'Завершена',
+		'pending' => 'В черзі'
+	);
+	$is_admin = is_current_user_admin();
+	$cls      = ! $is_admin ? ' not-active' : '';
+	if ( $statuses ):
+		echo ' <div class="project-item-statuses">';
+		foreach ( $statuses as $key => $status ):
+			if ( $key === $post_status ):
+				$color = '#7BB500';
+				if ( $key == 'pending' ) {
+					$color = '#333';
+				} elseif ( $key == 'archive' ) {
+					$color = '#9B9EBE';
+				}
+				?>
+                <span class="project-item-status active <?php echo $cls; ?>" data-id="<?php echo $id; ?>"
+                      data-status="<?php echo $key; ?>"
+                      style="background-color:<?php echo $color; ?>"><?php echo $status; ?></span>
+			<?php
+			endif;
+		endforeach;
+		foreach ( $statuses as $key => $status ):
+			$color = '#7BB500';
+			if ( $key == 'pending' ) {
+				$color = '#333';
+			} elseif ( $key == 'archive' ) {
+				$color = '#9B9EBE';
+			}
+			?>
+            <span class="project-item-status <?php echo $cls; ?>" data-id="<?php echo $id; ?>"
+                  data-status="<?php echo $key; ?>"
+                  style="background-color:<?php echo $color; ?>"><?php echo $status; ?></span>
+		<?php
+		endforeach;
+		echo '</div>';
+	endif; ?>
+
+
+	<?php
 }
 
 function the_projects_page() {

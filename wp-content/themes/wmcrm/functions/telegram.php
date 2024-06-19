@@ -74,12 +74,38 @@ function on_telegram_auth() {
 	}
 }
 
-function send_telegram_message( $chat_id, $message, $bot_token = false, $parse_mode = 'html' ) {
+function send_telegram_message( $chat_id, $message, $keyboard = array(), $bot_token = false, $parse_mode = 'html' ) {
 
 	$bot_token = $bot_token ?: carbon_get_theme_option( 'telegram_token' );
-	$message   = str_replace(
+	$sessions  = carbon_get_theme_option( 'sessions' ) ?: array();
+	$data      = [
+		'chat_id'    => (int) $chat_id,
+		'text'       => $message,
+		"parse_mode" => $parse_mode
+	];
+	if ( $keyboard ) {
+		$data['reply_markup'] = json_encode( $keyboard );
+	}
+	$ch = curl_init( "https://api.telegram.org/bot" . $bot_token . "/sendMessage?" . http_build_query( $data ) );
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+	curl_setopt( $ch, CURLOPT_HEADER, false );
+	$resultQuery = curl_exec( $ch );
+	curl_close( $ch );
+	$sessions[] = array(
+		'connect_id'   => $message,
+		'last_message' => json_encode( $resultQuery ),
+	);
+	carbon_set_theme_option( 'sessions', $sessions );
+
+	return $resultQuery;
+}
+
+add_action( 'send_telegram_message_action_hook', 'send_telegram_message', 10, 5 );
+
+function get_telegram_text( $text ) {
+	$message = str_replace(
 		array(
-			"<br>",
+			"<p></p>",
 			"<hr>",
 			"h1",
 			"h2",
@@ -92,8 +118,43 @@ function send_telegram_message( $chat_id, $message, $bot_token = false, $parse_m
 			'strong',
 			'strong'
 		),
-		$message );
-	$message   = strip_tags(
+		$text );
+	$message = strip_tags(
+		$message,
+		array(
+			'a',
+			'b',
+			'strong',
+			'i',
+			'em',
+			'ins',
+			's',
+			'del',
+			'pre',
+		)
+	);
+
+	return $message;
+}
+
+function get_telegram_text_without_link( $text ) {
+	$message = str_replace(
+		array(
+			"<p></p>",
+			"<hr>",
+			"h1",
+			"h2",
+			"h3",
+		),
+		array(
+			PHP_EOL,
+			PHP_EOL . PHP_EOL,
+			'strong',
+			'strong',
+			'strong'
+		),
+		$text );
+	$message = strip_tags(
 		$message,
 		array(
 			'b',
@@ -106,19 +167,6 @@ function send_telegram_message( $chat_id, $message, $bot_token = false, $parse_m
 			'pre',
 		)
 	);
-	$message = replaceUrl($message);
-	$data      = [
-		'chat_id'    => (int) $chat_id,
-		'text'       => $message,
-		"parse_mode" => $parse_mode
-	];
-	$ch = curl_init( "https://api.telegram.org/bot" . $bot_token . "/sendMessage?" . http_build_query( $data ) );
-	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-	curl_setopt( $ch, CURLOPT_HEADER, false );
-	$resultQuery = curl_exec( $ch );
-	curl_close( $ch );
 
-	return $resultQuery;
+	return $message;
 }
-
-add_action( 'send_telegram_message_action_hook', 'send_telegram_message', 10, 4 );

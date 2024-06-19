@@ -46,6 +46,7 @@ function send_notification( $user_id, $ID ) {
 				wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
 					$telegram_id,
 					$message_telegram,
+					array(),
 					false,
 					'html'
 				) );

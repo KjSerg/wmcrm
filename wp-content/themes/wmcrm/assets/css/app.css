@@ -2327,10 +2327,13 @@ input {
     display: none;
   }
 }
-.project-item-status {
+.project-item-statuses {
+  position: relative;
+  margin-right: 0.4rem;
   margin-left: auto;
-  margin-right: 0.5rem;
-  display: flex;
+}
+.project-item-status {
+  display: none;
   padding: 4px 6px;
   border-radius: 8px;
   color: #FFF;
@@ -2339,6 +2342,15 @@ input {
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  text-align: center;
+  cursor: pointer;
+}
+.project-item-status.active {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
 }
 @media (max-width: 960px) {
   .project-item-status {
@@ -2495,8 +2507,18 @@ input {
   background-color: #c9085f;
   transition: 0.5s ease;
 }
+@media (max-width: 767px) {
+  .project-item__remove {
+    opacity: 1;
+  }
+}
 .project-item:hover .project-item__remove {
   opacity: 1;
+}
+@media (max-width: 450px) {
+  .project-item .project-tag-form {
+    display: none;
+  }
 }
 .project-section-children {
   padding: 0;
@@ -2546,6 +2568,22 @@ input {
   left: 0;
   width: 100%;
   transform: translateY(-50%);
+}
+.project-tag-form {
+  width: 12rem;
+  margin-left: 1rem;
+}
+.project-tag-form .selectric {
+  height: 3rem;
+  border: none;
+  border-radius: 0;
+}
+.project-tag-form .selectric .button {
+  height: 100%;
+}
+.project-tag-form .selectric .label {
+  height: 3rem;
+  line-height: 3rem;
 }
 
 .pagination-wrapper {

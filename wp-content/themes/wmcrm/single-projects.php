@@ -147,8 +147,11 @@ require_once ABSPATH . 'wp-admin/includes/media.php';
                     <div class="project-date">
 						<?php echo get_the_date( 'd.m.Y H:i' ); ?>
                     </div>
-					<?php the_post_status_html( $post_status ); ?>
-					<?php the_project_tags_html( $tags );; ?>
+					<?php the_post_status_html( $post_status, $id ); ?>
+					<?php the_project_tags_html( $tags, get_terms( array(
+						'taxonomy'   => 'tags',
+						'hide_empty' => false,
+					) ) ); ?>
                 </div>
             </div>
             <div class="project-section-text text">
