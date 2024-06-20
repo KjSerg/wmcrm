@@ -1692,13 +1692,15 @@ function add_absences() {
 			$link        = get_post_type_archive_link( 'absences' ) . '?confirm_absences=' . $absences_id;
 			$message_txt = $title . ' - ' . ( $date_finish ?: $date_start );
 			$message_txt .= '<hr>' . $reason_obj->name;
-			$message_txt .= '<br>' . $text . '"';
+			$message_txt .= '<br>"' . $text . '"';
 //			$message_txt .= '<hr>' . '<a target="_blank" href="' . $link . '">Підтвердити</a>';
 			$keyboard = [
 				'inline_keyboard' => [
 					[
-						[ 'text' => 'Підтвердити', 'callback_data' => 'confirm_absences:id:' . $absences_id ],
-
+						[
+							'text'          => 'Підтвердити',
+							'callback_data' => 'confirm_absences:id:' . $absences_id
+						],
 					]
 				]
 			];

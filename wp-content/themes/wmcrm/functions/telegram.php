@@ -170,3 +170,119 @@ function get_telegram_text_without_link( $text ) {
 
 	return $message;
 }
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'crm/v1', '/telegram_callback', array(
+		'methods'             => 'POST',
+		'callback'            => 'handle_telegram_callback',
+		'permission_callback' => '__return_true', // Для тестування, потім краще зробити перевірку
+	) );
+} );
+
+function handle_telegram_callback( WP_REST_Request $request ) {
+	$body   = $request->get_body();
+	$update = json_decode( $body, true );
+	$token  = carbon_get_theme_option( 'telegram_token' );
+	if ( isset( $update['callback_query'] ) ) {
+		$callback_query = $update['callback_query'];
+		$callback_data  = $callback_query['data'];
+		$chat_id        = $callback_query['message']['chat']['id'];
+		$parts          = explode( ':', $callback_data );
+		$button         = $parts[0];
+		$param          = $parts[1];
+		$value          = $parts[2];
+		$response       = "";
+		if ( $param == 'id' && $value ) {
+			$id = (int) $value;
+			if ( get_post( $id ) && get_post_status( $id ) != 'publish' ) {
+				$my_post = array(
+					'ID'          => $id,
+					'post_status' => 'publish',
+				);
+				$id      = wp_update_post( $my_post, true );
+				if ( ! is_wp_error( $id ) ) {
+					$user_id = get_post_author_id( $id );
+					$user    = get_user_by( 'id', $user_id );
+					if ( $user_id ) {
+						if ( ! carbon_get_user_meta( $user_id, 'fired' ) ) {
+							$start_date  = carbon_get_post_meta( $id, 'absences_start_date' );
+							$finish_date = carbon_get_post_meta( $id, 'absences_finish_date' );
+							$reasons     = get_the_terms( $id, 'reasons' );
+							$text        = 'Погоджено ';
+							if ( $reasons ) {
+								$text .= $reasons[0]->name;
+								$text .= ' ';
+							}
+							if ( $start_date == $finish_date ) {
+								$text .= 'дата відсутності ' . $start_date;
+							} else {
+								$text .= '(від ' . $start_date . ' до ' . $finish_date . ')';
+							}
+							if ( $user ) {
+								if ( carbon_get_user_meta( $user_id, 'email_notification' ) ) {
+									send_message( $text, $user->user_email, 'Погоджено відсутність' );
+								}
+								if ( carbon_get_user_meta( $user_id, 'telegram_notification' ) ) {
+									if ( $telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' ) ) {
+										if ( is_working_hours() ) {
+											send_telegram_message( $telegram_id, $text );
+										} else {
+											wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
+												$telegram_id,
+												$text,
+												array(),
+												false,
+												'html'
+											) );
+										}
+									}
+								}
+								$post_data = array(
+									'post_type'   => 'notice',
+									'post_title'  => $text,
+									'post_status' => 'publish',
+									'post_author' => $user_id
+								);
+								$notice_id = wp_insert_post( $post_data, true );
+								if ( $notice_id && ! is_wp_error( $notice_id ) ) {
+									carbon_set_post_meta( $notice_id, 'notice_type', 'notification' );
+								}
+								$response .= PHP_EOL . $text . " для " . $user->display_name;
+							}else{
+								$response .= "Користувача не існує";
+							}
+						}else{
+							$response .= "Користувача вже звільнено відсутність неактуальна";
+						}
+					}else{
+						$response .= "Користувача не існує";
+					}
+				}else{
+					$response .= $id->get_error_message();
+				}
+			}else{
+				$response .= "Відпустку ID:$value не знайдено або вже погодженно!";
+			}
+		}else{
+			$response .= "Передані не вірні параметри $param:$value";
+		}
+		$url         = "https://api.telegram.org/bot$token/sendMessage";
+		$post_fields = [
+			'chat_id' => $chat_id,
+			'text'    => $response
+		];
+		$ch          = curl_init();
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, array(
+			"Content-Type:multipart/form-data"
+		) );
+		curl_setopt( $ch, CURLOPT_URL, $url );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_fields );
+		$output = curl_exec( $ch );
+		curl_close( $ch );
+
+		return new WP_REST_Response( 'Success', 200 );
+	}
+
+	return new WP_REST_Response( 'No callback query found', 400 );
+}

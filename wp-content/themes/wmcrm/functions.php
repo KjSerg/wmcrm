@@ -89,3 +89,4 @@ function custom_mime_types( $mimes ) {
 
 add_filter( 'upload_mimes', 'custom_mime_types' );
 
+
