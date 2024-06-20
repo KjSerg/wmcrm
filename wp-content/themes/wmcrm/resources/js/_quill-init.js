@@ -64,9 +64,16 @@ $(document).ready(function () {
         $doc.find('.comment-field-id').val(id);
         $doc.find('.value-field').val(html);
         initQuill(false);
-        $('html,body').animate({
-            scrollTop: $doc.find('#editor').offset().top - ($doc.find('.header').outerHeight() + 50)
-        }, 400);
+        if($this.closest('.window-main').length > 0){
+            $('.window-main').animate({
+                scrollTop: $doc.find('#editor').offset().top - ($doc.find('.header').outerHeight() + 50)
+            }, 400);
+        }else {
+            $('html,body').animate({
+                scrollTop: $doc.find('#editor').offset().top - ($doc.find('.header').outerHeight() + 50)
+            }, 400);
+        }
+
     });
     initQuill();
     initProjectQuill();

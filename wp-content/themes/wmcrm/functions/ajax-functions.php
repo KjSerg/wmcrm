@@ -82,10 +82,20 @@ function new_comment() {
 				'post_title'   => 'Comment',
 				'post_status'  => 'publish',
 				'post_content' => $text1,
-				'post_author'  => $user_id
 			);
 			$comment_id    = 0;
 			if ( $update_comment_id && get_post( $update_comment_id ) ) {
+				$author_id = (int) get_post_author_id( $update_comment_id );
+				$res['$author_id'] = $author_id;
+				$res['$user_id'] = $user_id;
+				if ( $author_id != $user_id ) {
+					$discussion_edit_users   = carbon_get_user_meta( $update_comment_id, 'discussion_edit_users' );
+					$discussion_edit_users   = $discussion_edit_users ? explode( ',', $discussion_edit_users ) : array();
+					$discussion_edit_users[] = $user_id;
+					$discussion_edit_users = array_unique($discussion_edit_users);
+					$res['$discussion_edit_users'] = $discussion_edit_users;
+					carbon_set_post_meta( $update_comment_id, 'discussion_edit_users', implode( ',', $discussion_edit_users ) );
+				}
 				$post_data['ID'] = $update_comment_id;
 				$comment_id      = wp_update_post( $post_data, true );
 				$arr             = carbon_get_post_meta( $comment_id, 'discussion_files' );
@@ -102,7 +112,8 @@ function new_comment() {
 					carbon_set_post_meta( $comment_id, 'discussion_files', array() );
 				}
 			} else {
-				$comment_id = wp_insert_post( $post_data, true );
+				$post_data['post_author'] = $user_id;
+				$comment_id               = wp_insert_post( $post_data, true );
 			}
 			if ( ! is_wp_error( $comment_id ) ) {
 				carbon_set_post_meta( $comment_id, 'discussion_project_id', $project_id );
@@ -1065,7 +1076,7 @@ function change_user_time() {
 			if ( ! is_wp_error( $comment_id ) ) {
 				$notification_text = 'Заявка на зміну часу ' . $_date . $str . PHP_EOL . $text;
 				carbon_set_post_meta( $comment_id, 'discussion_project_id', $id );
-				create_notification( $id, $comment_id, $notification_text, array(1) );
+				create_notification( $id, $comment_id, $notification_text, array( 1 ) );
 			} else {
 				$res['type'] = 'error';
 				$res['msg']  = $comment_id->get_error_message();

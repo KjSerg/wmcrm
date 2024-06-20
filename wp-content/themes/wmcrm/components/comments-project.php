@@ -56,7 +56,7 @@ function the_comment_project( $comment_id, $user_id = false ) {
 	$author_id   = get_post_field( 'post_author', $comment_id );
 	$user        = get_user_by( 'id', $author_id );
 	$is_archive  = $post_type == 'comments';
-	$author_test = ( ! $is_archive && $author_id == $user_id );
+	$author_test = ( ! $is_archive && $author_id == $user_id ) || is_current_user_admin();
 	$avatar      = false;
 	$is_read     = false;
 	$users_read  = carbon_get_post_meta( $comment_id, 'discussion_read_users' );
@@ -76,8 +76,10 @@ function the_comment_project( $comment_id, $user_id = false ) {
 			$name .= ' ' . mb_substr( $first_name, 0, 1 ) . '.';
 		}
 	}
-	$cls              = $is_read ? 'read' : 'unread';
-	$discussion_files = carbon_get_post_meta( $comment_id, 'discussion_files' );
+	$cls                   = $is_read ? 'read' : 'unread';
+	$discussion_files      = carbon_get_post_meta( $comment_id, 'discussion_files' );
+	$discussion_edit_users = carbon_get_post_meta( $comment_id, 'discussion_edit_users' );
+	$discussion_edit_users = $discussion_edit_users ? explode( ',', $discussion_edit_users ) : array();
 	?>
     <div class="comment project-section-wrapper <?php echo $is_archive ? 'archive-comment' : '';
 	echo ' ' . $cls; ?> <?php echo $is_service ? 'service-comment' : ''; ?>"
@@ -90,17 +92,36 @@ function the_comment_project( $comment_id, $user_id = false ) {
 				<?php if ( $avatar ) {
 					echo "<div class='comment-author__avatar'><img class='cover' src='$avatar' alt=''/></div>";
 				} ?>
-				<?php echo $name ?>
+				<?php
+				echo $name;
+				if ( $discussion_edit_users ) {
+					$discussion_edit_users_count = count( $discussion_edit_users );
+					echo "<br> ✍️: ";
+					foreach ( $discussion_edit_users as $user_index => $edit_user ) {
+						if ( $edit_user = get_user_by( 'id', $edit_user ) ) {
+							$user_index += 1;
+							echo $edit_user->display_name;
+							if ( $user_index < $discussion_edit_users_count ) {
+								echo ', ';
+							}
+						}
+					}
+				}
+				?>
+
             </div>
             <div class="comment-date">
 				<?php echo date( 'd-m-Y H:i', $time );
 				echo $is_archive ? ' [архів]' : ''; ?>
             </div>
 			<?php if ( ! $is_service ): ?>
-				<?php if ( $author_test ): ?>
-                    <a href="#" data-id="<?php echo $comment_id ?>" class="comment-remove remove-btn comment-remove-js">
-						<?php _s( _i( 'remove' ) ) ?>
-                    </a>
+				<?php if ( $author_test && ! $is_archive ): ?>
+					<?php if ( $author_id == $user_id ): ?>
+                        <a href="#" data-id="<?php echo $comment_id ?>"
+                           class="comment-remove remove-btn comment-remove-js">
+							<?php _s( _i( 'remove' ) ) ?>
+                        </a>
+					<?php endif; ?>
                     <a href="#" data-id="<?php echo $comment_id ?>" class="comment-change change-btn comment-change-js">
 						<?php _s( _i( 'edit' ) ) ?>
                     </a>
@@ -175,14 +196,14 @@ function the_project_comment() {
 			$users_read = explode( ',', $users_read );
 			$is_read    = in_array( $user_id, $users_read );
 		}
-		$check_cls    = $is_read ? 'read' : 'unread';
-		$link         = get_post_type_archive_link( 'discussion' );
-		$comment_link = ( $post_type == 'costs' ) ? get_post_type_archive_link('costs') : get_the_permalink( $project_id ) . '#comment-' . $id;
-		$check_cls    .= $post_type == 'costs' ? ' change-user-time-item' : '';
+		$check_cls             = $is_read ? 'read' : 'unread';
+		$link                  = get_post_type_archive_link( 'discussion' );
+		$comment_link          = ( $post_type == 'costs' ) ? get_post_type_archive_link( 'costs' ) : get_the_permalink( $project_id ) . '#comment-' . $id;
+		$check_cls             .= $post_type == 'costs' ? ' change-user-time-item' : '';
 		$costs_sum_hour_change = carbon_get_post_meta( $project_id, 'costs_sum_hour_change' );
-		$costs_sum = carbon_get_post_meta( $project_id, 'costs_sum_hour' );
-		$res = $costs_sum;
-		$string = $res;
+		$costs_sum             = carbon_get_post_meta( $project_id, 'costs_sum_hour' );
+		$res                   = $costs_sum;
+		$string                = $res;
 		if ( $sum_hour_arr = explode( ':', $costs_sum ) ) {
 			$res = $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
 		}

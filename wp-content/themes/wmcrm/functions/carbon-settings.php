@@ -157,6 +157,7 @@ function crb_attach_in_discussion() {
 			         Field::make( "text", "discussion_project_id", "ID проєка" ),
 			         Field::make( "text", "discussion_project_hush", "Hush коментаря" ),
 			         Field::make( "checkbox", "discussion_is_service", "Службове повідомлення" ),
+			         Field::make( "text", "discussion_edit_users", "Змінено користувачами" ),
 			         Field::make( "text", "discussion_read_users", "Прочитано користувачами" ),
 			         Field::make( 'complex', 'discussion_files', __( 'Файли' ) )
 			              ->add_fields( array(
