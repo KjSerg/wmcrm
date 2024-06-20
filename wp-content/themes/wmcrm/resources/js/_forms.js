@@ -2,6 +2,7 @@ import {closeWindow, hidePreloader, isJsonString, renderMain, showMassage, showP
 import {setQiullText} from "./_quill-init";
 import Invite from "./Invite";
 import {initPlugins} from "./_js";
+import {validateTime} from "./_js";
 
 let $doc = $(document);
 $doc.ready(function () {

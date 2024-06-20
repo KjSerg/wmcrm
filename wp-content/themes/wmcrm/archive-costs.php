@@ -180,6 +180,7 @@ get_header();
 												$costs_confirmed = carbon_get_post_meta( $cost_id, 'costs_confirmed' );
 												$costs_text_list = carbon_get_post_meta( $cost_id, 'costs_text_list' );
 												$costs_sum_seconds = carbon_get_post_meta( $cost_id, 'costs_sum' );
+//												var_dump(get_stopwatches( $cost_id ));
 												$res = $costs_sum;
 												$changed = false;
 												if ( $sum_hour_arr = explode( ':', $costs_sum ) ) {

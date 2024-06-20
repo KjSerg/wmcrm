@@ -69,7 +69,6 @@ export function renderMain(args) {
     $.ajax(param).done(function (r) {
         hidePreloader();
         loading = false;
-
         if (r) {
             let $requestBody = $(parser.parseFromString(r, "text/html"));
             $container.html($requestBody.find('main.content').html());
@@ -286,6 +285,7 @@ export function removeArrayElement(element, array) {
 export const bytesToMB = (bytes) => {
     return (bytes / (1024 * 1024)).toFixed(2);
 }
+
 export const bytesToKB = (bytes) => {
     return Math.floor(bytes/1000);
 }

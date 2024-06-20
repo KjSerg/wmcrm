@@ -87,9 +87,9 @@ function the_comment_project( $comment_id, $user_id = false ) {
          id="comment-<?php echo $comment_id ?>">
         <div class="comment-head">
             <div class="comment-author">
-	            <?php if ( $avatar ) {
-		            echo "<div class='comment-author__avatar'><img class='cover' src='$avatar' alt=''/></div>";
-	            } ?>
+				<?php if ( $avatar ) {
+					echo "<div class='comment-author__avatar'><img class='cover' src='$avatar' alt=''/></div>";
+				} ?>
 				<?php echo $name ?>
             </div>
             <div class="comment-date">
@@ -128,7 +128,8 @@ function the_comment_project( $comment_id, $user_id = false ) {
                             <div class="icon"><?php _s( _i( 'file' ) ) ?></div>
                             <a target="_blank"
                                href="<?php echo $file_url; ?>">
-                                <?php echo basename( $attachment_file ); ?> (<?php echo getFileSize( $attachment_file ); ?>)
+								<?php echo basename( $attachment_file ); ?>
+                                (<?php echo getFileSize( $attachment_file ); ?>)
                             </a>
                         </li>
 					<?php endif; endforeach; ?>
@@ -176,7 +177,18 @@ function the_project_comment() {
 		}
 		$check_cls    = $is_read ? 'read' : 'unread';
 		$link         = get_post_type_archive_link( 'discussion' );
-		$comment_link = ( $post_type == 'costs' ) ? "#" : get_the_permalink( $project_id ) . '#comment-' . $id;
+		$comment_link = ( $post_type == 'costs' ) ? get_post_type_archive_link('costs') : get_the_permalink( $project_id ) . '#comment-' . $id;
+		$check_cls    .= $post_type == 'costs' ? ' change-user-time-item' : '';
+		$costs_sum_hour_change = carbon_get_post_meta( $project_id, 'costs_sum_hour_change' );
+		$costs_sum = carbon_get_post_meta( $project_id, 'costs_sum_hour' );
+		$res = $costs_sum;
+		$string = $res;
+		if ( $sum_hour_arr = explode( ':', $costs_sum ) ) {
+			$res = $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
+		}
+		if ( $res ) {
+			$string = $costs_sum_hour_change ? $res . '⮕' . $costs_sum_hour_change : $res;
+		}
 		?>
         <div class="discussion-item <?php echo $check_cls; ?>"
 			<?php if ( ! $is_read ): ?>
@@ -198,7 +210,7 @@ function the_project_comment() {
                 <div class="discussion-item-head">
                     <a href="<?php echo $comment_link ?>"
                        class="link-js discussion-item__title">
-						<?php echo ( $post_type == 'costs' ) ? 'Заявка на зміну робочого часу' : get_the_title( $project_id ) ?>
+						<?php echo ( $post_type == 'costs' ) ? 'Заявка на зміну робочого часу ' . $string : get_the_title( $project_id ) ?>
                     </a>
 					<?php if ( $project_id )
 						the_project_performers( $project_id ) ?>
@@ -211,9 +223,9 @@ function the_project_comment() {
 							?>
                             <div class="row">
 								<?php $sub_link = $link . '?id=' . $project_id . '&action=change_user_time'; ?>
-                                <a href="<?php echo $sub_link; ?>" class="button">Підтвердити зміну</a>
+                                <a href="<?php echo $sub_link; ?>" class="button default-link">Підтвердити зміну</a>
 								<?php $sub_link = $link . '?id=' . $project_id . '&comment_id=' . $id . '&action=remove_change_user_time'; ?>
-                                <a href="<?php echo $sub_link; ?>" class="button">Відмінити зміну</a>
+                                <a href="<?php echo $sub_link; ?>" class="button default-link">Відмінити зміну</a>
                             </div>
 						<?php else: ?>
                             <p>

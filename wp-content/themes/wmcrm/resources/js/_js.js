@@ -112,7 +112,6 @@ $(document).ready(function () {
             $t.removeClass('project-close');
         }
     });
-
     $doc.on('click', '.link-js', function (e) {
         e.preventDefault();
         let $t = $(this);
@@ -186,11 +185,12 @@ $(document).ready(function () {
             });
         }
     });
-    $doc.on('click', '.discussion-item', function (e) {
+    $doc.on('click', '.discussion-item:not(.change-user-time-item)', function (e) {
         e.preventDefault();
         let $t = $(this);
         let $title = $t.find('.discussion-item__title');
         let url = $title.attr('href');
+
         renderMain({
             url: url,
             addToHistory: true
@@ -481,7 +481,7 @@ document.addEventListener('visibilitychange', function () {
     }
 });
 
-function validateTime(time) {
+export function validateTime(time) {
     var timeRegex = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
     return timeRegex.test(time);
 }

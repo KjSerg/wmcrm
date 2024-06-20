@@ -9734,6 +9734,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 var $doc = $(document);
 $doc.ready(function () {
   $doc.on('submit', '.form-js', function (e) {
@@ -9925,7 +9926,7 @@ function isValidForm($form) {
       }
     }
     if (thsInput.hasClass('time-input')) {
-      if (validateTime(thsInputVal)) {
+      if ((0,_js__WEBPACK_IMPORTED_MODULE_3__.validateTime)(thsInputVal)) {
         thsInput.removeClass('error');
         $label.removeClass('error');
       } else {
@@ -10382,7 +10383,8 @@ function isImageUrl(string) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   initPlugins: () => (/* binding */ initPlugins),
-/* harmony export */   initTriggers: () => (/* binding */ initTriggers)
+/* harmony export */   initTriggers: () => (/* binding */ initTriggers),
+/* harmony export */   validateTime: () => (/* binding */ validateTime)
 /* harmony export */ });
 /* harmony import */ var selectric__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! selectric */ "./node_modules/selectric/public/jquery.selectric.js");
 /* harmony import */ var selectric__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(selectric__WEBPACK_IMPORTED_MODULE_0__);
@@ -10574,7 +10576,7 @@ $(document).ready(function () {
       });
     }
   });
-  $doc.on('click', '.discussion-item', function (e) {
+  $doc.on('click', '.discussion-item:not(.change-user-time-item)', function (e) {
     e.preventDefault();
     var $t = $(this);
     var $title = $t.find('.discussion-item__title');

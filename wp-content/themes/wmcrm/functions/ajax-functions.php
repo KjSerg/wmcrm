@@ -1063,8 +1063,9 @@ function change_user_time() {
 			);
 			$comment_id         = wp_insert_post( $post_data, true );
 			if ( ! is_wp_error( $comment_id ) ) {
+				$notification_text = 'Заявка на зміну часу ' . $_date . $str . PHP_EOL . $text;
 				carbon_set_post_meta( $comment_id, 'discussion_project_id', $id );
-				create_notification( $id, $comment_id, $text );
+				create_notification( $id, $comment_id, $notification_text, array(1) );
 			} else {
 				$res['type'] = 'error';
 				$res['msg']  = $comment_id->get_error_message();

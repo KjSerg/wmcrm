@@ -3,6 +3,7 @@ add_action( 'create_notification_action_hook', 'create_notification', 10, 4 );
 
 function create_notification( $project_id = 0, $comment_id = 0, $text = '', $users_ids = array() ) {
 	$telegram_m                = '';
+	$keyboard                  = array();
 	$project_id                = $project_id ?? 0;
 	$comment_id                = $comment_id ?? 0;
 	$text                      = $text ?? '';
@@ -27,7 +28,6 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 	}
 	$m = '<h1>' . $post_title . '</h1> <hr><br>';
 	$m .= $text;
-
 	if ( $project_id ) {
 		if ( $post_type == 'costs' ) {
 			$link     = get_post_type_archive_link( 'discussion' );
@@ -35,6 +35,10 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 			$m        .= '<hr><br> <a target="_blank" href="' . $sub_link . '">Підтвердити зміну</a>';
 			$sub_link = $link . '?id=' . $project_id . '&comment_id=' . $comment_id . '&action=remove_change_user_time';
 			$m        .= '<br> <a target="_blank" href="' . $sub_link . '">Відмінити зміну</a>';
+			if ( $comment_author_id ) {
+				$comment_author = get_user_by( 'id', $comment_author_id );
+				$telegram_m     .= '<em>' . $comment_author->display_name . '</em>' . PHP_EOL . PHP_EOL;
+			}
 		} else {
 			$project_permalink = get_the_permalink( $project_id );
 			$link              = $project_permalink;
@@ -47,14 +51,32 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 				$telegram_m     .= '<em>' . $comment_author->display_name . '</em>' . PHP_EOL;
 			}
 			$telegram_m .= "<a href='$link'>$post_title</a>" . PHP_EOL;
-
 		}
-
 	}
 	$telegram_m .= PHP_EOL;
 	$telegram_m .= PHP_EOL;
 	$telegram_m .= get_telegram_text_without_link( $text );
-	$users      = $users ? explode( ',', $users ) : array();
+	if ( $post_type == 'costs' ) {
+		$telegram_m .= PHP_EOL;
+		$link       = get_post_type_archive_link( 'discussion' );
+		$sub_link   = $link . '?id=' . $project_id . '&action=change_user_time';
+		$sub_link1  = $link . '?id=' . $project_id . '&comment_id=' . $comment_id . '&action=remove_change_user_time';
+		$keyboard   = [
+			'inline_keyboard' => [
+				[
+					[
+						'text' => 'Підтвердити',
+						'url'  => $sub_link
+					],
+					[
+						'text' => 'Відмінити',
+						'url'  => $sub_link1
+					],
+				]
+			]
+		];
+	}
+	$users = $users ? explode( ',', $users ) : array();
 	if ( $worksection_user_to_email ) {
 		$__user_id = email_exists( $worksection_user_to_email );
 		if ( $__user_id ) {
@@ -114,18 +136,19 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 	if ( $telegram_users ) {
 		foreach ( $telegram_users as $telegram_id ) {
 			if ( is_working_hours() ) {
-				send_telegram_message( $telegram_id, $telegram_m );
+				send_telegram_message( $telegram_id, $telegram_m, $keyboard );
 			} else {
 				wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
 					$telegram_id,
 					$telegram_m,
-					array(),
+					$keyboard,
 					false,
 					'html'
 				) );
 			}
 		}
 	}
+//	send_telegram_message( 532699566,$telegram_m, $keyboard );
 }
 
 function create_cron_notification( $args = array() ) {

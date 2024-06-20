@@ -77,7 +77,7 @@ function on_telegram_auth() {
 function send_telegram_message( $chat_id, $message, $keyboard = array(), $bot_token = false, $parse_mode = 'html' ) {
 
 	$bot_token = $bot_token ?: carbon_get_theme_option( 'telegram_token' );
-	$sessions  = carbon_get_theme_option( 'sessions' ) ?: array();
+//	$sessions  = carbon_get_theme_option( 'sessions' ) ?: array();
 	$data      = [
 		'chat_id'    => (int) $chat_id,
 		'text'       => $message,
@@ -91,11 +91,11 @@ function send_telegram_message( $chat_id, $message, $keyboard = array(), $bot_to
 	curl_setopt( $ch, CURLOPT_HEADER, false );
 	$resultQuery = curl_exec( $ch );
 	curl_close( $ch );
-	$sessions[] = array(
-		'connect_id'   => $message,
-		'last_message' => json_encode( $resultQuery ),
-	);
-	carbon_set_theme_option( 'sessions', $sessions );
+//	$sessions[] = array(
+//		'connect_id'   => $message,
+//		'last_message' => json_encode( $resultQuery ),
+//	);
+//	carbon_set_theme_option( 'sessions', $sessions );
 
 	return $resultQuery;
 }
