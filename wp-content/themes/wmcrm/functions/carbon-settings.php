@@ -177,6 +177,7 @@ function crb_attach_in_events() {
 	         ->show_on_post_type( 'events' )
 	         ->add_fields(
 		         array(
+			         Field::make( "text", "event_date", "Дата" ),
 			         Field::make( "text", "event_question", "Запитання" ),
 			         Field::make( "complex", "event_answers", 'Варіанти відповіді' )
 			              ->add_fields(

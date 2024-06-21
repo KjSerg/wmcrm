@@ -78,6 +78,7 @@ function the_event( $id = false, $show = false ) {
 		$event_question = carbon_get_post_meta( $id, 'event_question' );
 		$event_answers  = carbon_get_post_meta( $id, 'event_answers' );
 		$event_multiple = carbon_get_post_meta( $id, 'event_multiple' );
+		$event_date = carbon_get_post_meta( $id, 'event_date' );
 		$input_type     = $event_multiple ? 'checkbox' : 'radio';
 		$author_id      = get_post_field( 'post_author', $id );
 		$avatar         = carbon_get_user_meta( $author_id, 'avatar' );
@@ -105,7 +106,7 @@ function the_event( $id = false, $show = false ) {
                     </div>
                 </div>
                 <div class="events-item__title">
-					<?php echo get_the_title( $id ) ?>
+					<?php echo get_the_title( $id ) . ' '; echo $event_date ?: ''; ?>
                 </div>
                 <div class="text events-item__text">
 					<?php echo replace_url( get_content_by_id( $id ) ); ?>

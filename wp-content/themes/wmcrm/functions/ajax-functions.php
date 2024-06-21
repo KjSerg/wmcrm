@@ -85,14 +85,14 @@ function new_comment() {
 			);
 			$comment_id    = 0;
 			if ( $update_comment_id && get_post( $update_comment_id ) ) {
-				$author_id = (int) get_post_author_id( $update_comment_id );
+				$author_id         = (int) get_post_author_id( $update_comment_id );
 				$res['$author_id'] = $author_id;
-				$res['$user_id'] = $user_id;
+				$res['$user_id']   = $user_id;
 				if ( $author_id != $user_id ) {
-					$discussion_edit_users   = carbon_get_user_meta( $update_comment_id, 'discussion_edit_users' );
-					$discussion_edit_users   = $discussion_edit_users ? explode( ',', $discussion_edit_users ) : array();
-					$discussion_edit_users[] = $user_id;
-					$discussion_edit_users = array_unique($discussion_edit_users);
+					$discussion_edit_users         = carbon_get_user_meta( $update_comment_id, 'discussion_edit_users' );
+					$discussion_edit_users         = $discussion_edit_users ? explode( ',', $discussion_edit_users ) : array();
+					$discussion_edit_users[]       = $user_id;
+					$discussion_edit_users         = array_unique( $discussion_edit_users );
 					$res['$discussion_edit_users'] = $discussion_edit_users;
 					carbon_set_post_meta( $update_comment_id, 'discussion_edit_users', implode( ',', $discussion_edit_users ) );
 				}
@@ -837,6 +837,7 @@ function create_event() {
 		$question     = $_POST['question'] ?? '';
 		$answers      = $_POST['answer'] ?? '';
 		$is_anonymous = $_POST['voting'] ?? '';
+		$date         = $_POST['date'] ?? '';
 		$type         = $_POST['type'] ?? 'radio';
 		if ( $title && $text ) {
 			$post_data = array(
@@ -848,6 +849,7 @@ function create_event() {
 			);
 			$post_id   = wp_insert_post( $post_data, true );
 			if ( $post_id && ! is_wp_error( $post_id ) ) {
+				carbon_set_post_meta( $post_id, 'date', $date );
 				if ( $question && $answers ) {
 					$answers_array = array();
 					if ( is_array( $answers ) ) {

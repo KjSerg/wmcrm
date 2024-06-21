@@ -73,7 +73,6 @@ $(document).ready(function () {
                 scrollTop: $doc.find('#editor').offset().top - ($doc.find('.header').outerHeight() + 50)
             }, 400);
         }
-
     });
     initQuill();
     initProjectQuill();

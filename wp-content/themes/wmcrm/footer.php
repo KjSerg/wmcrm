@@ -43,8 +43,12 @@ $statuses       = array(
                        placeholder="Введіть назву події">
             </label>
             <label class="form-group">
-                <span class="form-group__title"> Опи події</span>
+                <span class="form-group__title"> Опис події</span>
                 <textarea name="text" required placeholder="Опис"></textarea>
+            </label>
+            <label class="form-group">
+                <span class="form-group__title"> Дата події</span>
+                <input type="text" name="date" value="" readonly class="date-input">
             </label>
             <div class="event-poll">
                 <div class="event-poll-head">
