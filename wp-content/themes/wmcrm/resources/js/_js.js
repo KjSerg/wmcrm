@@ -83,12 +83,24 @@ export function initTriggers() {
 }
 
 export function initPlugins() {
-    $('.selectric').selectric();
+    $('.selectric').selectric().on('change', function () {
+        const $t = $(this);
+        if ($t.attr('name') === 'project_tag') {
+            const $option = $t.find('option:selected');
+            if ($option.length > 0) {
+                const color = $option.attr('data-color');
+                if (color !== undefined) {
+                    $t.closest('.project-tag-form').css('background-color', color);
+                }
+            }
+        }
+    });
     $('input.date-input').datepicker({
         changeMonth: true,
         changeYear: true,
         dateFormat: "dd-mm-yy"
     });
+
 }
 
 $(document).ready(function () {
@@ -243,6 +255,8 @@ $(document).ready(function () {
         if (id === undefined) return;
         $doc.find('.delete-absence').attr('data-id', id);
         $doc.find('.delete-absence').addClass('active');
+        $t.addClass('active');
+        showMassage('Натисніть "Esc" ⌨️ щоб відмінити операцію')
     });
     $doc.on('click', '.delete-absence', function (e) {
         e.preventDefault();
@@ -404,6 +418,7 @@ $(document).ready(function () {
         //window-main
         if (e.key === "Escape") {
             $doc.find('.delete-absence').removeClass('active');
+            $doc.find('.calendar-table-item').removeClass('active');
             let $window = $doc.find('.modal-window.active');
             if ($window.length > 0) {
                 $window.removeClass('active');

@@ -199,19 +199,28 @@ function the_performers( $id ) {
 }
 
 function the_project_tags_html( $tags, $tag_list ) {
-    $subtype = $_GET['subtype'] ?? '';
+	$subtype = $_GET['subtype'] ?? '';
 	if ( is_current_user_admin() ) {
 		if ( $tag_list ) {
+			$tag_color = carbon_get_term_meta( $tags[0]->term_id, 'tag_color' );
 			?>
-            <form class="form-js project-tag-form" method="post" id="project-tag-form-<?php echo get_the_ID() . '-' . $subtype; ?>">
+            <form class="form-js project-tag-form" method="post"
+                  style="background-color: <?php echo $tag_color ?: '#7BB500'; ?>;"
+                  id="project-tag-form-<?php echo get_the_ID() . '-' . $subtype; ?>">
                 <input type="hidden" name="action" value="change_project_tag">
                 <input type="hidden" name="id" value="<?php echo get_the_ID() ?>">
                 <select name="project_tag" class="selectric  submit-on-select">
                     <option selected value="">
                         Теги
                     </option>
-					<?php foreach ( $tag_list as $_tag ): ?>
-                        <option value="<?php echo $_tag->term_id ?>" <?php echo is_current_tag($_tag->term_id , $tags) ? 'selected' : ''; ?> >
+					<?php foreach ( $tag_list as $_tag ):
+						$color = '#7BB500';
+						$tag_color = carbon_get_term_meta( $_tag->term_id, 'tag_color' );
+						$color = $tag_color ?: $color;
+						?>
+                        <option value="<?php echo $_tag->term_id ?>"
+                                data-color="<?php echo $color; ?>"
+							<?php echo is_current_tag( $_tag->term_id, $tags ) ? 'selected' : ''; ?> >
 							<?php echo $_tag->name; ?>
                         </option>
 					<?php endforeach; ?>
@@ -287,6 +296,10 @@ function the_post_status_html( $post_status, $id ) {
 function the_projects_page() {
 	$type    = $_GET['type'] ?? '';
 	$arr     = array();
+	$tags               = get_terms( array(
+		'taxonomy'   => 'tags',
+		'hide_empty' => false,
+	) );
 	$user_id = get_current_user_id();
 	if ( $_GET && $user_id ) {
 		foreach ( $_GET as $key => $val ) {
@@ -311,7 +324,9 @@ function the_projects_page() {
 				while ( have_posts() ) {
 					the_post();
 					$id = get_the_ID();
-					the_project();
+					the_project($id, '', array(
+						'tags' => $tags
+					));
 				}
 			} else {
 				?>

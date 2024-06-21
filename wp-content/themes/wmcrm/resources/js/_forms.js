@@ -30,8 +30,10 @@ $doc.ready(function () {
                     if (resetTriggerTest) $form.trigger('reset');
                     $form.find('.form-files-result').html('');
                 }
+                if($form.hasClass('event-window-form')){
+                    closeWindow();
+                }
                 if (r) {
-
                     if (isJsonString(r)) {
                         let res = JSON.parse(r);
                         if (res.avatar !== undefined) {

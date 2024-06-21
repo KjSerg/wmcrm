@@ -2572,11 +2572,15 @@ input {
 .project-tag-form {
   width: 12rem;
   margin-left: 1rem;
+  border-radius: 8px;
 }
 .project-tag-form .selectric {
   height: 3rem;
   border: none;
   border-radius: 0;
+}
+.project-tag-form .selectric .button:after {
+  border-top-color: #fff;
 }
 .project-tag-form .selectric .button {
   height: 100%;
@@ -2584,6 +2588,7 @@ input {
 .project-tag-form .selectric .label {
   height: 3rem;
   line-height: 3rem;
+  color: #fff;
 }
 
 .pagination-wrapper {
@@ -4095,6 +4100,7 @@ input {
   align-items: center;
   justify-content: flex-start;
   padding: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0);
   overflow: hidden;
   color: #FFF;
   font-family: Montserrat;
@@ -4103,6 +4109,12 @@ input {
   font-weight: 500;
   line-height: 140%;
   white-space: nowrap;
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+.calendar-table-item.active {
+  width: auto !important;
+  border-color: rgb(255, 255, 255);
 }
 .calendar-table-item[data-last] {
   left: auto;

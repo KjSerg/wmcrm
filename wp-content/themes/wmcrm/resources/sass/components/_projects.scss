@@ -507,17 +507,21 @@
     &-form {
       width: 12rem;
       margin-left: 1rem;
-
+      border-radius: 8px;
       .selectric {
         height: 3rem;
         border: none;
         border-radius: 0;
+         .button:after {
+           border-top-color: #fff;
+         }
         .button{
           height: 100%;
         }
         .label {
           height: 3rem;
           line-height: 3rem;
+          color: #fff;
         }
       }
     }

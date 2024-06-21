@@ -71,6 +71,7 @@
       align-items: center;
       justify-content: flex-start;
       padding: 1rem;
+      border: 2px solid rgba(255,255,255,0);
       overflow: hidden;
       color:  #FFF;
       font-family: Montserrat;
@@ -79,6 +80,12 @@
       font-weight: 500;
       line-height: 140%;
       white-space: nowrap;
+      cursor: pointer;
+      transition: 0.5s ease;
+      &.active {
+        width: auto!important;
+        border-color: rgba(255,255,255,1);
+      }
       &[data-last]{
         left: auto;
         right: 0;

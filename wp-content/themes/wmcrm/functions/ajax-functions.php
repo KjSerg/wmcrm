@@ -871,10 +871,8 @@ function create_event() {
 					carbon_set_post_meta( $post_id, 'event_answers', $answers_array );
 					carbon_set_post_meta( $post_id, 'event_anonymous', $is_anonymous == 'anonymous' );
 					carbon_set_post_meta( $post_id, 'event_multiple', $type == 'checkbox' );
-					ob_start();
-					the_events_section( false );
-					$res['events_html'] = ob_get_clean();
 				}
+				$res['url'] = get_post_type_archive_link( 'events' );
 			} else {
 				$res['type'] = 'error';
 				$res['msg']  = $post_id->get_error_message();

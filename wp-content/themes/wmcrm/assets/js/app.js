@@ -9761,6 +9761,9 @@ $doc.ready(function () {
           if (resetTriggerTest) $form.trigger('reset');
           $form.find('.form-files-result').html('');
         }
+        if ($form.hasClass('event-window-form')) {
+          (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.closeWindow)();
+        }
         if (r) {
           if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(r)) {
             var res = JSON.parse(r);
@@ -10476,7 +10479,18 @@ function initTriggers() {
   });
 }
 function initPlugins() {
-  $('.selectric').selectric();
+  $('.selectric').selectric().on('change', function () {
+    var $t = $(this);
+    if ($t.attr('name') === 'project_tag') {
+      var $option = $t.find('option:selected');
+      if ($option.length > 0) {
+        var color = $option.attr('data-color');
+        if (color !== undefined) {
+          $t.closest('.project-tag-form').css('background-color', color);
+        }
+      }
+    }
+  });
   $('input.date-input').datepicker({
     changeMonth: true,
     changeYear: true,
@@ -10633,6 +10647,8 @@ $(document).ready(function () {
     if (id === undefined) return;
     $doc.find('.delete-absence').attr('data-id', id);
     $doc.find('.delete-absence').addClass('active');
+    $t.addClass('active');
+    (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showMassage)('Натисніть "Esc" ⌨️ щоб відмінити операцію');
   });
   $doc.on('click', '.delete-absence', function (e) {
     e.preventDefault();
@@ -10794,6 +10810,7 @@ $(document).ready(function () {
     //window-main
     if (e.key === "Escape") {
       $doc.find('.delete-absence').removeClass('active');
+      $doc.find('.calendar-table-item').removeClass('active');
       var $window = $doc.find('.modal-window.active');
       if ($window.length > 0) {
         $window.removeClass('active');
@@ -11325,6 +11342,7 @@ function appendContainer(href) {
       var $requestBody = $(parser.parseFromString(r, "text/html"));
       $container.append($requestBody.find('.container-js').html());
       $pagination.html($requestBody.find('.pagination-js').html());
+      (0,_js__WEBPACK_IMPORTED_MODULE_3__.initPlugins)();
     } else {
       $pagination.html('');
     }
@@ -11353,6 +11371,7 @@ function renderContainer(url) {
       $container.html($requestBody.find('.container-js').html());
       $pagination.html($requestBody.find('.pagination-js').html());
       $postsCounter.html($requestBody.find('.found-posts').html());
+      (0,_js__WEBPACK_IMPORTED_MODULE_3__.initPlugins)();
     } else {
       $pagination.html('');
     }

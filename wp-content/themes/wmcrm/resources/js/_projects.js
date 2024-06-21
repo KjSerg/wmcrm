@@ -317,6 +317,7 @@ function appendContainer(href, $button = false) {
             let $requestBody = $(parser.parseFromString(r, "text/html"));
             $container.append($requestBody.find('.container-js').html());
             $pagination.html($requestBody.find('.pagination-js').html());
+            initPlugins();
         } else {
             $pagination.html('');
         }
@@ -346,6 +347,7 @@ export function renderContainer(url) {
             $container.html($requestBody.find('.container-js').html());
             $pagination.html($requestBody.find('.pagination-js').html());
             $postsCounter.html($requestBody.find('.found-posts').html());
+            initPlugins();
         } else {
             $pagination.html('');
         }
