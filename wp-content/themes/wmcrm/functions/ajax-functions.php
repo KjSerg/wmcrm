@@ -2061,6 +2061,43 @@ function change_project_tag() {
 	die();
 }
 
+add_action( 'wp_ajax_nopriv_search_projects_list', 'search_projects_list' );
+add_action( 'wp_ajax_search_projects_list', 'search_projects_list' );
+function search_projects_list() {
+	$string = $_POST['string'] ?? '';
+	$res    = array();
+	if ( $string ) {
+		$default_args = array(
+			'post_status'    => array( 'publish', 'pending', 'archive' ),
+			'post_type'      => 'projects',
+			'posts_per_page' => - 1,
+		);
+		$args         = $default_args;
+		$args['s']    = $string;
+		$query        = new WP_Query( $args );
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				$id        = get_the_ID();
+				$permalink = get_the_permalink();
+				$title     = get_the_title();
+				$res[]     = array(
+					'name' => $title,
+					'link'  => $permalink,
+				);
+			}
+		}else {
+			$res[] = array(
+				'name' => "Не знайдено",
+			);
+		}
+		wp_reset_postdata();
+		wp_reset_query();
+	}
+	echo json_encode($res);
+	die();
+}
+
 function get_cost_id( $arr = array() ) {
 	$res     = 0;
 	$user_id = $arr['user_id'] ?? false;

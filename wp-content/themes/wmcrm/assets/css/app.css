@@ -1764,11 +1764,17 @@ input {
 }
 .header-form__icon {
   position: absolute;
+  z-index: 1;
   left: 2rem;
   top: 50%;
   transform: translateY(-50%);
   width: 1.5rem;
   height: 1.5rem;
+}
+.header-form .autocomplete {
+  position: relative;
+  display: block;
+  height: 5rem;
 }
 
 .add-event-link {

@@ -14,12 +14,16 @@ export default class Autocomplete {
             e.preventDefault();
             const $this = $(this);
             const val = $this.attr('data-val');
+            const href = $this.attr('href');
             const text = $this.text().trim();
             const $container = $this.closest('.autocomplete');
             const $wrapper = $container.find('.autocomplete-wrapper');
             $container.find('.autocomplete-text').val(text);
             $container.find('.autocomplete-value').val(val);
             $wrapper.hide();
+            if(href !== '#'){
+                window.location.href = href;
+            }
         });
         $doc.mouseup(function (e) {
             let div = $(".autocomplete");
@@ -69,10 +73,15 @@ export default class Autocomplete {
                         res.forEach(function (item) {
                             const val = item.val || false;
                             const name = item.name;
+                            const link = item.link || '#';
                             if (val) {
-                                html += `<a href="#" data-val="${val}" class="autocomplete-item">${name}</a>`;
+                                html += `<a href="${link}" data-val="${val}" class="autocomplete-item">${name}</a>`;
                             } else {
-                                html += `<span class="autocomplete-item not-active">${name}</span>`;
+                                if(link){
+                                    html += `<a href="${link}" data-val="${val}" class="autocomplete-item">${name}</a>`;
+                                }else {
+                                    html += `<span class="autocomplete-item not-active">${name}</span>`;
+                                }
                             }
                         });
                         $wrapper.html(html);

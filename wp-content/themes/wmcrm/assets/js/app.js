@@ -8590,12 +8590,16 @@ var Autocomplete = /*#__PURE__*/function () {
         e.preventDefault();
         var $this = $(this);
         var val = $this.attr('data-val');
+        var href = $this.attr('href');
         var text = $this.text().trim();
         var $container = $this.closest('.autocomplete');
         var $wrapper = $container.find('.autocomplete-wrapper');
         $container.find('.autocomplete-text').val(text);
         $container.find('.autocomplete-value').val(val);
         $wrapper.hide();
+        if (href !== '#') {
+          window.location.href = href;
+        }
       });
       $doc.mouseup(function (e) {
         var div = $(".autocomplete");
@@ -8645,10 +8649,15 @@ var Autocomplete = /*#__PURE__*/function () {
               res.forEach(function (item) {
                 var val = item.val || false;
                 var name = item.name;
+                var link = item.link || '#';
                 if (val) {
-                  html += "<a href=\"#\" data-val=\"".concat(val, "\" class=\"autocomplete-item\">").concat(name, "</a>");
+                  html += "<a href=\"".concat(link, "\" data-val=\"").concat(val, "\" class=\"autocomplete-item\">").concat(name, "</a>");
                 } else {
-                  html += "<span class=\"autocomplete-item not-active\">".concat(name, "</span>");
+                  if (link) {
+                    html += "<a href=\"".concat(link, "\" data-val=\"").concat(val, "\" class=\"autocomplete-item\">").concat(name, "</a>");
+                  } else {
+                    html += "<span class=\"autocomplete-item not-active\">".concat(name, "</span>");
+                  }
                 }
               });
               $wrapper.html(html);

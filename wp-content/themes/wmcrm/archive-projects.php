@@ -25,7 +25,7 @@ $id             = get_the_ID();
 $isLighthouse   = isLighthouse();
 $size           = isLighthouse() ? 'thumbnail' : 'full';
 $projects_url   = get_post_type_archive_link( 'projects' );
-$s              = $_GET['search'] ?? '';
+$s              = $_GET['s'] ?? '';
 $performer      = $_GET['performer'] ?? ( $worksection_id ?: "" );
 $_user_id       = $_GET['user_id'] ?? '';
 $orderby        = $_GET['orderby'] ?? '';
@@ -65,6 +65,9 @@ $current_user_admin = is_current_user_admin();
             <form action="<?php echo $projects_url ?>" method="get" class="projects-filter filter-project-form">
                 <input type="hidden" name="order" class="order-input" value="<?php echo $order; ?>">
                 <input type="hidden" name="type" value="next_project_page">
+				<?php if ( $s ): ?>
+                    <input type="hidden" name="s" value="<?php echo $s ?>">
+				<?php endif; ?>
                 <div class="projects-filter__item">
 					<?php if ( $users ): ?>
                         <select name="user_id" class="selectric submit-on-select">
@@ -163,9 +166,9 @@ $current_user_admin = is_current_user_admin();
 					while ( have_posts() ) {
 						the_post();
 						$id = get_the_ID();
-						the_project($id, '', array(
-                                'tags' => $tags
-                        ));
+						the_project( $id, '', array(
+							'tags' => $tags
+						) );
 					}
 				} else {
 					?>

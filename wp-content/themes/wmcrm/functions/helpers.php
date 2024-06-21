@@ -631,61 +631,60 @@ function set_query_data() {
 	}
 	if ( $search ) {
 		$args['post_status'] = array( 'publish', 'pending', 'archive' );
-	} else {
-		if ( $_user_id ) {
-			$_worksection_id = carbon_get_user_meta( $_user_id, 'worksection_id' );
-			$meta_query      = array(
-				'relation' => 'OR',
-				array(
-					'key'   => '_worksection_user_to_id',
-					'value' => $_worksection_id,
-				),
+	}
+	if ( $_user_id ) {
+		$_worksection_id = carbon_get_user_meta( $_user_id, 'worksection_id' );
+		$meta_query      = array(
+			'relation' => 'OR',
+			array(
+				'key'   => '_worksection_user_to_id',
+				'value' => $_worksection_id,
+			),
+		);
+		if ( $_worksection_id ) {
+			$meta_query[] = array(
+				'key'     => '_project_users_to_id',
+				'value'   => $_user_id,
+				'compare' => 'LIKE',
 			);
-			if ( $_worksection_id ) {
-				$meta_query[] = array(
-					'key'     => '_project_users_to_id',
-					'value'   => $_user_id,
-					'compare' => 'LIKE',
-				);
-			}
-			if ( isset( $args['meta_query'] ) ) {
-				$args['meta_query'][] = $meta_query;
-			} else {
-				$args['meta_query'] = array( $meta_query );
-			}
 		}
-		if ( $tag ) {
-			$tax_query = array(
-				array(
-					'taxonomy' => 'tags',
-					'field'    => 'id',
-					'terms'    => array( $tag )
-				),
-			);
-			if ( isset( $args['meta_query'] ) ) {
-				$args['tax_query'][] = $tax_query;
-			} else {
-				$args['tax_query'] = array( $tax_query );
-			}
+		if ( isset( $args['meta_query'] ) ) {
+			$args['meta_query'][] = $meta_query;
+		} else {
+			$args['meta_query'] = array( $meta_query );
 		}
-		if ( $color ) {
-			$color     = (int) $color;
-			$tax_query = array(
-				array(
-					'taxonomy' => 'colors',
-					'field'    => 'id',
-					'terms'    => array( $color )
-				),
-			);
-			if ( isset( $args['meta_query'] ) ) {
-				$args['tax_query'][] = $tax_query;
-			} else {
-				$args['tax_query'] = array( $tax_query );
-			}
+	}
+	if ( $tag ) {
+		$tax_query = array(
+			array(
+				'taxonomy' => 'tags',
+				'field'    => 'id',
+				'terms'    => array( $tag )
+			),
+		);
+		if ( isset( $args['meta_query'] ) ) {
+			$args['tax_query'][] = $tax_query;
+		} else {
+			$args['tax_query'] = array( $tax_query );
 		}
-		if ( $status ) {
-			$args['post_status'] = $status;
+	}
+	if ( $color ) {
+		$color     = (int) $color;
+		$tax_query = array(
+			array(
+				'taxonomy' => 'colors',
+				'field'    => 'id',
+				'terms'    => array( $color )
+			),
+		);
+		if ( isset( $args['meta_query'] ) ) {
+			$args['tax_query'][] = $tax_query;
+		} else {
+			$args['tax_query'] = array( $tax_query );
 		}
+	}
+	if ( $status ) {
+		$args['post_status'] = $status;
 	}
 	if ( ! empty( $args ) ) {
 		$query = array_merge( $wp_query->query, $args );

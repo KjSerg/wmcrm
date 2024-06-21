@@ -101,7 +101,7 @@ $msg = absences_action();
                                 + Нова задача
                             </a>
 						<?php endif; ?>
-                        <form method="get" class="header-form" action="<?php echo $projects_url ?>">
+                        <form method="get" class="header-form " action="<?php echo $projects_url ?>">
                             <div class="header-form__icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="16" viewBox="0 0 15 16"
                                      fill="none">
@@ -110,8 +110,13 @@ $msg = absences_action();
                                           fill="#9B9EBE"/>
                                 </svg>
                             </div>
-                            <input type="text" name="s" placeholder="Пошук..." class="header-form__input"
-                                   value="<?php echo $s ?>">
+                            <label class="autocomplete">
+                                <input type="text" name="s" placeholder="Пошук..."
+                                       data-action="search_projects_list"
+                                       class="header-form__input autocomplete-input autocomplete-text"
+                                       value="<?php echo $s ?>">
+                                <span class="autocomplete-wrapper" style="display: none"></span>
+                            </label>
                         </form>
                     </div>
                 </div>
