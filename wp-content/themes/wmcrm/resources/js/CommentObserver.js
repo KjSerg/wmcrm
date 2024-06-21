@@ -10,6 +10,52 @@ export default class CommentObserver {
         this.$doc = $(document);
         this.obsever();
         this.readingCommentsInViewport();
+        this.showComment();
+    }
+
+    getQueryParams() {
+        let params = {};
+        let queryString = window.location.search.substring(1);
+        let queryArray = queryString.split("&");
+
+        for (let i = 0; i < queryArray.length; i++) {
+            let pair = queryArray[i].split("=");
+            let key = decodeURIComponent(pair[0]);
+            let value = decodeURIComponent(pair[1] || '');
+            params[key] = value;
+        }
+
+        return params;
+    }
+
+    getHash() {
+        return window.location.hash.substring(1);
+    }
+
+    highlightText(element, textToHighlight) {
+        $(element).html(function(_, html) {
+            let regex = new RegExp('(' + textToHighlight + ')', 'gi');
+            return html.replace(regex, '<mark>$1</mark>');
+        });
+    }
+
+    showComment() {
+        const _this = this;
+        const hash = _this.getHash();
+        const params = _this.getQueryParams();
+        console.log(hash)
+        if(hash === undefined) return;
+        if(hash === '') return;
+        if (params.string !== undefined) {
+            _this.highlightText('.content', params.string);
+            const $el = $(document).find('#' + hash);
+            if ($el.length === 0) return;
+            $el.addClass('showing-element');
+            setTimeout(function () {
+                $el.removeClass('showing-element');
+            }, 5000);
+
+        }
     }
 
     readingComment(id) {
@@ -17,7 +63,7 @@ export default class CommentObserver {
         const isRequesting = _this.isRequesting;
         if (isRequesting || _this.readedCommentID.includes(id)) {
             const test = !_this.requestQueue.includes(id) || !_this.readedCommentID.includes(id);
-            if(!_this.requestQueue.includes(id)) {
+            if (!_this.requestQueue.includes(id)) {
                 _this.requestQueue.push(id);
             }
             console.log(_this.requestQueue)

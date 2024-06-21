@@ -1,4 +1,17 @@
 <?php
+$string         = $_GET['string'] ?? '';
+$comments_count = $_GET['comments_count'] ?? '';
+$redirected     = $_GET['redirected'] ?? 'false';
+$id                        = get_the_ID();
+if ( $string && $redirected == 'false' ) {
+	$permalink  = get_the_permalink();
+	$comment_id = get_comment_id_by_string( $string, $id );
+	if ( $comment_id ) {
+        var_dump($comment_id);
+		header( 'Location: ' . $permalink . "?comments_count=$comments_count&string=$string&redirected=true#comment-$comment_id" );
+		die();
+	}
+}
 $var             = variables();
 $set             = $var['setting_home'];
 $assets          = $var['assets'];
@@ -21,7 +34,6 @@ if ( $route == 'edit' && $is_admin ) {
 if ( $subtype !== 'modal' ) {
 	get_header();
 }
-$id                        = get_the_ID();
 $title                     = get_the_title();
 $isLighthouse              = isLighthouse();
 $size                      = isLighthouse() ? 'thumbnail' : 'full';
@@ -92,7 +104,7 @@ require_once ABSPATH . 'wp-admin/includes/media.php';
 				<?php endif; ?>
                 <div class="project-control">
                     <div class="project-control__time">
-                        <?php echo get_project_time($id); ?>
+						<?php echo get_project_time( $id ); ?>
                     </div>
 					<?php if ( ! $is_admin ): ?>
 						<?php if ( $is_performer && $current_project != $id ): ?>

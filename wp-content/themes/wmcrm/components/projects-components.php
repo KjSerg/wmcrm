@@ -1,6 +1,12 @@
 <?php
 function the_project( $id = false, $cls = '', $args = array() ) {
-	$cockie             = $_COOKIE['selected_project'] ?? '';
+	$cockie          = $_COOKIE['selected_project'] ?? '';
+	$string          = $_GET['string'] ?? '';
+	$search_by       = $_GET['search_by'] ?? '';
+	$link_to_comment = '';
+	if ( $string && $search_by == 'comments' ) {
+		$link_to_comment = get_the_permalink( $id ) . '?comments_count=-1&string=' . $string;
+	}
 	$current_user_admin = is_current_user_admin();
 	$id                 = $id ?: get_the_ID();
 	$parent_id          = wp_get_post_parent_id( $id );
@@ -29,7 +35,8 @@ function the_project( $id = false, $cls = '', $args = array() ) {
 			?>
         </div>
         <div class="project-item-name">
-            <a href="<?php echo get_the_permalink( $id ) ?>" class="project-item-title link-js open-in-modal">
+            <a href="<?php echo $link_to_comment ?: get_the_permalink( $id ) ?>"
+               class="project-item-title  <?php echo !$link_to_comment ?'  link-js open-in-modal': '' ?>">
 				<?php echo get_the_title( $id ); ?>
             </a>
 			<?php the_project_tags_html( $tags, $tag_list ); ?>
@@ -296,14 +303,14 @@ function the_post_status_html( $post_status, $id ) {
 function the_projects_page() {
 	$type    = $_GET['type'] ?? '';
 	$arr     = array();
-	$tags               = get_terms( array(
+	$tags    = get_terms( array(
 		'taxonomy'   => 'tags',
 		'hide_empty' => false,
 	) );
 	$user_id = get_current_user_id();
 	if ( $_GET && $user_id ) {
 		foreach ( $_GET as $key => $val ) {
-			if ( $key != 'type' && $key != 's' && $val != '' ) {
+			if ( $key != 'type' && $key != 's' && $val != '' && $key != 'string' && $key != 'search_by' ) {
 				$arr[ $key ] = $val;
 			}
 		}
@@ -324,9 +331,9 @@ function the_projects_page() {
 				while ( have_posts() ) {
 					the_post();
 					$id = get_the_ID();
-					the_project($id, '', array(
+					the_project( $id, '', array(
 						'tags' => $tags
-					));
+					) );
 				}
 			} else {
 				?>

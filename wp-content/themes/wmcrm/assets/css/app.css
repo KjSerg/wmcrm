@@ -1882,7 +1882,7 @@ input {
 .timer-control {
   opacity: 0;
   min-width: 47rem;
-  z-index: 1;
+  z-index: 2;
   position: absolute;
   top: 100%;
   right: 0;
@@ -5356,4 +5356,10 @@ button {
 
 .presets-wrapper > * {
   margin-bottom: 2rem;
+}
+
+.showing-element {
+  transform: scale(1.01);
+  border-radius: 1rem;
+  border: 1px solid #7BB500;
 }

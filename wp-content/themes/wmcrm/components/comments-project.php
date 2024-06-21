@@ -1,22 +1,26 @@
 <?php
 function the_comments( $id ) {
+	$comments_count          = $_GET['comments_count'] ?? '';
 	$link                    = get_the_permalink( $id );
 	$default_posts_per_page  = get_option( 'posts_per_page' );
 	$worksection_comment_ids = carbon_get_post_meta( $id, 'worksection_comment_ids' );
 	$comment_ids             = carbon_get_post_meta( $id, 'project_comment_ids' );
-
 	if ( $comment_ids || $worksection_comment_ids ) {
 		$worksection_comment_ids = explode( ',', $worksection_comment_ids );
 		$comment_ids             = explode( ',', $comment_ids );
 		$comments_collection     = array_merge( $worksection_comment_ids, $comment_ids );
 		$paged                   = $_GET['pagenumber'] ?? 1;
-		$query                   = new WP_Query( array(
+		$query_args              = array(
 			'post_type'      => array( 'comments', 'discussion' ),
 			'post_status'    => 'publish',
 			'posts_per_page' => $default_posts_per_page,
 			'post__in'       => $comments_collection,
 			'paged'          => $paged,
-		) );
+		);
+		if ( $comments_count ) {
+			$query_args['posts_per_page'] = (int) $comments_count;
+		}
+		$query = new WP_Query( $query_args );
 		if ( $query->have_posts() ) {
 			?>
             <div class="section-comments-list container-js"><?php

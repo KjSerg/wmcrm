@@ -8852,8 +8852,55 @@ var CommentObserver = /*#__PURE__*/function () {
     this.$doc = $(document);
     this.obsever();
     this.readingCommentsInViewport();
+    this.showComment();
   }
   return _createClass(CommentObserver, [{
+    key: "getQueryParams",
+    value: function getQueryParams() {
+      var params = {};
+      var queryString = window.location.search.substring(1);
+      var queryArray = queryString.split("&");
+      for (var i = 0; i < queryArray.length; i++) {
+        var pair = queryArray[i].split("=");
+        var key = decodeURIComponent(pair[0]);
+        var value = decodeURIComponent(pair[1] || '');
+        params[key] = value;
+      }
+      return params;
+    }
+  }, {
+    key: "getHash",
+    value: function getHash() {
+      return window.location.hash.substring(1);
+    }
+  }, {
+    key: "highlightText",
+    value: function highlightText(element, textToHighlight) {
+      $(element).html(function (_, html) {
+        var regex = new RegExp('(' + textToHighlight + ')', 'gi');
+        return html.replace(regex, '<mark>$1</mark>');
+      });
+    }
+  }, {
+    key: "showComment",
+    value: function showComment() {
+      var _this = this;
+      var hash = _this.getHash();
+      var params = _this.getQueryParams();
+      console.log(hash);
+      if (hash === undefined) return;
+      if (hash === '') return;
+      if (params.string !== undefined) {
+        _this.highlightText('.content', params.string);
+        var $el = $(document).find('#' + hash);
+        if ($el.length === 0) return;
+        $el.addClass('showing-element');
+        setTimeout(function () {
+          $el.removeClass('showing-element');
+        }, 5000);
+      }
+    }
+  }, {
     key: "readingComment",
     value: function readingComment(id) {
       var _this = this;

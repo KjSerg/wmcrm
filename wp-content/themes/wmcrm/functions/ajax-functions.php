@@ -2075,6 +2075,11 @@ function search_projects_list() {
 		$args         = $default_args;
 		$args['s']    = $string;
 		$query        = new WP_Query( $args );
+		$projects_url = get_post_type_archive_link( 'projects' );
+		$res[]        = array(
+			'name' => "Шукати в коментарях (бета)",
+			'link' => $projects_url . '?string=' . $string . '&search_by=comments',
+		);
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) {
 				$query->the_post();
@@ -2083,18 +2088,18 @@ function search_projects_list() {
 				$title     = get_the_title();
 				$res[]     = array(
 					'name' => $title,
-					'link'  => $permalink,
+					'link' => $permalink,
 				);
 			}
-		}else {
+		} else {
 			$res[] = array(
-				'name' => "Не знайдено",
+				'name' => "Проєктів не знайдено",
 			);
 		}
 		wp_reset_postdata();
 		wp_reset_query();
 	}
-	echo json_encode($res);
+	echo json_encode( $res );
 	die();
 }
 

@@ -611,12 +611,23 @@ function get_performers() {
 }
 
 function set_query_data() {
+	$search_by      = $_GET['search_by'] ?? '';
+	$string         = $_GET['string'] ?? '';
 	$user_id        = get_current_user_id();
 	$worksection_id = carbon_get_user_meta( $user_id, 'worksection_id' );
-	global $wp_query;
-	$args      = array(
+	$args           = array(
 		'post_status' => array( 'publish', 'pending' ),
 	);
+	if ( $search_by == 'comments' && $string ) {
+		$projects_ids = get_projects_by_comments( $string );
+		if ( $projects_ids == 0 ) {
+			$args['post__in'] = array( 0 );
+		} else {
+			$args['post__in']    = $projects_ids;
+			$args['post_status'] = array( 'publish', 'pending', 'archive' );
+		}
+	}
+	global $wp_query;
 	$performer = $_GET['performer'] ?? ( $worksection_id ?: '' );
 	$user      = $_GET['user'] ?? "";
 	$_user_id  = $_GET['user_id'] ?? "";
@@ -626,6 +637,7 @@ function set_query_data() {
 	$order     = $_GET['order'] ?? '';
 	$orderby   = $_GET['orderby'] ?? '';
 	$color     = $_GET['color'] ?? '';
+
 	if ( $orderby == 'activity' ) {
 		$args['orderby'] = 'modified';
 	}
@@ -662,7 +674,7 @@ function set_query_data() {
 				'terms'    => array( $tag )
 			),
 		);
-		if ( isset( $args['meta_query'] ) ) {
+		if ( isset( $args['tax_query'] ) ) {
 			$args['tax_query'][] = $tax_query;
 		} else {
 			$args['tax_query'] = array( $tax_query );
@@ -677,7 +689,7 @@ function set_query_data() {
 				'terms'    => array( $color )
 			),
 		);
-		if ( isset( $args['meta_query'] ) ) {
+		if ( isset( $args['tax_query'] ) ) {
 			$args['tax_query'][] = $tax_query;
 		} else {
 			$args['tax_query'] = array( $tax_query );
@@ -690,6 +702,67 @@ function set_query_data() {
 		$query = array_merge( $wp_query->query, $args );
 		query_posts( $query );
 	}
+}
+
+function get_projects_by_comments( $string ) {
+	$res          = array();
+	$default_args = array(
+		'post_status'    => array( 'publish' ),
+		'post_type'      => array( 'discussion', "comments" ),
+		'posts_per_page' => - 1,
+		's'              => $string
+	);
+	$query        = new WP_Query( $default_args );
+	if ( $query->have_posts() ) {
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			$id         = get_the_ID();
+			$project_id = carbon_get_post_meta( $id, 'discussion_project_id' ) ?: carbon_get_post_meta( $id, 'comment_project_id' );
+
+			if ( $project_id ) {
+				$res[] = (int) $project_id;
+			}
+		}
+	}
+	wp_reset_postdata();
+	wp_reset_query();
+
+	return empty( $res ) ? 0 : $res;
+}
+
+function get_comment_id_by_string( $string, $project_id = 0 ) {
+	$res          = 0;
+	$default_args = array(
+		'post_status'    => array( 'publish' ),
+		'post_type'      => array( 'discussion', "comments" ),
+		'posts_per_page' => 1,
+		's'              => $string
+	);
+	if ( $project_id ) {
+		$default_args['meta_query'] = array(
+			'relation' => 'OR',
+			array(
+				'key'   => '_comment_project_id',
+				'value' => $project_id,
+			),
+			array(
+				'key'   => '_discussion_project_id',
+				'value' => $project_id,
+			),
+		);
+	}
+	$query = new WP_Query( $default_args );
+	if ( $query->have_posts() ) {
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			$id  = get_the_ID();
+			$res = $id;
+		}
+	}
+	wp_reset_postdata();
+	wp_reset_query();
+
+	return $res;
 }
 
 function user_filter_redirect() {
@@ -732,6 +805,7 @@ function set_sub_query_data() {
 }
 
 function is_empty_query() {
+	$string         = $_GET['string'] ?? '';
 	$search         = $_GET['s'] ?? '';
 	$color          = $_GET['color'] ?? '';
 	$tag            = $_GET['project-tag'] ?? '';
@@ -743,7 +817,7 @@ function is_empty_query() {
 	$user           = $_GET['user'] ?? "";
 	$user_id        = $_GET['user_id'] ?? "";
 
-	return ! $search && ! $tag && ! $status && ! $performer && ! $user && ! $orderby && ! $user_id && ! $color;
+	return ! $search && ! $tag && ! $status && ! $performer && ! $user && ! $orderby && ! $user_id && ! $color && ! $string;
 }
 
 function get_children_projects( $id ) {
