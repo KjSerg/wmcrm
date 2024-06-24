@@ -208,11 +208,10 @@
       color: rgba(155, 158, 190, 0.60);
       text-align: center;
       font-family: Montserrat;
-      font-size: 1.6rem;
+      font-size: 1.4rem;
       font-style: normal;
-      font-weight: 600;
+      font-weight: 500;
       line-height: 150%;
-      letter-spacing: 0.8px;
       text-transform: uppercase;
       border-bottom: 3px solid rgba(#C9085F, 0);
       transition: 0.4s ease;
@@ -220,23 +219,20 @@
         font-size: 1.4rem;
 
       }
-
       &.active {
         color: #FFF;
         border-bottom-color: rgba(#C9085F, 1);
       }
-
       &:hover {
         color: #FFF;
       }
     }
 
     li {
-      margin-right: 4rem;
+      margin-right: 2rem;
 
       @media (max-width: 870px) {
         margin-right: 2rem;
-
       }
 
       &:last-child {
@@ -254,7 +250,9 @@
     position: relative;
     width: 28rem;
 
-
+    @media (max-width: 980px){
+      width: 20rem;
+    }
     @media (max-width: 870px) {
       width: 100%;
       max-width: 30rem;

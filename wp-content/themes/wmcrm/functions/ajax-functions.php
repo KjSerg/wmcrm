@@ -1138,11 +1138,11 @@ function change_user_data() {
 			$last_name  = get_user_meta( $user->ID, 'last_name', true );
 			$full_name  = trim( $last_name . ' ' . $first_name );
 			if ( ! empty( $full_name ) && ( $user->data->display_name != $full_name ) ) {
+				change_project_users($user->data->display_name, $full_name);
 				$userdata = array(
 					'ID'           => $user_id,
 					'display_name' => $full_name,
 				);
-
 				wp_update_user( $userdata );
 				$change_data['name'] = $user->display_name;
 			}
@@ -1234,11 +1234,11 @@ function change_user() {
 			$last_name  = get_user_meta( $user->ID, 'last_name', true );
 			$full_name  = trim( $last_name . ' ' . $first_name );
 			if ( ! empty( $full_name ) && ( $user->data->display_name != $full_name ) ) {
+				change_project_users($user->data->display_name, $full_name);
 				$userdata = array(
 					'ID'           => $user_id,
 					'display_name' => $full_name,
 				);
-
 				wp_update_user( $userdata );
 				$change_data['name'] = $user->display_name;
 			}

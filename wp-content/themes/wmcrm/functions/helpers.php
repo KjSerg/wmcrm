@@ -1784,3 +1784,39 @@ function is_current_tag( $tag_id, $tags ) {
 
 	return false;
 }
+
+function change_project_users( $old_name, $new_name ) {
+	$args  = array(
+		'post_type'      => 'projects',
+		'posts_per_page' => - 1,
+		'post_status'    => array( 'publish', 'pending', 'archive' ),
+		'meta_query'     => array(
+			'relation' => 'OR',
+			array(
+				'key'     => '_project_users_to_name',
+				'value'   => $old_name,
+				'compare' => 'LIKE',
+			),
+			array(
+				'key'     => '_project_users_observer_name',
+				'value'   => $old_name,
+				'compare' => 'LIKE',
+			)
+		)
+	);
+	$query = new WP_Query( $args );
+	if ( $query->have_posts() ) {
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			$id                          = get_the_ID();
+			$project_users_to_name       = carbon_get_post_meta( $id, 'project_users_to_name' );
+			$project_users_observer_name = carbon_get_post_meta( $id, 'project_users_observer_name' );
+			$project_users_to_name       = str_replace( $old_name, $new_name, $project_users_to_name );
+			$project_users_observer_name = str_replace( $old_name, $new_name, $project_users_observer_name );
+			carbon_set_post_meta( $id, 'project_users_to_name', $project_users_to_name );
+			carbon_set_post_meta( $id, 'project_users_observer_name', $project_users_observer_name );
+		}
+	}
+	wp_reset_postdata();
+	wp_reset_query();
+}

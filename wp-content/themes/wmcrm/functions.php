@@ -64,6 +64,24 @@ function disable_smilies() {
 	update_option( 'use_smilies', 0 );
 }
 
+add_action( 'init', 'logout_ira_iphone' );
+function logout_ira_iphone() {
+	$user_id = get_current_user_id();
+	if($user_id){
+		if($user_id == 9) {
+			$user_agent = get_user_agent();
+			$pos = strpos($user_agent, 'iPhone;');
+			if($pos !== false){
+				if ( is_user_logged_in() ) {
+					wp_logout();
+					wp_redirect( home_url() );
+					exit();
+				}
+			}
+		}
+	}
+}
+
 add_action( 'init', 'set_current_user_status' );
 function set_current_user_status() {
 	if ( $user_id = get_current_user_id() ) {
