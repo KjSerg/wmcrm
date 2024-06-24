@@ -64,7 +64,7 @@ function disable_smilies() {
 	update_option( 'use_smilies', 0 );
 }
 
-add_action( 'init', 'logout_ira_iphone' );
+//add_action( 'init', 'logout_ira_iphone' );
 function logout_ira_iphone() {
 	$user_id = get_current_user_id();
 	if($user_id){

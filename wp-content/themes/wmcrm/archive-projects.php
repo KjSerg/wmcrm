@@ -68,22 +68,24 @@ $current_user_admin = is_current_user_admin();
 				<?php if ( $s ): ?>
                     <input type="hidden" name="s" value="<?php echo $s ?>">
 				<?php endif; ?>
-                <div class="projects-filter__item">
-					<?php if ( $users ): ?>
-                        <select name="user_id" class="selectric submit-on-select">
-                            <option <?php echo $_user_id == '' ? 'selected' : ''; ?> value="">Виконавець</option>
-							<?php foreach ( $users as $user ): $userID = $user->ID;
-								$ws_id = carbon_get_user_meta( $userID, 'worksection_id' ) ?>
-                                <option <?php echo $_user_id == $userID ? 'selected' : ''; ?>
-                                        value="<?php echo esc_attr( $userID ) ?>">
-									<?php echo $user->display_name; ?>
-                                </option>
-							<?php endforeach; ?>
-                        </select>
-					<?php else: ?>
-                        Виконавець
-					<?php endif; ?>
-                </div>
+				<?php if ( $is_admin ): ?>
+                    <div class="projects-filter__item">
+						<?php if ( $users ): ?>
+                            <select name="user_id" class="selectric submit-on-select">
+                                <option <?php echo $_user_id == '' ? 'selected' : ''; ?> value="">Виконавець</option>
+								<?php foreach ( $users as $user ): $userID = $user->ID;
+									$ws_id = carbon_get_user_meta( $userID, 'worksection_id' ) ?>
+                                    <option <?php echo $_user_id == $userID ? 'selected' : ''; ?>
+                                            value="<?php echo esc_attr( $userID ) ?>">
+										<?php echo $user->display_name; ?>
+                                    </option>
+								<?php endforeach; ?>
+                            </select>
+						<?php else: ?>
+                            Виконавець
+						<?php endif; ?>
+                    </div>
+				<?php endif; ?>
                 <div class="projects-filter__item">
 
                     <select name="orderby" class="selectric trigger-on-select submit-on-select">

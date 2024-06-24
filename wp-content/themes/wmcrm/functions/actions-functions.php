@@ -14,7 +14,7 @@ function absences_action() {
 			);
 			$id      = wp_update_post( $my_post, true );
 			if ( ! is_wp_error( $id ) ) {
-				$res     = '<div class="admin-notification">Відгул підтверджений <a href="#" class="close-notice">x</a></div>';
+				$res     = '<div class="admin-notification">Відгул підтверджений <a href="#" class="close-notice">Прочитано ☑️</a></div>';
 				$user_id = get_post_author_id( $id );
 				if ( $user_id ) {
 					if ( ! carbon_get_user_meta( $user_id, 'fired' ) ) {
@@ -71,7 +71,7 @@ function absences_action() {
 				$user_id = get_post_author_id( $id );
 				if ( $current_user_id == $user_id || is_current_user_admin() ) {
 					if ( wp_delete_post( $id ) ) {
-						$res       = '<div class="admin-notification">Відгул видалено і непідтверджений <a href="#" class="close-notice">x</a></div>';
+						$res       = '<div class="admin-notification">Відгул видалено і непідтверджений <a href="#" class="close-notice">Прочитано ☑️</a></div>';
 						$post_data = array(
 							'post_type'   => 'notice',
 							'post_title'  => 'Відгул видалено і непідтверджений',

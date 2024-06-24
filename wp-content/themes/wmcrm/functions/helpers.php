@@ -636,30 +636,50 @@ function set_query_data() {
 	$status    = $_GET['project-status'] ?? '';
 	$order     = $_GET['order'] ?? '';
 	$orderby   = $_GET['orderby'] ?? '';
-	$color     = $_GET['color'] ?? '';
-
 	if ( $orderby == 'activity' ) {
 		$args['orderby'] = 'modified';
 	}
 	if ( $search ) {
 		$args['post_status'] = array( 'publish', 'pending', 'archive' );
 	}
-	if ( $_user_id ) {
-		$_worksection_id = carbon_get_user_meta( $_user_id, 'worksection_id' );
-		$meta_query      = array(
+	if ( is_current_user_admin() ) {
+		if ( $_user_id ) {
+			$_worksection_id = carbon_get_user_meta( $_user_id, 'worksection_id' );
+			$meta_query      = array(
+				'relation' => 'OR',
+				array(
+					'key'   => '_worksection_user_to_id',
+					'value' => $_worksection_id,
+				),
+			);
+			if ( $_worksection_id ) {
+				$meta_query[] = array(
+					'key'     => '_project_users_to_id',
+					'value'   => $_user_id,
+					'compare' => 'LIKE',
+				);
+			}
+			if ( isset( $args['meta_query'] ) ) {
+				$args['meta_query'][] = $meta_query;
+			} else {
+				$args['meta_query'] = array( $meta_query );
+			}
+		}
+	} else {
+		$current_user = get_user_by( 'id', $user_id );
+		$meta_query   = array(
 			'relation' => 'OR',
 			array(
-				'key'   => '_worksection_user_to_id',
-				'value' => $_worksection_id,
-			),
-		);
-		if ( $_worksection_id ) {
-			$meta_query[] = array(
-				'key'     => '_project_users_to_id',
-				'value'   => $_user_id,
+				'key'     => '_project_users_to_name',
+				'value'   => $current_user->display_name,
 				'compare' => 'LIKE',
-			);
-		}
+			),
+			array(
+				'key'     => '_project_users_observer_name',
+				'value'   => $current_user->display_name,
+				'compare' => 'LIKE',
+			)
+		);
 		if ( isset( $args['meta_query'] ) ) {
 			$args['meta_query'][] = $meta_query;
 		} else {
@@ -680,26 +700,16 @@ function set_query_data() {
 			$args['tax_query'] = array( $tax_query );
 		}
 	}
-	if ( $color ) {
-		$color     = (int) $color;
-		$tax_query = array(
-			array(
-				'taxonomy' => 'colors',
-				'field'    => 'id',
-				'terms'    => array( $color )
-			),
-		);
-		if ( isset( $args['tax_query'] ) ) {
-			$args['tax_query'][] = $tax_query;
-		} else {
-			$args['tax_query'] = array( $tax_query );
-		}
-	}
 	if ( $status ) {
 		$args['post_status'] = $status;
 	}
 	if ( ! empty( $args ) ) {
 		$query = array_merge( $wp_query->query, $args );
+		if ( $user_id == 4 ) {
+			echo '<pre>';
+			var_dump( $query );
+			echo '</pre>';
+		}
 		query_posts( $query );
 	}
 }
@@ -1648,7 +1658,7 @@ function get_notices() {
 					'title' => $title,
 					'type'  => $type,
 					'id'    => $id,
-					'html'  => '<div data-id="' . $id . '" class="admin-' . $type . '">' . $title . ' <a href="#" data-id="' . $id . '" class="close-notice">x</a> </div>',
+					'html'  => '<div data-id="' . $id . '" class="admin-' . $type . '">' . $title . ' <a href="#" data-id="' . $id . '" class="close-notice">Прочитано ☑️</a> </div>',
 				);
 			}
 		}
@@ -1819,4 +1829,52 @@ function change_project_users( $old_name, $new_name ) {
 	}
 	wp_reset_postdata();
 	wp_reset_query();
+}
+
+function set_projects_users() {
+	if ( is_current_user_admin() ) {
+		$users = get_users();
+		foreach ( $users as $_user ) {
+			$__id = $_user->ID;
+			$wid  = carbon_get_user_meta( $__id, 'worksection_id' );
+			if ( $wid ) {
+				if ( ! carbon_get_user_meta( $__id, 'fired' ) ) {
+					$args  = array(
+						'post_type'      => 'projects',
+						'posts_per_page' => - 1,
+						'post_status'    => array( 'publish', 'pending', 'archive' ),
+						'meta_query'     => array(
+							array(
+								'key'   => '_worksection_user_to_id',
+								'value' => $wid
+							),
+						)
+					);
+					$query = new WP_Query( $args );
+					if ( $query->have_posts() ) {
+						while ( $query->have_posts() ) {
+							$query->the_post();
+							$id                          = get_the_ID();
+							$project_users_to_name       = carbon_get_post_meta( $id, 'project_users_to_name' );
+							$project_users_observer_name = carbon_get_post_meta( $id, 'project_users_observer_name' );
+							if ( ! $project_users_to_name ) {
+								$project_users_to_name = $_user->display_name;
+								carbon_set_post_meta( $id, 'project_users_to_name', $project_users_to_name );
+								carbon_set_post_meta( $id, 'project_users_to_id', $__id );
+								echo $id . '<br>';
+							}
+							if ( ! $project_users_observer_name ) {
+								$project_users_observer_name = $_user->display_name;
+								carbon_set_post_meta( $id, 'project_users_observer_name', $project_users_observer_name );
+								carbon_set_post_meta( $id, 'project_users_observer_id', $__id );
+							}
+						}
+					}
+					wp_reset_postdata();
+					wp_reset_query();
+				}
+			}
+		}
+	}
+	die();
 }

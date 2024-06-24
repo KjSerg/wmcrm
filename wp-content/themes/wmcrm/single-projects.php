@@ -1,4 +1,7 @@
 <?php
+//if(get_the_ID() == 3790){
+//	set_projects_users();
+//}
 $string         = $_GET['string'] ?? '';
 $comments_count = $_GET['comments_count'] ?? '';
 $redirected     = $_GET['redirected'] ?? 'false';
