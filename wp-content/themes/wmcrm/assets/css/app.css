@@ -3986,10 +3986,13 @@ input {
   color: #333;
   text-align: center;
   font-family: Montserrat;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-style: normal;
   font-weight: 400;
   line-height: 140%;
+}
+.days-table-column.days-sub-sum-column {
+  background-color: #7BB500;
 }
 .days-table-column:nth-child(8), .days-table-column:nth-child(7) {
   background: rgba(136, 158, 252, 0.1);
@@ -3999,6 +4002,19 @@ input {
 }
 .days-table-wrapper {
   overflow: auto;
+}
+.days-table-week-result {
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 1.6rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
+  color: #fff;
+}
+.days-table-week-result.deficit {
+  color: #333;
+  font-weight: 600;
 }
 .days-controls {
   position: absolute;
@@ -4516,6 +4532,17 @@ b.button {
 }
 .text ul li:before, .ql-snow .ql-editor ul li:before {
   content: "-";
+}
+.text ol, .ql-snow .ql-editor ol {
+  counter-reset: list;
+}
+.text ol li, .ql-snow .ql-editor ol li {
+  padding-left: 1rem;
+}
+.text ol li:before, .ql-snow .ql-editor ol li:before {
+  counter-increment: list;
+  content: counter(list) ". ";
+  font-weight: 600;
 }
 .text img, .ql-snow .ql-editor img {
   width: 100%;

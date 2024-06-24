@@ -21,7 +21,7 @@ $get_user_id   = $_GET['user_id'] ?? '';
 if ( ! $is_admin ) {
 	$get_user_id = $current_user_id;
 }
-$_get_month         = $_GET['month'] ?? '';
+$_get_month        = $_GET['month'] ?? '';
 $get_month         = $_GET['month'] ?? $current_month;
 $get_week          = $_GET['week'] ?? '';
 $active_dates_week = $get_week ? get_dates_of_week( $current_year, $get_week ) : $dates_week;
@@ -102,9 +102,9 @@ get_header();
 									}
 								}
 								if ( $last_day_m != $get_month ) {
-                                    if($_get_month != ''){
-	                                    $attr .= ' disabled';
-                                    }
+									if ( $_get_month != '' ) {
+										$attr .= ' disabled';
+									}
 								}
 								?>
                                 <option data-selector=".week-js" data-val="<?php echo $w; ?>"
@@ -151,9 +151,11 @@ get_header();
 								?>
                                 <div class="days-table-column"><?php echo convert_date_to_day_format( $item ) ?></div>
 							<?php endforeach; endif; ?>
+                            <div class="days-table-column days-sub-sum-column">Підсумок</div>
                         </div>
 						<?php if ( $active_users ): foreach ( $active_users as $_user ):
 							$_userID = $_user->ID;
+							$user_stopwatches = array();
 							if ( ! is__user_admin( $_userID ) ):
 								$_attr = '';
 								if ( $get_user_id ) {
@@ -180,7 +182,7 @@ get_header();
 												$costs_confirmed = carbon_get_post_meta( $cost_id, 'costs_confirmed' );
 												$costs_text_list = carbon_get_post_meta( $cost_id, 'costs_text_list' );
 												$costs_sum_seconds = carbon_get_post_meta( $cost_id, 'costs_sum' );
-//												var_dump(get_stopwatches( $cost_id ));
+												$stopwatch = get_stopwatches( $cost_id );
 												$res = $costs_sum;
 												$changed = false;
 												if ( $sum_hour_arr = explode( ':', $costs_sum ) ) {
@@ -189,10 +191,12 @@ get_header();
 													$res = $costs_sum;
 												}
 												if ( $costs_sum_hour_change && $costs_confirmed ) {
-													$changed      = $costs_sum_hour_change;
-													$css_class    .= ' changed-time';
-													$title_attr[] = 'Змінено ' . $costs_confirmed;
+													$changed             = $costs_sum_hour_change;
+													$css_class           .= ' changed-time';
+													$title_attr[]        = 'Змінено ' . $costs_confirmed;
+													$stopwatch['change'] = $changed;
 												}
+												$user_stopwatches[] = $stopwatch;
 												if ( $costs_status == 1 || $costs_status == - 1 ) {
 													if ( $current_date != $item ) {
 														$log          = carbon_get_post_meta( $cost_id, 'post_data' );
@@ -228,6 +232,9 @@ get_header();
 											<?php endif; ?>
                                         </div>
 									<?php endforeach; endif; ?>
+                                    <div class="days-table-column days-sub-sum-column">
+										<?php the_user_week_result( $user_stopwatches ); ?>
+                                    </div>
                                 </div>
 							<?php endif; endforeach; endif; ?>
                     </div>

@@ -375,6 +375,19 @@ b.button{
       }
     }
   }
+  ol {
+    counter-reset: list;
+    li {
+      padding-left: 1rem;
+
+      &:before {
+        counter-increment: list;
+        content: counter(list) ". ";
+
+        font-weight: 600;
+      }
+    }
+  }
 
   img {
     width: 100%;

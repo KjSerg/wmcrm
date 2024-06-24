@@ -1483,8 +1483,9 @@ function get_text_user_status( $status ) {
 }
 
 function get_stopwatches( $id ) {
-	$time = time();
-	$res  = array(
+	$time         = time();
+	$current_date = date( 'd-m-Y', $time );
+	$res          = array(
 		'pause' => array(
 			'seconds' => 0,
 			'string'  => '00:00:00'
@@ -1495,14 +1496,19 @@ function get_stopwatches( $id ) {
 		),
 	);
 	if ( $id && get_post( $id ) ) {
-		$costs_work_list  = carbon_get_post_meta( $id, 'costs_work_list' ) ?: array();
-		$costs_pause_list = carbon_get_post_meta( $id, 'costs_pause_list' ) ?: array();
+		$date                     = carbon_get_post_meta( $id, 'costs_date' );
+		$costs_sum                = carbon_get_post_meta( $id, 'costs_sum' );
+		$costs_work_list          = carbon_get_post_meta( $id, 'costs_work_list' ) ?: array();
+		$costs_pause_list         = carbon_get_post_meta( $id, 'costs_pause_list' ) ?: array();
+		$res['work']['costs_sum'] = (int) $costs_sum;
 		if ( $costs_work_list ) {
 			foreach ( $costs_work_list as $item ) {
 				$start  = (int) $item['start'];
 				$finish = (int) $item['finish'];
-				if ( $start == $finish ) {
-					$finish = $time;
+				if ( $current_date == $date ) {
+					if ( $start == $finish ) {
+						$finish = $time;
+					}
 				}
 				$result                 = $finish - $start;
 				$res['work']['seconds'] = $res['work']['seconds'] + $result;
@@ -1513,8 +1519,10 @@ function get_stopwatches( $id ) {
 			foreach ( $costs_pause_list as $item ) {
 				$start  = (int) $item['start'];
 				$finish = (int) $item['finish'];
-				if ( $start == $finish ) {
-					$finish = $time;
+				if ( $current_date == $date ) {
+					if ( $start == $finish ) {
+						$finish = $time;
+					}
 				}
 				$result                  = $finish - $start;
 				$res['pause']['seconds'] = $res['pause']['seconds'] + $result;
@@ -1877,4 +1885,53 @@ function set_projects_users() {
 		}
 	}
 	die();
+}
+
+function the_user_week_result( $user_stopwatches ) {
+	$week_work_time   = 0;
+	$count            = count( $user_stopwatches );
+	$hour             = HOUR_IN_SECONDS;
+	$default_work_day = $hour * 8;
+	if ( $user_stopwatches ) {
+		foreach ( $user_stopwatches as $day_user_stopwatch ) {
+			$work_day    = $day_user_stopwatch['work'];
+			$miliseconds = (int) $work_day['costs_sum'] ?? 0;
+			$miliseconds = $miliseconds > 0 ? $miliseconds : 0;
+			$seconds     = $work_day['seconds'] ?? $miliseconds ? ( $miliseconds / 1000 ) : 0;
+			$seconds     = $seconds > 0 ? $seconds : ( $miliseconds ? ( $miliseconds / 1000 ) : 0 );
+			$change      = $work_day['change'] ?? 0;
+			if ( $change ) {
+				$arr     = explode( ':', $change );
+				$h       = $arr[0] ?? 0;
+				$m       = $arr[1] ?? 0;
+				$s       = $arr[2] ?? 0;
+				$s       = (int) $s;
+				$m       = (int) $m;
+				$h       = (int) $h;
+				$s       = $s + ( $m * 60 ) + ( $h * 3600 );
+				$seconds = $s;
+			}
+			$week_work_time = $week_work_time + $seconds;
+		}
+	}
+	$week_work_time = (int) $week_work_time;
+	$formated       = secondsToTimeFormat( $week_work_time );
+	$min            = $default_work_day * $count;
+	$cls            = '';
+	$prefix         = '';
+	$sum            = 0;
+	if ( $min > $week_work_time ) {
+		$cls    = 'deficit';
+		$prefix = '-';
+		$sum    = $min - $week_work_time;
+	} elseif ( $min < $week_work_time ) {
+		$cls    = 'surplus';
+		$prefix = '+';
+		$sum    = $week_work_time - $min;
+	}
+
+	$formated_sum = secondsToTimeFormat( $sum );
+	$string       = $prefix . $formated_sum;
+	$html         = "<div class='days-table-week-result $cls'>$string</div>";
+	echo $html;
 }
