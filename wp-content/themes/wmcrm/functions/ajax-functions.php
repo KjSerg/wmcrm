@@ -602,12 +602,12 @@ function save_user_time() {
 			carbon_set_post_meta( $id, 'costs_sum_hour_pause', $pause_time_str );
 			carbon_set_post_meta( $id, 'costs_sum_pause', $pause_time );
 			$res['_status'] = $status;
-			if(isset($_POST['status'])){
-				$status           = (int) $status;
+			if ( isset( $_POST['status'] ) ) {
+				$status = (int) $status;
 				carbon_set_post_meta( $id, 'costs_status', $status );
-				$res['__status'] = carbon_get_post_meta($id, 'costs_status');
+				$res['__status'] = carbon_get_post_meta( $id, 'costs_status' );
 			}
-			$status = (int) carbon_get_post_meta($id, 'costs_status');
+			$status = (int) carbon_get_post_meta( $id, 'costs_status' );
 			carbon_set_post_meta( $id, 'costs_list', $costs_list );
 			carbon_set_post_meta( $id, 'costs_data', json_encode( $work_times ) );
 			$pd               = carbon_get_post_meta( $id, 'post_data' );
@@ -815,8 +815,42 @@ function get_user_time() {
 		$res['cost_id'] = $cost_id;
 		$res['user_id'] = $user_id;
 		if ( $cost_id ) {
-			$res['pauses']                = carbon_get_post_meta( $cost_id, 'pauses' );
-			$res['costs_data']            = carbon_get_post_meta( $cost_id, 'costs_data' );
+			if ( $costs_pause_list = carbon_get_post_meta( $cost_id, 'costs_pause_list' ) ) {
+				$arr = array();
+				foreach ( $costs_pause_list as $item ) {
+					$s     = $item['start'] ?? 0;
+					$f     = $item['finish'] ?? 0;
+					$s     = (int) $s;
+					$s     = $s * 1000;
+					$f     = (int) $f;
+					$f     = $f * 1000;
+					$arr[] = array(
+						'start'  => $s,
+						'finish' => $f == $s ? 0 : $f,
+					);
+				}
+				$res['pauses'] = json_encode( $arr );
+			} else {
+				$res['pauses'] = carbon_get_post_meta( $cost_id, 'pauses' );
+			}
+			if ( $costs_work_list = carbon_get_post_meta( $cost_id, 'costs_work_list' ) ) {
+				$arr = array();
+				foreach ( $costs_work_list as $item ) {
+					$s     = $item['start'] ?? 0;
+					$f     = $item['finish'] ?? 0;
+					$s     = (int) $s;
+					$s     = $s * 1000;
+					$f     = (int) $f;
+					$f     = $f * 1000;
+					$arr[] = array(
+						'start'  => $s,
+						'finish' => $f == $s ? 0 : $f,
+					);
+				}
+				$res['costs_data'] = json_encode( $arr );
+			} else {
+				$res['costs_data'] = carbon_get_post_meta( $cost_id, 'costs_data' );
+			}
 			$res['costs_status']          = (int) carbon_get_post_meta( $cost_id, 'costs_status' );
 			$res['costs_start']           = carbon_get_post_meta( $cost_id, 'costs_start' );
 			$res['costs_finish']          = carbon_get_post_meta( $cost_id, 'costs_finish' );
@@ -1144,7 +1178,7 @@ function change_user_data() {
 			$last_name  = get_user_meta( $user->ID, 'last_name', true );
 			$full_name  = trim( $last_name . ' ' . $first_name );
 			if ( ! empty( $full_name ) && ( $user->data->display_name != $full_name ) ) {
-				change_project_users($user->data->display_name, $full_name);
+				change_project_users( $user->data->display_name, $full_name );
 				$userdata = array(
 					'ID'           => $user_id,
 					'display_name' => $full_name,
@@ -1240,7 +1274,7 @@ function change_user() {
 			$last_name  = get_user_meta( $user->ID, 'last_name', true );
 			$full_name  = trim( $last_name . ' ' . $first_name );
 			if ( ! empty( $full_name ) && ( $user->data->display_name != $full_name ) ) {
-				change_project_users($user->data->display_name, $full_name);
+				change_project_users( $user->data->display_name, $full_name );
 				$userdata = array(
 					'ID'           => $user_id,
 					'display_name' => $full_name,

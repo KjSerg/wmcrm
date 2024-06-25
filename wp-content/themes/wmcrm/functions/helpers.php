@@ -705,11 +705,6 @@ function set_query_data() {
 	}
 	if ( ! empty( $args ) ) {
 		$query = array_merge( $wp_query->query, $args );
-		if ( $user_id == 4 ) {
-			echo '<pre>';
-			var_dump( $query );
-			echo '</pre>';
-		}
 		query_posts( $query );
 	}
 }
@@ -728,7 +723,6 @@ function get_projects_by_comments( $string ) {
 			$query->the_post();
 			$id         = get_the_ID();
 			$project_id = carbon_get_post_meta( $id, 'discussion_project_id' ) ?: carbon_get_post_meta( $id, 'comment_project_id' );
-
 			if ( $project_id ) {
 				$res[] = (int) $project_id;
 			}
