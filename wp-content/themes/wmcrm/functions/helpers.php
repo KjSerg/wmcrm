@@ -1929,7 +1929,6 @@ function the_user_week_result( $user_stopwatches ) {
 		$prefix = '+';
 		$sum    = $week_work_time - $min;
 	}
-
 	$formated_sum = secondsToTimeFormat( $sum );
 	$string       = $prefix . $formated_sum;
 	$html         = "<div class='days-table-week-result $cls'>$string</div>";

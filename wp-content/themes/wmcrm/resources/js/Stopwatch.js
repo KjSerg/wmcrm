@@ -305,7 +305,7 @@ export default class Stopwatch {
                 _this.finishTimestamp = 0;
             }
         }
-        _this.saveData(false, true);
+        _this.saveData(false, true, true);
     }
 
     pauseEvent() {
@@ -324,7 +324,7 @@ export default class Stopwatch {
             _workTimes[workTimesLastIndex].finish = unix;
             _this.workTimes = _workTimes;
         }
-        _this.saveData(false, true);
+        _this.saveData(false, true,true);
     }
 
     finish() {
@@ -347,7 +347,7 @@ export default class Stopwatch {
         }
         clearInterval(_this.interval);
         _this.renderResults();
-        _this.saveData(true, true);
+        _this.saveData(true, true,true);
     }
 
     getCurrentTimestamp() {
@@ -383,7 +383,7 @@ export default class Stopwatch {
         return day + "-" + month + "-" + year;
     }
 
-    saveData(getResultModal = false, showLoader = false) {
+    saveData(getResultModal = false, showLoader = false, changeStatus = false) {
         const _this = this;
         if (_this.date === false) _this.date = getCurrentDate();
         if (_this.date !== getCurrentDate()) _this.clearStorage();
@@ -405,12 +405,14 @@ export default class Stopwatch {
             stopwatches: _stopwatches,
             start: _startTimestamp,
             finish: _finishTimestamp,
-            status: _status,
             costs_sum: sum,
             costs_sum_hour: _this.convertMillisecondsToTime(sum),
             pause_time: sumPauses,
             pause_time_hour: _this.convertMillisecondsToTime(sumPauses),
         };
+        if(changeStatus){
+            data.status = _status;
+        }
         if (showLoader) {
             showPreloader();
         }
@@ -422,7 +424,6 @@ export default class Stopwatch {
             hidePreloader();
             if (isJsonString(r)) {
                 const res = JSON.parse(r);
-                console.log(res);
                 _this.runTick();
                 const html = res.timer_modal_html;
                 _this.loading = false;
@@ -443,22 +444,6 @@ export default class Stopwatch {
             console.log(errorThrown)
             _this.saveData(getResultModal, showLoader);
         });
-
-        // sendRequest(adminAjax, data, 'POST', showLoader).then((res) => {
-        //     console.log(res);
-        //     _this.runTick();
-        //     const html = res.timer_modal_html;
-        //     _this.loading = false;
-        //     if (html !== undefined && html !== '') {
-        //         if (_this.$doc.find('#report-window').length > 0) closeWindow(_this.$doc.find('#report-window'));
-        //         $('body').append(html);
-        //         setTimeout(function () {
-        //             openWindow(_this.$doc.find('#report-window'));
-        //         }, 500);
-        //     }
-        // }).catch(function (e) {
-        //     console.log(e)
-        // });
     }
 
     getCurrentData(saveData = false) {
@@ -494,12 +479,11 @@ export default class Stopwatch {
                     if (isJsonString(costs_data)) costs_data = JSON.parse(costs_data);
                     _this.stopwatches = pauses;
                     _this.workTimes = costs_data;
-                    if (costs_status) {
-                        _this.status = Number(costs_status);
-                    }
                     _this.startTimestamp = Number(costs_start || 0);
                     _this.finishTimestamp = Number(costs_finish || 0);
+                    _this.status = Number(costs_status);
                     _this.renderResults();
+                    console.log(_this.status)
                     if (_this.status === 1) {
                         _this.$doc.find('.timer').removeClass('pause');
                         _this.$doc.find('.timer').addClass('play');

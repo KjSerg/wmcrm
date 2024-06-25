@@ -541,7 +541,7 @@ function save_user_time() {
 	$start            = $_POST['start'] ?? '';
 	$finish           = $_POST['finish'] ?? '';
 	$unix             = $_POST['unix'] ?? '';
-	$status           = $_POST['status'] ?? '0';
+	$status           = $_POST['status'] ?? '';
 	$costs_sum        = $_POST['costs_sum'] ?? '';
 	$costs_sum_hour   = $_POST['costs_sum_hour'] ?? '';
 	$pause_time       = $_POST['pause_time'] ?? '';
@@ -601,7 +601,13 @@ function save_user_time() {
 			carbon_set_post_meta( $id, 'costs_sum', $costs_sum );
 			carbon_set_post_meta( $id, 'costs_sum_hour_pause', $pause_time_str );
 			carbon_set_post_meta( $id, 'costs_sum_pause', $pause_time );
-			carbon_set_post_meta( $id, 'costs_status', $status );
+			$res['_status'] = $status;
+			if(isset($_POST['status'])){
+				$status           = (int) $status;
+				carbon_set_post_meta( $id, 'costs_status', $status );
+				$res['__status'] = carbon_get_post_meta($id, 'costs_status');
+			}
+			$status = (int) carbon_get_post_meta($id, 'costs_status');
 			carbon_set_post_meta( $id, 'costs_list', $costs_list );
 			carbon_set_post_meta( $id, 'costs_data', json_encode( $work_times ) );
 			$pd               = carbon_get_post_meta( $id, 'post_data' );
@@ -609,7 +615,6 @@ function save_user_time() {
 			$costs_work_list  = carbon_get_post_meta( $id, 'costs_work_list' ) ?: array();
 			$costs_pause_list = carbon_get_post_meta( $id, 'costs_pause_list' ) ?: array();
 			$costs_text_list  = carbon_get_post_meta( $id, 'costs_text_list' ) ?: array();
-			$status           = (int) $status;
 			$old_status       = (int) $old_status;
 			$txt              = $user->display_name;
 			$current_date     = date( 'd-m-Y H:i:s', $time );
@@ -801,6 +806,7 @@ function get_user_time() {
 	$time    = time();
 	$user_id = get_current_user_id();
 	$date    = date( 'd-m-Y', $time );
+//	$date    = $_POST['date'];
 	if ( $user_id && $date ) {
 		$cost_id        = get_cost_id( array(
 			'user_id' => $user_id,
