@@ -656,7 +656,12 @@ function save_user_time() {
 						$costs_work_list[ array_key_last( $costs_work_list ) ]['finish'] = $time;
 					}
 					if ( isset( $costs_pause_list[ array_key_last( $costs_pause_list ) ] ) ) {
-						$costs_pause_list[ array_key_last( $costs_pause_list ) ]['finish'] = $time;
+						$l = $costs_pause_list[ array_key_last( $costs_pause_list ) ];
+						$f = $l['finish'];
+						$s = $l['start'];
+						if($f == $s){
+							$costs_pause_list[ array_key_last( $costs_pause_list ) ]['finish'] = $time;
+						}
 					}
 				}
 				save_project_costs( $project_id, array( 'status' => $status ) );
