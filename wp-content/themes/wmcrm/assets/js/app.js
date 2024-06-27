@@ -9239,7 +9239,10 @@ var Stopwatch = /*#__PURE__*/function () {
         if (!isOpen) {
           $timer.addClass('open-controls');
           $('body').addClass('open-timer');
-          if (_this.status === 0 && _this.workTimes.length === 0) {
+          console.log(_this.status);
+          console.log(_this.workTimes);
+          console.log(_this.workTimes.length);
+          if ((_this.status === 0 || isNaN(_this.status)) && _this.workTimes.length === 0) {
             _this.$doc.find('.timer-button-start').trigger('click');
           }
         } else {
@@ -9603,44 +9606,47 @@ var Stopwatch = /*#__PURE__*/function () {
         if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(r)) {
           var res = JSON.parse(r);
           console.log(res);
+          console.log(res.cost_id);
           if (res) {
-            _this.$doc.find('.timer').removeClass('not-active');
-            var pauses = res.pauses || [];
-            var costs_data = res.costs_data || [];
-            var costs_status = res.costs_status;
-            var costs_start = res.costs_start || 0;
-            var costs_finish = res.costs_finish || 0;
-            var timer_modal_html = res.timer_modal_html;
-            var costs_sum_hour = res.costs_sum_hour;
-            var costs_sum = res.costs_sum;
-            var costs_sum_hour_pause = res.costs_sum_hour_pause;
-            var costs_sum_pause = res.costs_sum_pause;
-            if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(pauses)) pauses = JSON.parse(pauses);
-            if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(costs_data)) costs_data = JSON.parse(costs_data);
-            _this.stopwatches = pauses;
-            _this.workTimes = costs_data;
-            _this.startTimestamp = Number(costs_start || 0);
-            _this.finishTimestamp = Number(costs_finish || 0);
-            _this.status = Number(costs_status);
-            _this.renderResults();
-            console.log(_this.status);
-            if (_this.status === 1) {
-              _this.$doc.find('.timer').removeClass('pause');
-              _this.$doc.find('.timer').addClass('play');
-              _this.runTick();
-            } else if (_this.status === -1) {
-              _this.$doc.find('.timer').addClass('pause');
-              _this.$doc.find('.timer').removeClass('play');
-              _this.runTick();
-            } else {
-              _this.$doc.find('.timer').removeClass('pause');
-              _this.$doc.find('.timer').removeClass('play');
+            if (res.cost_id !== 0) {
+              _this.$doc.find('.timer').removeClass('not-active');
+              var pauses = res.pauses || [];
+              var costs_data = res.costs_data || [];
+              var costs_status = res.costs_status;
+              var costs_start = res.costs_start || 0;
+              var costs_finish = res.costs_finish || 0;
+              var timer_modal_html = res.timer_modal_html;
+              var costs_sum_hour = res.costs_sum_hour;
+              var costs_sum = res.costs_sum;
+              var costs_sum_hour_pause = res.costs_sum_hour_pause;
+              var costs_sum_pause = res.costs_sum_pause;
+              if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(pauses)) pauses = JSON.parse(pauses);
+              if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(costs_data)) costs_data = JSON.parse(costs_data);
+              _this.stopwatches = pauses;
+              _this.workTimes = costs_data;
+              _this.startTimestamp = Number(costs_start || 0);
+              _this.finishTimestamp = Number(costs_finish || 0);
+              _this.status = Number(costs_status);
+              _this.renderResults();
+              console.log(_this.status);
+              if (_this.status === 1) {
+                _this.$doc.find('.timer').removeClass('pause');
+                _this.$doc.find('.timer').addClass('play');
+                _this.runTick();
+              } else if (_this.status === -1) {
+                _this.$doc.find('.timer').addClass('pause');
+                _this.$doc.find('.timer').removeClass('play');
+                _this.runTick();
+              } else {
+                _this.$doc.find('.timer').removeClass('pause');
+                _this.$doc.find('.timer').removeClass('play');
+              }
+              if (res.reload) {
+                window.location.reload();
+                return;
+              }
+              if (saveData) _this.saveData();
             }
-            if (res.reload) {
-              window.location.reload();
-              return;
-            }
-            if (saveData) _this.saveData();
           } else {
             window.location.reload();
           }
