@@ -9608,8 +9608,8 @@ var Stopwatch = /*#__PURE__*/function () {
           console.log(res);
           console.log(res.cost_id);
           if (res) {
+            _this.$doc.find('.timer').removeClass('not-active');
             if (res.cost_id !== 0) {
-              _this.$doc.find('.timer').removeClass('not-active');
               var pauses = res.pauses || [];
               var costs_data = res.costs_data || [];
               var costs_status = res.costs_status;

@@ -467,8 +467,8 @@ export default class Stopwatch {
                 console.log(res)
                 console.log(res.cost_id)
                 if (res) {
+                    _this.$doc.find('.timer').removeClass('not-active');
                     if(res.cost_id !== 0){
-                        _this.$doc.find('.timer').removeClass('not-active');
                         let pauses = res.pauses || [];
                         let costs_data = res.costs_data || [];
                         const costs_status = res.costs_status;
