@@ -1898,7 +1898,7 @@ function the_user_week_result( $user_stopwatches ) {
 			$miliseconds = $miliseconds > 0 ? $miliseconds : 0;
 			$seconds     = $work_day['seconds'] ?? $miliseconds ? ( $miliseconds / 1000 ) : 0;
 			$seconds     = $seconds > 0 ? $seconds : ( $miliseconds ? ( $miliseconds / 1000 ) : 0 );
-			$change      = $work_day['change'] ?? 0;
+			$change      = $day_user_stopwatch['change'] ?? 0;
 			if ( $change ) {
 				$arr     = explode( ':', $change );
 				$h       = $arr[0] ?? 0;

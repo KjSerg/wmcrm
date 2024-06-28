@@ -103,9 +103,21 @@ function change_user_time_event() {
 		if ( $action === 'change_user_time' ) {
 			if ( $id && get_post( $id ) ) {
 				$costs_confirmed = carbon_get_post_meta( $id, 'costs_confirmed' );
+				$costs_status    = carbon_get_post_meta( $id, 'costs_status' );
+				$costs_text_list = carbon_get_post_meta( $id, 'costs_text_list' );
 				if ( ! $costs_confirmed ) {
 					carbon_set_post_meta( $id, 'costs_confirmed', date( 'd.m.Y', $time ) );
 				}
+				if ( $costs_status != 0 ) {
+					carbon_set_post_meta( $id, 'costs_status', 0 );
+				}
+				$user = get_user_by( 'id', $user_id );
+				$_temp = array(
+					'text' => $user->display_name . ' погодив зміну і завершив робочий день',
+					'unix' => time()
+				);
+				array_unshift( $costs_text_list, $_temp );
+				carbon_set_post_meta( $id, 'costs_text_list', $costs_text_list );
 			}
 			$notification = get_user_notification_by_comment_id( $comment_id, $user_id );
 			if ( $notification ) {
