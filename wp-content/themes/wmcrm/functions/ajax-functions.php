@@ -525,8 +525,8 @@ function starting_project() {
 				$res['type'] = 'error';
 				$res['msg']  = $project_id->get_error_message();
 			}
-			save_project_costs( $project_id, array( 'old_project_id' => $old_project_id ) );
 		}
+		save_project_costs( $project_id, array( 'old_project_id' => $old_project_id ) );
 	}
 	echo json_encode( $res );
 	die();

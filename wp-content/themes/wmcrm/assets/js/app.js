@@ -10934,7 +10934,7 @@ document.addEventListener('visibilitychange', function () {
   }
 });
 function validateTime(time) {
-  var timeRegex = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+  var timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
   return timeRegex.test(time);
 }
 window.onpopstate = function (event) {

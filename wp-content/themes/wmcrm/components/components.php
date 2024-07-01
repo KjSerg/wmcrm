@@ -549,7 +549,9 @@ function the_timer_modal( $args = array() ) {
                 </div>
             </div>
 			<?php if ( $current_user_id == $user_id ): ?>
-				<?php if ( ! $costs_sum_hour_change ): ?>
+				<?php if ( ! $costs_sum_hour_change ):
+					$t = explode( ':', $costs_sum_hour );
+					?>
                     <div class="report-footer">
                         <div class="report-footer-control">
                             <div class="report-footer__title">Змінити робочий час</div>
@@ -562,7 +564,7 @@ function the_timer_modal( $args = array() ) {
                                 <div class="report-footer__title">Змінити робочий час</div>
                                 <label for="" class="form-group report-footer-form__label">
                                     <input type="text" required class="time-input"
-                                           name="time" value="<?php echo esc_attr( $costs_sum_hour ); ?>">
+                                           name="time" value="<?php echo esc_attr( $t[0] . ':' . $t[1] ); ?>">
                                 </label>
                             </div>
                             <label class="form-group">
