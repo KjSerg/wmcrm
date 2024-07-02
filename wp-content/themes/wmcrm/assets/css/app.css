@@ -4551,6 +4551,13 @@ b.button {
   max-height: 10rem;
   cursor: pointer;
 }
+.text pre, .ql-snow .ql-editor pre {
+  padding: 1rem;
+  overflow: scroll;
+  color: #fff;
+  background-color: black;
+  font-weight: 600;
+}
 
 .editor-field {
   margin-bottom: 0;
