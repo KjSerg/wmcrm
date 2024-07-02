@@ -111,7 +111,7 @@ function change_user_time_event() {
 				if ( $costs_status != 0 ) {
 					carbon_set_post_meta( $id, 'costs_status', 0 );
 				}
-				$user = get_user_by( 'id', $user_id );
+				$user  = get_user_by( 'id', $user_id );
 				$_temp = array(
 					'text' => $user->display_name . ' погодив зміну і завершив робочий день',
 					'unix' => time()
@@ -169,6 +169,77 @@ function save_project_costs( $project_id, $args = array() ) {
 				}
 			}
 		}
+	}
+}
+
+function start_work_time() {
+	$action = $_GET['action'] ?? '';
+	if ( $action == 'start_work_time' ) {
+		$res     = [];
+		$user_id = get_current_user_id();
+		if ( $user_id ) {
+			if ( ! is_current_user_admin() ) {
+				$status     = 1;
+				$project_id = carbon_get_user_meta( $user_id, 'current_project' );
+				$user_agent = get_user_agent();
+				$user_id    = get_current_user_id();
+				$user_ip    = get_the_user_ip();
+				$date       = date( 'd-m-Y' );
+				$user       = get_user_by( 'id', $user_id );
+				date_default_timezone_set( "Europe/Kiev" );
+				$cost_id   = get_cost_id( array(
+					'user_id' => $user_id,
+					'date'    => $date,
+				) );
+				$post_data = array(
+					'post_type'   => 'costs',
+					'post_title'  => $date,
+					'post_status' => 'publish',
+				);
+				if ( $cost_id ) {
+					$post_data['ID'] = $cost_id;
+				} else {
+					$post_data['post_author'] = $user_id;
+				}
+				$id = $cost_id ? wp_update_post( $post_data, true ) : wp_insert_post( $post_data, true );
+				if ( $id && ! is_wp_error( $id ) ) {
+					$old_status       = carbon_get_post_meta( $id, 'costs_status' ) ?: 0;
+					$time             = time();
+					$costs_work_list  = carbon_get_post_meta( $id, 'costs_work_list' ) ?: array();
+					$costs_pause_list = carbon_get_post_meta( $id, 'costs_pause_list' ) ?: array();
+					$costs_text_list  = carbon_get_post_meta( $id, 'costs_text_list' ) ?: array();
+					$old_status       = (int) $old_status;
+					$txt              = $user->display_name;
+					$current_date     = date( 'd-m-Y H:i:s', $time );
+					if ( $status != $old_status ) {
+						$txt   .= ' розпочав(ла) робочий день о ' . $current_date;
+						$_temp = array(
+							'text'       => $txt,
+							'user_agent' => $user_agent,
+							'unix'       => $time,
+							'status'     => $status,
+							'old_status' => $old_status,
+							'user_ip'    => $user_ip,
+						);
+						array_unshift( $costs_text_list, $_temp );
+						$costs_work_list[] = array(
+							'start'  => $time,
+							'finish' => $time
+						);
+						if ( $costs_pause_list && isset( $costs_pause_list[ array_key_last( $costs_pause_list ) ] ) ) {
+							$costs_pause_list[ array_key_last( $costs_pause_list ) ]['finish'] = $time;
+						}
+						save_project_costs( $project_id, array( 'status' => $status ) );
+						$res['msg'] = $txt;
+					}
+					carbon_set_post_meta( $id, 'costs_work_list', $costs_work_list );
+					carbon_set_post_meta( $id, 'costs_pause_list', $costs_pause_list );
+					carbon_set_post_meta( $id, 'costs_text_list', $costs_text_list );
+				}
+			}
+		}
+		echo json_encode( $res );
+		die();
 	}
 }
 

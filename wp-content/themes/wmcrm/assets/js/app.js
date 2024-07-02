@@ -9568,7 +9568,11 @@ var Stopwatch = /*#__PURE__*/function () {
           var res = JSON.parse(r);
           _this.runTick();
           var html = res.timer_modal_html;
+          var msg = res.msg;
           _this.loading = false;
+          if (msg !== undefined && msg !== '') {
+            alert(msg);
+          }
           if (html !== undefined && html !== '') {
             if (_this.$doc.find('#report-window').length > 0) (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.closeWindow)(_this.$doc.find('#report-window'));
             $('body').append(html);
@@ -9583,6 +9587,7 @@ var Stopwatch = /*#__PURE__*/function () {
         console.log(jqXHR);
         console.log(textStatus);
         console.log(errorThrown);
+        _this.loading = false;
         _this.saveData(getResultModal, showLoader);
       });
     }
@@ -9728,7 +9733,7 @@ var setNotificationsNumber = function setNotificationsNumber() {
     var notificationsHash = localStorage.getItem('notificationsHash') || '';
     if (hash !== notificationsHash && newNum > 0) {
       setTimeout(newMessageSoundPlay, 1000);
-      var title = $(document).find('title').text();
+      var title = localStorage.getItem('title') || $(document).find('title').text();
       $(document).find('title').text('(' + newNum + ') ' + title);
     }
     localStorage.setItem('notificationsHash', hash);
@@ -10204,10 +10209,12 @@ function renderMain(args) {
     loading = false;
     if (r) {
       var $requestBody = $(parser.parseFromString(r, "text/html"));
+      var title = $requestBody.find('title').html();
       $container.html($requestBody.find('main.content').html());
-      $doc.find('title').html($requestBody.find('title').html());
+      $doc.find('title').html(title);
       if (addToHistory) history.pushState({}, "", url);
       $doc.find('body').removeClass('loading');
+      localStorage.setItem('title', title);
       (0,_js__WEBPACK_IMPORTED_MODULE_2__.initPlugins)();
       (0,_quill_init__WEBPACK_IMPORTED_MODULE_0__["default"])();
       var invite = new _Invite__WEBPACK_IMPORTED_MODULE_1__["default"]();

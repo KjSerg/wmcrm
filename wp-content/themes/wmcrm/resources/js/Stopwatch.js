@@ -428,7 +428,11 @@ export default class Stopwatch {
                 const res = JSON.parse(r);
                 _this.runTick();
                 const html = res.timer_modal_html;
+                const msg = res.msg;
                 _this.loading = false;
+                if (msg !== undefined && msg !== '') {
+                    alert(msg);
+                }
                 if (html !== undefined && html !== '') {
                     if (_this.$doc.find('#report-window').length > 0) closeWindow(_this.$doc.find('#report-window'));
                     $('body').append(html);
@@ -444,6 +448,7 @@ export default class Stopwatch {
             console.log(jqXHR)
             console.log(textStatus)
             console.log(errorThrown)
+            _this.loading = false;
             _this.saveData(getResultModal, showLoader);
         });
     }

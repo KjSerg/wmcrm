@@ -202,6 +202,7 @@ function the_timer_list() {
 	if ( $timers = get_current_timers() ): ?>
         <ul class="timer-list">
 			<?php foreach ( $timers as $obj ):
+                $timer_ID = $obj['ID'];
 				$user_ID = $obj['user'];
 				$status = $obj['status'];
 				$current_project = $obj['current_project'];
@@ -216,6 +217,8 @@ function the_timer_list() {
 				} elseif ( $status == '0' ) {
 					$cls = ' stop';
 				}
+                $res = get_stopwatches( $timer_ID );
+                $test = $res && isset($res['work']['string']);
 				?>
                 <li class="timer-list-item" data-user-id="<?php echo $user_ID ?>">
                     <a href="<?php echo get_author_posts_url( $user_ID ) ?>"
@@ -229,11 +232,20 @@ function the_timer_list() {
                     </a>
                     <div class="timer-list-item__value <?php echo $cls; ?>" title='<?php echo $text_list_str; ?>'>
 						<?php
-						if ( $sum_hour_arr = explode( ':', $sum_hour ) ) {
-							echo $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
-						} else {
-							echo $obj['sum_hour'];
-						}
+                        if($test){
+	                        if ( $sum_hour_arr = explode( ':', $res['work']['string'] ) ) {
+		                        echo $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
+	                        } else {
+		                        echo $res['work']['string'];
+	                        }
+                        }else{
+	                        if ( $sum_hour_arr = explode( ':', $sum_hour ) ) {
+		                        echo $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
+	                        } else {
+		                        echo $obj['sum_hour'];
+	                        }
+                        }
+
 						?>
                     </div>
 					<?php if ( $current_project && get_post( $current_project ) ): ?>

@@ -71,10 +71,12 @@ export function renderMain(args) {
         loading = false;
         if (r) {
             let $requestBody = $(parser.parseFromString(r, "text/html"));
+            const title = $requestBody.find('title').html();
             $container.html($requestBody.find('main.content').html());
-            $doc.find('title').html($requestBody.find('title').html());
+            $doc.find('title').html(title);
             if (addToHistory) history.pushState({}, "", url);
             $doc.find('body').removeClass('loading');
+            localStorage.setItem('title', title);
             initPlugins();
             initQuill();
             const invite = new Invite();

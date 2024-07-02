@@ -1,6 +1,7 @@
 import {sendRequest} from "./_helpers";
 import {setInterval} from "worker-timers";
 import {Howl, Howler} from 'howler';
+
 export default function checkingNotifications() {
     setNotificationsNumber();
     setInterval(setNotificationsNumber, 20000);
@@ -19,7 +20,7 @@ export const setNotificationsNumber = () => {
         let notificationsHash = localStorage.getItem('notificationsHash') || '';
         if (hash !== notificationsHash && newNum > 0) {
             setTimeout(newMessageSoundPlay, 1000);
-            const title = $(document).find('title').text();
+            const title = localStorage.getItem('title') || $(document).find('title').text();
             $(document).find('title').text('(' + newNum + ') ' + title);
         }
         localStorage.setItem('notificationsHash', hash);
@@ -33,7 +34,7 @@ export const setNotificationsNumber = () => {
 export function newMessageSoundPlay() {
     const audioElement = document.getElementById('new-message-sound');
     const src = audioElement.getAttribute('src');
-    if(src){
+    if (src) {
         const audio = new Audio(src);
         audio.play();
 

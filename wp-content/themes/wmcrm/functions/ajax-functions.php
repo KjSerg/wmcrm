@@ -665,6 +665,7 @@ function save_user_time() {
 					}
 				}
 				save_project_costs( $project_id, array( 'status' => $status ) );
+				$res['msg'] = $txt;
 			}
 			carbon_set_post_meta( $id, 'costs_work_list', $costs_work_list );
 			carbon_set_post_meta( $id, 'costs_pause_list', $costs_pause_list );
