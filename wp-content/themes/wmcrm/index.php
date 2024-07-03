@@ -11,9 +11,9 @@ if ( $user_id ) {
 	} elseif ( $route == 'users' && $is_admin ) {
 		the_users_page();
 	} else {
-		$projects = get_post_type_archive_link( 'projects' );
-
-		header( 'Location: ' . $projects );
+		$projects       = get_post_type_archive_link( 'projects' );
+		$user_main_page = carbon_get_user_meta( $user_id, 'user_main_page' );
+		header( 'Location: ' . $user_main_page ?: $projects );
 	}
 	die();
 }

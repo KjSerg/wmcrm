@@ -659,7 +659,7 @@ function save_user_time() {
 						$l = $costs_pause_list[ array_key_last( $costs_pause_list ) ];
 						$f = $l['finish'];
 						$s = $l['start'];
-						if($f == $s){
+						if ( $f == $s ) {
 							$costs_pause_list[ array_key_last( $costs_pause_list ) ]['finish'] = $time;
 						}
 					}
@@ -1153,6 +1153,7 @@ function change_user_data() {
 		$email     = $_POST['email'] ?? '';
 		$birthday  = $_POST['birthday'] ?? '';
 		$position  = $_POST['position'] ?? '';
+		$main_page = $_POST['main_page'] ?? '';
 		$user      = get_user_by( 'id', $user_id );
 		if ( $user ) {
 			$_name          = $user->display_name;
@@ -1217,6 +1218,10 @@ function change_user_data() {
 				carbon_set_user_meta( $user_id, 'position', $position );
 				$result[]                = 'Посаду змінено';
 				$change_data['position'] = $position;
+			}
+			if ( $main_page ) {
+				carbon_set_user_meta( $user_id, 'user_main_page', $main_page );
+				$result[]                = 'Стартову сторінку змінено';
 			}
 		} else {
 			$res['type'] = 'error';

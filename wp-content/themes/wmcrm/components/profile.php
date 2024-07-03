@@ -111,6 +111,23 @@ function the_profile() {
                                value="<?php echo $birthday ?: '01-01-1995'; ?>"
                                placeholder="День народження">
                     </label>
+                    <label class="form-group " style="width: 100%">
+                        <span class="form-group__title">Головна сторінка</span>
+                        <select name="main_page"  class="selectric">
+                            <option value="">
+                                Зробіть вибір
+                            </option>
+                            <option value="https://crmwm.web-mosaica.top/discussion/">
+                                Головна
+                            </option>
+                            <option value="https://crmwm.web-mosaica.top/projects/">
+                                Задачі
+                            </option>
+                            <option value="https://crmwm.web-mosaica.top/?route=users">
+                                Люди
+                            </option>
+                        </select>
+                    </label>
                 </div>
                 <div class="profile-form-controls">
                     <button class="button profile-form__button" type="submit">

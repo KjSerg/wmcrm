@@ -5,10 +5,10 @@ $assets          = $var['assets'];
 $url             = $var['url'];
 $logo            = carbon_get_theme_option( 'logo' );
 $social_networks = carbon_get_theme_option( 'social_networks' );
-$projects_url    = get_post_type_archive_link( 'projects' );
 $user_id         = get_current_user_id();
 $user            = get_user_by( 'id', $user_id );
 $avatar          = carbon_get_user_meta( $user_id, 'avatar' );
+$user_main_page  = carbon_get_user_meta( $user_id, 'user_main_page' );
 $is_admin        = is_current_user_admin();
 $projects_url    = get_post_type_archive_link( 'projects' );
 $discussion_url  = get_post_type_archive_link( 'discussion' );
@@ -45,7 +45,8 @@ $msg = absences_action();
     <div class="container">
         <div class="header-content">
             <div class="header-top">
-                <a href="<?php echo $user_id ? $projects_url : $url ?>" class="header-logo link-js">
+                <a href="<?php echo $user_id ? ( $user_main_page ?: $projects_url ) : $url ?>"
+                   class="header-logo link-js">
                     <img src="<?php _u( $logo ) ?>" alt="">
                 </a>
 				<?php if ( $user_id ): ?>
