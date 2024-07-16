@@ -63,6 +63,7 @@ get_header();
             </div>
 		<?php endif; ?>
     </div>
+
     <section class="section days-section calendar-section">
         <div class="container">
 
@@ -184,6 +185,7 @@ get_header();
 													if ( is_date_in_range( $_day_date, $item['date_start'], $item['finish_date'] ) ) {
 														$item_reason      = $item['reasons'][0];
 														$diff             = $item['diff'];
+														$text             = $item['text'] ?? '';
 														$first_date       = $item['date_start'] == $_day_date;
 														$last_date        = $item['finish_date'] == $_day_date;
 														$item_reason_slug = $item_reason->slug;
@@ -192,20 +194,21 @@ get_header();
 														$reason_color     = carbon_get_term_meta( $item_reason_id, 'reason_color' );
 														$css_cls          .= " $item_reason_slug";
 														$attr             .= "data-id='$_id' data-diff='$diff'";
-														$str              = $item_reason_name . ' (від ' . $item['date_start'] . ' до ' . $item['finish_date'] . ')';
+														$str              = $item_reason_name . ' (від ' . $item['date_start'] . ' до ' . $item['finish_date'] . ')' . $text;
+
 														if ( $first_date ) {
 															$attr .= ' data-first ';
-														}elseif ($last_date){
+														} elseif ( $last_date ) {
 															$attr .= ' data-last ';
 														}
-                                                        if($first_date || $last_date){
-	                                                        if ( $reason_color ) {
-		                                                        $width = 100 + ( 100 * $diff );
-		                                                        $width = "calc($width% + " . $diff . "px)";
-		                                                        $attr  .= "style='background:$reason_color; width: $width'";
-	                                                        }
-	                                                        $html .= '<div ' . $attr . ' data-date=' . $_day_date . ' title="' . $str . '" class="calendar-table-item">' . $str . '</div>';
-                                                        }
+														if ( $first_date || $last_date ) {
+															if ( $reason_color ) {
+																$width = 100 + ( 100 * $diff );
+																$width = "calc($width% + " . $diff . "px)";
+																$attr  .= "style='background:$reason_color; width: $width'";
+															}
+															$html .= '<a href="#absences-' . $_id . '" ' . $attr . ' data-date=' . $_day_date . ' title="' . $text . '" class="calendar-table-item">' . $str . '</a>';
+														}
 													}
 												}
 											}
@@ -226,7 +229,6 @@ get_header();
     </section>
 
 <?php
-
 $args = array(
 	'post_type'      => 'absences',
 	'posts_per_page' => - 1,
@@ -235,7 +237,7 @@ $args = array(
 if ( ! $is_admin ) {
 	$args['author__in'] = array( $current_user_id );
 }
-$query = new WP_Query( $args );
+$query                = new WP_Query( $args );
 if ( $query->have_posts() ):
 	?>
     <section class="section absences-section">
@@ -255,6 +257,7 @@ endif;
 wp_reset_postdata();
 wp_reset_query();
 ?>
+
 
 <?php if ( $is_admin ): ?>
     <section class="section absences-section">
@@ -357,5 +360,54 @@ else: ?>
         </div>
     </section>
 <?php endif; ?>
+
+
+<?php
+if ( is_current_user_admin() ):
+	$d = "$get_month-$current_year";
+	$args             = array(
+		'post_type'      => 'absences',
+		'posts_per_page' => - 1,
+		'post_status'    => 'publish',
+
+		'meta_query' => array(
+			'relation' => 'OR',
+			array(
+				'key'     => '_absences_start_date',
+				'value'   => $d,
+				'compare' => 'LIKE',
+			),
+			array(
+				'key'     => '_absences_finish_date',
+				'value'   => $d,
+				'compare' => 'LIKE',
+			)
+		)
+	);
+	$args['meta_key'] = '_absences_start_date';
+	$args['order']    = "DESC";
+	$args['orderby']  = 'meta_value_num';
+	$query            = new WP_Query( $args );
+	if ( $query->have_posts() ):
+		?>
+        <section class="section absences-section">
+            <div class="container">
+                <div class="absences-title title">
+                    Активні відсутності за вибраний місяць
+                </div>
+                <div class="absences-list">
+					<?php while ( $query->have_posts() ): $query->the_post();
+						the_absences();
+					endwhile; ?>
+                </div>
+            </div>
+        </section>
+	<?php
+	endif;
+	wp_reset_postdata();
+	wp_reset_query();
+endif;
+?>
+
 <?php
 get_footer();

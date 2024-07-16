@@ -1138,7 +1138,8 @@ function get_discussion_ids_by_user_projects( $user_id = false ) {
 			while ( $query->have_posts() ) {
 				$query->the_post();
 				$comment_id    = get_the_ID();
-				$comment_ids[] = $comment_id;
+                $author = get_post_author_id($comment_id);
+                if($author != $user_id) $comment_ids[] = $comment_id;
 			}
 		}
 		wp_reset_postdata();
@@ -1621,6 +1622,7 @@ function get_absences_list( $get_month, $current_year, $author ) {
 		while ( $query->have_posts() ) {
 			$query->the_post();
 			$id          = get_the_ID();
+            $text = get_content_by_id($id);
 			$author      = get_post_author_id( $id );
 			$reasons     = get_the_terms( $id, 'reasons' );
 			$date_start  = carbon_get_post_meta( $id, 'absences_start_date' );
@@ -1633,6 +1635,7 @@ function get_absences_list( $get_month, $current_year, $author ) {
 				'date_start'  => $date_start,
 				'finish_date' => $finish_date,
 				'diff'        => $diff,
+				'text'        => strip_tags($text),
 			);
 		}
 	}

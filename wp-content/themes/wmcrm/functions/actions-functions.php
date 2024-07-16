@@ -67,7 +67,7 @@ function absences_action() {
 			}
 		}
 		if ( $action == 'remove_absences' ) {
-			if ( $current_user_id && get_post_status( $id ) != 'publish' ) {
+			if ( $current_user_id ) {
 				$user_id = get_post_author_id( $id );
 				if ( $current_user_id == $user_id || is_current_user_admin() ) {
 					if ( wp_delete_post( $id ) ) {

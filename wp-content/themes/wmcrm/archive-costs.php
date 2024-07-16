@@ -229,7 +229,14 @@ get_header();
                                                    title='<?php echo implode( '; ', $title_attr ); ?>'>
 													<?php echo $string; ?>
                                                 </a>
-											<?php endif; ?>
+											<?php else:
+                                                the_absence_item(
+	                                                array(
+		                                                'user_id' => $_userID,
+		                                                'date'    => $item
+	                                                )
+                                                );
+                                            endif; ?>
                                         </div>
 									<?php endforeach; endif; ?>
                                     <div class="days-table-column days-sub-sum-column">

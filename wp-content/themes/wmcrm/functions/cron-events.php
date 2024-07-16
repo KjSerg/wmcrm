@@ -102,6 +102,9 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 				if ( $comment_author == $user_id ) {
 					$user_test = false;
 				}
+				if(carbon_get_user_meta( $user_id, 'fired' )) {
+					$user_test = false;
+				}
 			}
 			if ( $post_type == 'costs' ) {
 				$user_test = carbon_get_user_meta( $user_id, 'super_admin' );

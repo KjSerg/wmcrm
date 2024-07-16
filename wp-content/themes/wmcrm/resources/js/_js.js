@@ -252,11 +252,23 @@ $(document).ready(function () {
         e.preventDefault();
         let $t = $(this);
         const id = $t.attr('data-id');
-        if (id === undefined) return;
-        $doc.find('.delete-absence').attr('data-id', id);
-        $doc.find('.delete-absence').addClass('active');
+        const href = $t.attr('href');
         $t.addClass('active');
-        showMassage('Натисніть "Esc" ⌨️ щоб відмінити операцію')
+        if (href === undefined) return;
+        const $el = $doc.find(href);
+        if ($el.length === 0) return;
+        $('html, body').animate({
+            scrollTop: $el.offset().top
+        });
+        $el.addClass('shake');
+        setTimeout(function (){
+            $el.removeClass('shake');
+            $t.removeClass('active');
+        }, 1000);
+        // if (id === undefined) return;
+        // $doc.find('.delete-absence').attr('data-id', id);
+        // $doc.find('.delete-absence').addClass('active');
+        // showMassage('Натисніть "Esc" ⌨️ щоб відмінити операцію')
     });
     $doc.on('click', '.delete-absence', function (e) {
         e.preventDefault();

@@ -202,7 +202,7 @@ function the_timer_list() {
 	if ( $timers = get_current_timers() ): ?>
         <ul class="timer-list">
 			<?php foreach ( $timers as $obj ):
-                $timer_ID = $obj['ID'];
+				$timer_ID = $obj['ID'];
 				$user_ID = $obj['user'];
 				$status = $obj['status'];
 				$current_project = $obj['current_project'];
@@ -217,8 +217,8 @@ function the_timer_list() {
 				} elseif ( $status == '0' ) {
 					$cls = ' stop';
 				}
-                $res = get_stopwatches( $timer_ID );
-                $test = $res && isset($res['work']['string']);
+				$res  = get_stopwatches( $timer_ID );
+				$test = $res && isset( $res['work']['string'] );
 				?>
                 <li class="timer-list-item" data-user-id="<?php echo $user_ID ?>">
                     <a href="<?php echo get_author_posts_url( $user_ID ) ?>"
@@ -232,19 +232,19 @@ function the_timer_list() {
                     </a>
                     <div class="timer-list-item__value <?php echo $cls; ?>" title='<?php echo $text_list_str; ?>'>
 						<?php
-                        if($test){
-	                        if ( $sum_hour_arr = explode( ':', $res['work']['string'] ) ) {
-		                        echo $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
-	                        } else {
-		                        echo $res['work']['string'];
-	                        }
-                        }else{
-	                        if ( $sum_hour_arr = explode( ':', $sum_hour ) ) {
-		                        echo $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
-	                        } else {
-		                        echo $obj['sum_hour'];
-	                        }
-                        }
+						if ( $test ) {
+							if ( $sum_hour_arr = explode( ':', $res['work']['string'] ) ) {
+								echo $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
+							} else {
+								echo $res['work']['string'];
+							}
+						} else {
+							if ( $sum_hour_arr = explode( ':', $sum_hour ) ) {
+								echo $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
+							} else {
+								echo $obj['sum_hour'];
+							}
+						}
 
 						?>
                     </div>
@@ -623,7 +623,8 @@ function the_absences( $id = false ) {
 	$test            = $author_id == $current_user_id;
 	$test            = $test ?: $is_admin;
 	if ( $test ):
-		$user = get_user_by( 'id', $author_id );
+		$post_status = get_post_status( $id );
+		$user        = get_user_by( 'id', $author_id );
 		$avatar      = carbon_get_user_meta( $author_id, 'avatar' );
 		$avatar      = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $author_id );
 		$link        = get_post_type_archive_link( 'absences' ) . '?action=confirm_absences&id=' . $id;
@@ -660,7 +661,7 @@ function the_absences( $id = false ) {
                 <strong><?php echo $str; ?></strong>
             </div>
             <div class="absences-item-controls">
-				<?php if ( is_current_user_admin() ): ?>
+				<?php if ( is_current_user_admin() && $post_status == 'pending' ): ?>
                     <a href="<?php echo $link; ?>" class="button">Підтвердити</a>
 				<?php endif; ?>
                 <a href="<?php echo $remove_link; ?>" class="button button--bordered">Відмінити</a>
@@ -696,3 +697,24 @@ function the_presets_select() {
 	wp_reset_query();
 }
 
+function the_absence_item( $args = array() ) {
+	$user_id = $args['user_id'] ?? get_current_user_id();
+	$date    = $args['date'] ?? false;
+	if ( $date && $user_id ) {
+		$date  = explode( '-', $date );
+		$items = get_absences_list( $date[1], $date[2], $user_id );
+
+		if ( $items ) {
+			foreach ( $items as $_id => $item ) {
+				if ( is_date_in_range( $args['date'], $item['date_start'], $item['finish_date'] ) ) {
+					$item_reason      = $item['reasons'][0];
+					$item_reason_name = $item_reason->name;
+					$item_reason_id   = $item_reason->term_id;
+					$reason_color     = carbon_get_term_meta( $item_reason_id, 'reason_color' );
+					$_attr            = "style='background:$reason_color;'";
+					echo "<div $_attr class='days-table-value-absence'>Відсутність через: <br> '$item_reason_name'</div>";
+				}
+			}
+		}
+	}
+}
