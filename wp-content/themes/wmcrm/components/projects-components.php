@@ -14,7 +14,7 @@ function the_project( $id = false, $cls = '', $args = array() ) {
 	$title              = get_the_title( $id );
 	$post_status        = get_post_status( $id );
 	$tags               = get_the_terms( $id, 'tags' );
-	$tag_list           = $args['tags'] ?: array();
+	$tag_list           = $args['tags'] ?? array();
 	$edit_cls           = $current_user_admin ? 'select-edit' : '';
 	if ( $cockie ) {
 		$cockie = explode( ',', $cockie );
@@ -209,7 +209,7 @@ function the_project_tags_html( $tags, $tag_list ) {
 	$subtype = $_GET['subtype'] ?? '';
 	if ( is_current_user_admin() ) {
 		if ( $tag_list ) {
-			$tag_color = carbon_get_term_meta( $tags[0]->term_id, 'tag_color' );
+			$tag_color = $tags ? carbon_get_term_meta( $tags[0]->term_id, 'tag_color' ) : '';
 			?>
             <form class="form-js project-tag-form" method="post"
                   style="background-color: <?php echo $tag_color ?: '#7BB500'; ?>;"

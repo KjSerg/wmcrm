@@ -209,7 +209,12 @@ function the_project_comment() {
 		$res                   = $costs_sum;
 		$string                = $res;
 		if ( $sum_hour_arr = explode( ':', $costs_sum ) ) {
-			$res = $sum_hour_arr[0] . ':' . $sum_hour_arr[1];
+			if ( isset( $sum_hour_arr[0] ) ) {
+				$res = $sum_hour_arr[0];
+			}
+			if ( isset( $sum_hour_arr[1] ) ) {
+				$res .= ':' . $sum_hour_arr[1];
+			}
 		}
 		if ( $res ) {
 			$string = $costs_sum_hour_change ? $res . '⮕' . $costs_sum_hour_change : $res;

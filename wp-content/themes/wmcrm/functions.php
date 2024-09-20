@@ -15,7 +15,7 @@ function wmcrm_scripts() {
 
 	wp_enqueue_style( 'wmcrm-app', get_template_directory_uri() . '/assets/css/app.css', array(), '1.0.2.6' );
 
-	wp_enqueue_script( 'wmcrm-app-scripts', get_template_directory_uri() . '/assets/js/app.js', array(), '1.0.4.9', true );
+	wp_enqueue_script( 'wmcrm-app-scripts', get_template_directory_uri() . '/assets/js/app.js', array(), '1.0.5.7', true );
 
 	wp_localize_script( 'ajax-script', 'AJAX', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 }

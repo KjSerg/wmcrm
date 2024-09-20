@@ -387,9 +387,22 @@ export default class Stopwatch {
 
     saveData(getResultModal = false, showLoader = false, changeStatus = false) {
         const _this = this;
+        console.log(_this.date)
         if (_this.date === false) _this.date = getCurrentDate();
-        if (_this.date !== getCurrentDate()) _this.clearStorage();
-        if (_this.loading === true) return;
+        console.log(_this.date)
+        console.log(getCurrentDate())
+        console.log(_this.date !== getCurrentDate())
+        if (_this.date !== getCurrentDate()) {
+            _this.clearStorage();
+        }
+        if (_this.loading === true){
+            console.log('loading: ' + _this.loading);
+            if(changeStatus){
+                alert('🚨🚨🚨 Увага‼️ Виникла помилка! Сторінка оновиться і повторіть дію знову!');
+            }
+            window.location.reload();
+            return;
+        }
         const _finishTimestamp = _this.finishTimestamp;
         const _startTimestamp = _this.startTimestamp;
         const _stopwatches = _this.stopwatches;
@@ -423,12 +436,12 @@ export default class Stopwatch {
             url: adminAjax,
             data: data,
         }).done(function (r) {
+            _this.loading = false;
             hidePreloader();
             if (isJsonString(r)) {
                 const res = JSON.parse(r);
                 const html = res.timer_modal_html;
                 const msg = res.msg;
-                _this.loading = false;
                 if(changeStatus){
                     if (msg !== undefined && msg !== '') {
                         _this.runTick();
@@ -449,7 +462,6 @@ export default class Stopwatch {
             } else {
                 alert(r);
             }
-
         }).fail(function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR)
             console.log(textStatus)
@@ -462,7 +474,9 @@ export default class Stopwatch {
     getCurrentData(saveData = false) {
         const _this = this;
         const date = _this.getCurrentDate();
-        if (_this.date !== date) _this.clearStorage();
+        if (_this.date !== date) {
+            _this.clearStorage();
+        }
         const data = {
             action: 'get_user_time',
             date: date

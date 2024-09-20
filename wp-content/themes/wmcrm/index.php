@@ -13,7 +13,12 @@ if ( $user_id ) {
 	} else {
 		$projects       = get_post_type_archive_link( 'projects' );
 		$user_main_page = carbon_get_user_meta( $user_id, 'user_main_page' );
-		header( 'Location: ' . $user_main_page ?: $projects );
+		$url = $projects;
+		if($user_main_page && $user_main_page != ''){
+			$url = $user_main_page;
+		}
+		header( 'Location: ' . $url);
+		die();
 	}
 	die();
 }

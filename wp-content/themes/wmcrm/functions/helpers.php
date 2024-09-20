@@ -901,7 +901,11 @@ function get_text_with_users( $text ) {
 				);
 			}
 		}
-
+		$result_text = str_replace(
+			array( 'дядя ' ),
+			array( "<span class='invite' data-user-id='2'>Дядя</span>" ),
+			$result_text
+		);
 	}
 
 	return array(
@@ -1137,9 +1141,11 @@ function get_discussion_ids_by_user_projects( $user_id = false ) {
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) {
 				$query->the_post();
-				$comment_id    = get_the_ID();
-                $author = get_post_author_id($comment_id);
-                if($author != $user_id) $comment_ids[] = $comment_id;
+				$comment_id = get_the_ID();
+				$author     = get_post_author_id( $comment_id );
+				if ( $author != $user_id ) {
+					$comment_ids[] = $comment_id;
+				}
 			}
 		}
 		wp_reset_postdata();
@@ -1622,7 +1628,7 @@ function get_absences_list( $get_month, $current_year, $author ) {
 		while ( $query->have_posts() ) {
 			$query->the_post();
 			$id          = get_the_ID();
-            $text = get_content_by_id($id);
+			$text        = get_content_by_id( $id );
 			$author      = get_post_author_id( $id );
 			$reasons     = get_the_terms( $id, 'reasons' );
 			$date_start  = carbon_get_post_meta( $id, 'absences_start_date' );
@@ -1635,7 +1641,7 @@ function get_absences_list( $get_month, $current_year, $author ) {
 				'date_start'  => $date_start,
 				'finish_date' => $finish_date,
 				'diff'        => $diff,
-				'text'        => strip_tags($text),
+				'text'        => strip_tags( $text ),
 			);
 		}
 	}
@@ -1899,9 +1905,11 @@ function the_user_week_result( $user_stopwatches ) {
 			$work_day    = $day_user_stopwatch['work'];
 			$miliseconds = (int) $work_day['costs_sum'] ?? 0;
 			$miliseconds = $miliseconds > 0 ? $miliseconds : 0;
-			$seconds     = $work_day['seconds'] ?? $miliseconds ? ( $miliseconds / 1000 ) : 0;
-			$seconds     = $seconds > 0 ? $seconds : ( $miliseconds ? ( $miliseconds / 1000 ) : 0 );
-			$change      = $day_user_stopwatch['change'] ?? 0;
+			$seconds     = $work_day['seconds'] ?? ( $miliseconds ? ( $miliseconds / 1000 ) : 0 );
+			if ( ! $seconds ) {
+				$seconds = $miliseconds ? ( $miliseconds / 1000 ) : 0;
+			}
+			$change = $day_user_stopwatch['change'] ?? 0;
 			if ( $change ) {
 				$arr     = explode( ':', $change );
 				$h       = $arr[0] ?? 0;
@@ -1931,6 +1939,8 @@ function the_user_week_result( $user_stopwatches ) {
 		$prefix = '+';
 		$sum    = $week_work_time - $min;
 	}
+
+
 	$formated_sum = secondsToTimeFormat( $sum );
 	$string       = $prefix . $formated_sum;
 	$html         = "<div class='days-table-week-result $cls'>$string</div>";

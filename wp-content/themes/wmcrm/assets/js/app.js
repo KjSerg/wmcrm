@@ -9527,9 +9527,22 @@ var Stopwatch = /*#__PURE__*/function () {
       var showLoader = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var changeStatus = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       var _this = this;
+      console.log(_this.date);
       if (_this.date === false) _this.date = (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)();
-      if (_this.date !== (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)()) _this.clearStorage();
-      if (_this.loading === true) return;
+      console.log(_this.date);
+      console.log((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)());
+      console.log(_this.date !== (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)());
+      if (_this.date !== (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)()) {
+        _this.clearStorage();
+      }
+      if (_this.loading === true) {
+        console.log('loading: ' + _this.loading);
+        if (changeStatus) {
+          alert('🚨🚨🚨 Увага‼️ Виникла помилка! Сторінка оновиться і повторіть дію знову!');
+        }
+        window.location.reload();
+        return;
+      }
       var _finishTimestamp = _this.finishTimestamp;
       var _startTimestamp = _this.startTimestamp;
       var _stopwatches = _this.stopwatches;
@@ -9563,12 +9576,12 @@ var Stopwatch = /*#__PURE__*/function () {
         url: adminAjax,
         data: data
       }).done(function (r) {
+        _this.loading = false;
         (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.hidePreloader)();
         if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(r)) {
           var res = JSON.parse(r);
           var html = res.timer_modal_html;
           var msg = res.msg;
-          _this.loading = false;
           if (changeStatus) {
             if (msg !== undefined && msg !== '') {
               _this.runTick();
@@ -9603,7 +9616,9 @@ var Stopwatch = /*#__PURE__*/function () {
       var saveData = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
       var _this = this;
       var date = _this.getCurrentDate();
-      if (_this.date !== date) _this.clearStorage();
+      if (_this.date !== date) {
+        _this.clearStorage();
+      }
       var data = {
         action: 'get_user_time',
         date: date

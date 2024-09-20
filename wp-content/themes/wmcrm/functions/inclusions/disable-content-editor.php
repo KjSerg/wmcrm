@@ -2,7 +2,7 @@
 function onwp_disable_content_editor()
 {
 	if(isset($_GET['post']) || isset($_POST['post_ID'])){
-		$post_id = $_GET['post'] ?: $_POST['post_ID'];
+		$post_id = $_GET['post'] ?? ($_POST['post_ID'] ?? 0);
 		$template_file = get_post_meta($post_id, '_wp_page_template', true);
 		if (
 			$template_file == 'contacts-page.php' ||

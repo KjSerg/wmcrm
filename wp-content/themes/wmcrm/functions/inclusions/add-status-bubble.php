@@ -77,17 +77,3 @@ function add_status()
 	</script>";
 }
 
-add_action('admin_menu', 'add_user_menu_bubble');
-function add_user_menu_bubble()
-{
-	global $menu;
-	$count1 = wp_count_posts('orders')->publish;
-	if ($count1) {
-		foreach ($menu as $key => $value) {
-			if ($menu[$key][2] == 'edit.php?post_type=orders') {
-				$menu[$key][0] .= ' <span class="awaiting-mod"><span class="pending-count">' . $count1 . '</span></span>';
-				break;
-			}
-		}
-	}
-}

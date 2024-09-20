@@ -215,7 +215,7 @@ get_header();
 														$css_class .= ' active-time';
 													}
 												}
-												$title_attr[] = $costs_text_list[0]['text'];
+												$title_attr[] = $costs_text_list ? $costs_text_list[0]['text'] : '';
 												$string       = '';
 												if ( $res ) {
 													$string = $changed ? $res . '⮕' . $changed : $res;
