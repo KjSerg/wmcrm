@@ -687,13 +687,7 @@ function save_user_time() {
 			$pause_time_str = $pause_time_hour['hours'] . ":" . $pause_time_hour['minutes'] . ":" . $pause_time_hour['seconds'];
 			carbon_set_post_meta( $id, 'costs_sum_hour', $time_str );
 			carbon_set_post_meta( $id, 'costs_sum_hour_pause', $pause_time_str );
-			$pd = carbon_get_post_meta( $id, 'post_data' );
-			$pd .= PHP_EOL . PHP_EOL .
-			       '____________________________________________________________________________________________________________________________________________________________________________________' .
-			       date( 'd-m-Y H:i:s', $time ) . PHP_EOL .
-			       '____________________________________________________________________________________________________________________________________________________________________________________' .
-			       json_encode( $_POST ) . PHP_EOL . "[$user_agent]";
-			carbon_set_post_meta( $id, 'post_data', $pd );
+
 			$res['ID'] = $id;
 			if ( $get_result_modal == '1' ) {
 				ob_start();
