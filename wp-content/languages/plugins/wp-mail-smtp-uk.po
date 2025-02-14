@@ -1,0 +1,333 @@
+# Translation of Plugins - WP Mail SMTP by WPForms &#8211; The Most Popular SMTP and Email Log Plugin - Stable (latest release) in Ukrainian
+# This file is distributed under the same license as the Plugins - WP Mail SMTP by WPForms &#8211; The Most Popular SMTP and Email Log Plugin - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-03-31 07:51:58+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.0\n"
+"Language: uk_UA\n"
+"Project-Id-Version: Plugins - WP Mail SMTP by WPForms &#8211; The Most Popular SMTP and Email Log Plugin - Stable (latest release)\n"
+
+#: src/SiteHealth.php:241 src/SiteHealth.php:375
+msgid "Configure mailer"
+msgstr "Налаштувати поштовий сервіс"
+
+#: src/SiteHealth.php:236
+msgid "The WP Mail SMTP plugin mailer setup is incomplete. Please click on the link below to access plugin settings and configure the mailer."
+msgstr "Налаштування конфігурації The WP Mail SMTP не закінчена. Будь ласка перейдіть за посиланням нижче, щоб закінчити налаштування."
+
+#: src/SiteHealth.php:225
+msgid "You currently have the default mailer selected, which means that you haven’t set up SMTP yet."
+msgstr "На даний момент у вас вибраний поштовий сервіс за замовчуванням. Це означає, що SMTP ще не налаштований."
+
+#: src/SiteHealth.php:217
+msgid "Test email sending"
+msgstr "Тестова відправка e-mail"
+
+#: src/SiteHealth.php:212
+msgid "The WP Mail SMTP plugin mailer setup is complete. You can send a test email, to make sure it's working properly."
+msgstr "Налаштування The WP Mail SMTP plugin mailer завершена. Ви можете відправити тестовий e-mail, щоб переконатися, що поштовий сервіс працює."
+
+#: src/SiteHealth.php:198
+msgid "Current mailer"
+msgstr "Поточний поштовий сервіс"
+
+#: src/SiteHealth.php:142
+msgid "No debug notices found."
+msgstr "Повідомлення відладки не знайдені."
+
+#: src/Admin/DebugEvents/Event.php:185 src/SiteHealth.php:141
+msgid "Debug"
+msgstr "Відладка"
+
+#: src/SiteHealth.php:137
+msgid "License key type"
+msgstr "Тип ліцензійного ключа"
+
+#: src/SiteHealth.php:97
+msgid "Is WP Mail SMTP mailer setup complete?"
+msgstr "Налаштування WP Mail SMTP mailer завершена?"
+
+#: src/Admin/Area.php:519
+msgid "Changes that you made to the settings are not saved!"
+msgstr "Зміни, внесені в налаштування, не збережені!"
+
+#: src/Admin/Pages/AboutTab.php:341
+msgid "RafflePress Pro"
+msgstr "RafflePress Pro"
+
+#: src/SiteHealth.php:230
+msgid "WP Mail SMTP mailer setup is incomplete"
+msgstr "Налаштування WP Mail SMTP mailer не завершена"
+
+#: src/SiteHealth.php:203
+msgid "WP Mail SMTP mailer setup is complete"
+msgstr "Налаштування WP Mail SMTP mailer виконана"
+
+#: src/Admin/Pages/AboutTab.php:335
+msgid "RafflePress"
+msgstr "RafflePress"
+
+#: src/Admin/ConnectionSettings.php:251
+msgid "Suggest a Mailer"
+msgstr "Пропонуємо Почтовий сервіс"
+
+#: src/Providers/Pepipost/Options.php:25
+msgid "Pepipost SMTP"
+msgstr "Pepipost SMTP"
+
+#: src/Providers/PepipostAPI/Options.php:117
+msgid "Get the API Key"
+msgstr "Отримати API ключ"
+
+#: src/Admin/Area.php:654
+msgid "Download"
+msgstr "Завантажити"
+
+#: src/Providers/Outlook/Options.php:39
+msgid "We're sorry, the Microsoft Outlook mailer is not available on your plan. Please upgrade to the PRO plan to unlock all these awesome features."
+msgstr "Приносимо вибачення, поштовий сервіс Amazon SES недоступний на вашому плані підписки. Будь ласка, перейдіть на план PRO, щоб розблокувати всі ці корисні функції."
+
+#: src/Providers/AmazonSES/Options.php:39
+msgid "We're sorry, the Amazon SES mailer is not available on your plan. Please upgrade to the PRO plan to unlock all these awesome features."
+msgstr "На жаль, поштовий сервіс Amazon SES недоступен у вашому плані. Перейдіть до плану PRO, щоб розблокувати всі ці корисні функції."
+
+#: src/Admin/Area.php:348 src/Admin/Area.php:349 src/Admin/Area.php:535
+#: src/Admin/SetupWizard.php:239 src/Reports/Emails/Summary.php:313
+msgid "Upgrade to Pro"
+msgstr "Обновити до Pro версиї"
+
+#: src/Admin/Area.php:554 src/Admin/SetupWizard.php:258
+msgid "Already purchased?"
+msgstr "Вже придбали?"
+
+#: src/Admin/Area.php:1241
+msgid "Educational notice for this mailer was successfully dismissed."
+msgstr "Обучающее повідомлення по цьому сервису було успішно відхилено."
+
+#: src/Admin/DebugEvents/Event.php:360 src/Admin/DebugEvents/Table.php:170
+msgid "Type"
+msgstr "Тип"
+
+#: src/SiteHealth.php:133
+msgid "Version"
+msgstr "Версія"
+
+#: src/Admin/Pages/ExportTab.php:121
+msgid "Status"
+msgstr "Статус"
+
+#: assets/languages/wp-mail-smtp-vue.php:902
+msgid "Install"
+msgstr "Встановити"
+
+#: assets/languages/wp-mail-smtp-vue.php:908 src/Admin/Area.php:646
+#: src/Admin/Pages/AboutTab.php:225
+msgid "Activated"
+msgstr "Активовано"
+
+#: src/Providers/Sendgrid/Options.php:29
+msgid "SendGrid"
+msgstr "SendGrid"
+
+#: src/Admin/Pages/AboutTab.php:279 src/Admin/Pages/SmartRoutingTab.php:278
+msgid "WPForms"
+msgstr "WPForms"
+
+#: src/Admin/Pages/MiscTab.php:39
+msgid "Misc"
+msgstr "Різне"
+
+#: assets/languages/wp-mail-smtp-vue.php:288
+#: src/Providers/PepipostAPI/Options.php:96
+#: src/Providers/Sendgrid/Options.php:67
+#: src/Providers/Sendinblue/Options.php:111
+#: src/Providers/Sendlayer/Options.php:94 src/Providers/SMTPcom/Options.php:106
+#: src/Providers/SparkPost/Options.php:87
+msgid "API Key"
+msgstr "Ключ API"
+
+#: src/Admin/Area.php:393 src/Admin/Area.php:399
+#: src/Admin/Pages/SettingsTab.php:38
+msgid "General"
+msgstr "Загальне"
+
+#: src/Admin/Pages/TestTab.php:113
+msgid "Email Test"
+msgstr "Тест email"
+
+#: assets/languages/wp-mail-smtp-vue.php:620
+#: src/Providers/OptionsAbstract.php:260
+msgid "SSL"
+msgstr "SSL"
+
+#: assets/languages/wp-mail-smtp-vue.php:462
+#: src/Providers/Gmail/Options.php:113
+msgid "Client ID"
+msgstr "ID кліента"
+
+#: src/Admin/DebugEvents/Event.php:375 src/Admin/DebugEvents/Table.php:172
+#: src/Admin/Pages/ExportTab.php:128
+msgid "Source"
+msgstr "Джерело"
+
+#: src/Admin/Pages/MiscTab.php:140
+msgid "Hide Announcements"
+msgstr "Приховати оголошення"
+
+#: src/Admin/ConnectionSettings.php:193
+msgid "Return Path indicates where non-delivery receipts - or bounce messages - are to be sent."
+msgstr "Шлях у зворотному напрямку показує, де будуть надсилатися квитанції, які не постачаються - або повідомлення відмов."
+
+#: src/Admin/Pages/TestTab.php:218
+msgid "Send Email"
+msgstr "Надіслати e-mail"
+
+#: src/Admin/Pages/AlertsTab.php:153 src/Admin/Pages/TestTab.php:158
+msgid "Send To"
+msgstr "Надіслати до"
+
+#: src/Admin/Area.php:526 src/Admin/PageAbstract.php:192
+msgid "Save Settings"
+msgstr "Зберегти налаштування"
+
+#: assets/languages/wp-mail-smtp-vue.php:611
+#: src/Providers/OptionsAbstract.php:350
+msgid "SMTP Password"
+msgstr "SMTP пароль"
+
+#: src/Helpers/UI.php:38
+msgid "Off"
+msgstr "Вимк"
+
+#: src/Helpers/UI.php:37
+msgid "On"
+msgstr "Увімк"
+
+#: assets/languages/wp-mail-smtp-vue.php:623
+#: src/Providers/OptionsAbstract.php:269
+msgid "TLS"
+msgstr "TLS"
+
+#: assets/languages/wp-mail-smtp-vue.php:617
+#: src/Admin/Pages/SettingsTab.php:371 src/Providers/OptionsAbstract.php:251
+msgid "None"
+msgstr "Немає"
+
+#: assets/languages/wp-mail-smtp-vue.php:223
+#: src/Providers/Mailgun/Options.php:97
+msgid "Domain Name"
+msgstr "Доменне ім'я"
+
+#: src/Providers/Mail/Options.php:26
+msgid "Default (none)"
+msgstr "За замовчуванням (немає)"
+
+#: src/Admin/Area.php:647 src/Admin/Pages/AboutTab.php:222
+msgid "Active"
+msgstr "Діючий"
+
+#: src/Admin/ConnectionSettings.php:279
+msgid "Dismiss this notice"
+msgstr "Відхилити це повідомлення"
+
+#: assets/languages/wp-mail-smtp-vue.php:220
+msgid "Private API Key"
+msgstr "Приватний API-ключ"
+
+#: src/Admin/Pages/AboutTab.php:241
+msgid "Not Installed"
+msgstr "Не встановлено"
+
+#: src/Admin/Pages/TestTab.php:938
+msgid "no"
+msgstr "ні"
+
+#: src/Admin/Pages/TestTab.php:839
+msgid "This means the connection to your SMTP host was made successfully, but the host rejected the email."
+msgstr "Це означає, що підключення до вашого хосту SMTP було успішно виконано, але хост відхилив електронну пошту."
+
+#: src/Admin/Pages/TestTab.php:837
+msgid "Error due to unsolicited and/or bulk e-mail."
+msgstr "Помилка через небажану та / або масову електронну пошту."
+
+#: src/Admin/Pages/TestTab.php:814 src/Admin/Pages/TestTab.php:941
+msgid "Verify with your SMTP host that your account has permissions to send emails using outside connections."
+msgstr "Переконайтеся, що ваш обліковий запис SMTP має дозвіл на надсилання електронних листів за допомогою зовнішніх з'єднань."
+
+#: src/Admin/Pages/TestTab.php:813 src/Admin/Pages/TestTab.php:940
+msgid "Contact your SMTP host to confirm you are using the correct username and password."
+msgstr "Зверніться до свого SMTP-хоста, щоб підтвердити, що ви використовуєте правильне ім'я користувача та пароль."
+
+#: src/Admin/Pages/AboutTab.php:244
+msgid "Install Plugin"
+msgstr "Встановити плагін"
+
+#: src/Admin/Area.php:318 src/Admin/Area.php:319 src/Admin/Area.php:1278
+msgid "Settings"
+msgstr "Налаштування"
+
+#: src/Admin/DashboardWidget.php:570
+msgid "Save Changes"
+msgstr "Зберегти зміни"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: wp_mail_smtp.php src/Admin/Area.php:307 src/Admin/Area.php:308
+#: src/Admin/Area.php:365 src/Admin/Area.php:366
+#: src/Admin/DashboardWidget.php:164 src/Admin/DashboardWidget.php:562
+#: src/SiteHealth.php:43
+msgid "WP Mail SMTP"
+msgstr "WP-Mail-SMTP"
+
+#: src/Admin/Pages/AlertsTab.php:135
+msgid "Email"
+msgstr "Email"
+
+#: assets/languages/wp-mail-smtp-vue.php:535 src/Admin/Pages/TestTab.php:253
+#: src/SiteHealth.php:352
+msgid "Send a Test Email"
+msgstr "Відправити тестовий лист"
+
+#: assets/languages/wp-mail-smtp-vue.php:602
+#: src/Providers/OptionsAbstract.php:317
+msgid "Authentication"
+msgstr "Авторизація"
+
+#: assets/languages/wp-mail-smtp-vue.php:587
+#: src/Providers/OptionsAbstract.php:241
+msgid "Encryption"
+msgstr "Шифрування"
+
+#: assets/languages/wp-mail-smtp-vue.php:590
+#: src/Providers/OptionsAbstract.php:281
+msgid "SMTP Port"
+msgstr "SMTP порт"
+
+#: assets/languages/wp-mail-smtp-vue.php:584
+#: src/Providers/OptionsAbstract.php:227
+msgid "SMTP Host"
+msgstr "SMTP сервер"
+
+#: src/Admin/ConnectionSettings.php:177
+msgid "Return Path"
+msgstr "Адреса повернення (return-path)"
+
+#: assets/languages/wp-mail-smtp-vue.php:653
+#: src/Admin/ConnectionSettings.php:202 src/Admin/Pages/ExportTab.php:125
+msgid "Mailer"
+msgstr "Метод відправки пошти"
+
+#: assets/languages/wp-mail-smtp-vue.php:242
+#: src/Admin/ConnectionSettings.php:127 src/Admin/Pages/ExportTab.php:111
+msgid "From Name"
+msgstr "Від імені"
+
+#: assets/languages/wp-mail-smtp-vue.php:251
+#: src/Admin/ConnectionSettings.php:70 src/Admin/Pages/SmartRoutingTab.php:180
+#: src/Admin/Pages/SmartRoutingTab.php:210
+msgid "From Email"
+msgstr "Від (адреса)"

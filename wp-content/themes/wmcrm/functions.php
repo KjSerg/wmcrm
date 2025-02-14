@@ -15,7 +15,7 @@ function wmcrm_scripts() {
 
 	wp_enqueue_style( 'wmcrm-app', get_template_directory_uri() . '/assets/css/app.css', array(), '1.0.2.6' );
 
-	wp_enqueue_script( 'wmcrm-app-scripts', get_template_directory_uri() . '/assets/js/app.js', array(), '1.0.5.7', true );
+	wp_enqueue_script( 'wmcrm-app-scripts', get_template_directory_uri() . '/assets/js/app.js', array(), '1.0.6.3', true );
 
 	wp_localize_script( 'ajax-script', 'AJAX', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 }
@@ -44,7 +44,17 @@ get_template_part( 'functions/actions-functions' );
 
 function custom_logout_and_redirect() {
 	$user_id = get_current_user_id();
-	if ( $user_id ) {
+	if ( $user_id && ! is_current_user_admin() ) {
+//		$str        = 'iPhone';
+//		$user_agent = get_user_agent();
+//		$pos        = strpos( $user_agent, $str );
+//		if ( $pos !== false) {
+//			if ( is_user_logged_in() && $user_id != 4 ) {
+//				wp_logout();
+//				wp_redirect( home_url() );
+//				exit();
+//			}
+//		}
 		$fired = carbon_get_user_meta( $user_id, 'fired' );
 		if ( $fired ) {
 			if ( is_user_logged_in() ) {
@@ -67,11 +77,11 @@ function disable_smilies() {
 //add_action( 'init', 'logout_ira_iphone' );
 function logout_ira_iphone() {
 	$user_id = get_current_user_id();
-	if($user_id){
-		if($user_id == 9) {
+	if ( $user_id ) {
+		if ( $user_id == 9 ) {
 			$user_agent = get_user_agent();
-			$pos = strpos($user_agent, 'iPhone;');
-			if($pos !== false){
+			$pos        = strpos( $user_agent, 'iPhone;' );
+			if ( $pos !== false ) {
 				if ( is_user_logged_in() ) {
 					wp_logout();
 					wp_redirect( home_url() );
@@ -106,5 +116,11 @@ function custom_mime_types( $mimes ) {
 }
 
 add_filter( 'upload_mimes', 'custom_mime_types' );
+
+// Вимкнення oEmbed
+remove_filter('the_content', [$GLOBALS['wp_embed'], 'autoembed'], 8);
+remove_action('wp_head', 'wp_oembed_add_discovery_links');
+remove_action('wp_head', 'wp_oembed_add_host_js');
+
 
 

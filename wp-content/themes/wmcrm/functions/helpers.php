@@ -1488,6 +1488,18 @@ function get_text_user_status( $status ) {
 	return '_';
 }
 
+function get_user_status( $status ) {
+	if ( $status == - 1 ) {
+		return '[⏸️ пауза]';
+	} elseif ( $status == 1 ) {
+		return '[▶️ старт]';
+	} elseif ( $status == 0 ) {
+		return '[🛑 закінчено]';
+	}
+
+	return '_';
+}
+
 function get_stopwatches( $id ) {
 	$time         = time();
 	$current_date = date( 'd-m-Y', $time );

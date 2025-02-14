@@ -7,7 +7,6 @@ $(document).ready(function () {
         e.preventDefault();
         const $t = $(this);
         const id = $t.attr('data-id');
-        console.log(id)
         if (id === undefined) {
             return;
         }
@@ -19,11 +18,18 @@ $(document).ready(function () {
                 action: 'remove_user_notice', id
             },
         }).done(function (r) {
+            $t.closest('div').remove();
             if (r) {
                 $(document).find('.notifications').html(r);
+                $(document).find('.notifications > *').show();
             }
         });
     });
+    document.onvisibilitychange = () => {
+        if (document.visibilityState === "visible") {
+            getNotice();
+        }
+    };
 });
 
 function updateNotice() {
@@ -42,6 +48,7 @@ export function getNotice() {
     }).done(function (r) {
         if (r) {
             $(document).find('.notifications').html(r);
+            $(document).find('.notifications > *').show();
         }
     });
 }

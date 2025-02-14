@@ -34,7 +34,20 @@ $msg = absences_action();
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
-    <title><?php wp_title(); ?></title>
+    <title><?php
+		if ( $user_id && ! $is_admin ) {
+			$cost_id = get_cost_id( array(
+				'user_id' => $user_id,
+				'date'    => date( 'd-m-Y', time() ),
+			) );
+			if ( $cost_id ) {
+				$costs_status = carbon_get_post_meta( $cost_id, 'costs_status' );
+				$costs_status = get_user_status( $costs_status ?: 0 );
+				echo $costs_status . ' ';
+			}
+		}
+		wp_title();
+		?></title>
 	<?php wp_head(); ?>
 </head>
 <body class="<?php echo is_current_user_admin() ? 'user-admin' : ''; ?>">

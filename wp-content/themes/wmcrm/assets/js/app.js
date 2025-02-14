@@ -9132,6 +9132,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_helpers */ "./resources/js/_helpers.js");
 /* harmony import */ var worker_timers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! worker-timers */ "./node_modules/worker-timers/build/es2019/module.js");
+/* harmony import */ var _check_notification__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_check-notification */ "./resources/js/_check-notification.js");
 /* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
@@ -9139,6 +9140,7 @@ function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = 
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
 
 
 var Stopwatch = /*#__PURE__*/function () {
@@ -9527,11 +9529,8 @@ var Stopwatch = /*#__PURE__*/function () {
       var showLoader = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var changeStatus = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       var _this = this;
-      console.log(_this.date);
+      var _status = _this.status;
       if (_this.date === false) _this.date = (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)();
-      console.log(_this.date);
-      console.log((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)());
-      console.log(_this.date !== (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)());
       if (_this.date !== (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)()) {
         _this.clearStorage();
       }
@@ -9547,7 +9546,6 @@ var Stopwatch = /*#__PURE__*/function () {
       var _startTimestamp = _this.startTimestamp;
       var _stopwatches = _this.stopwatches;
       var _workTimes = _this.workTimes;
-      var _status = _this.status;
       var sum = _this.getWorkTimesSum();
       var sumPauses = _this.getStopwatchSum();
       var currentDate = (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)();
@@ -9582,12 +9580,30 @@ var Stopwatch = /*#__PURE__*/function () {
           var res = JSON.parse(r);
           var html = res.timer_modal_html;
           var msg = res.msg;
+          var resStaus = res.__status;
+          if (resStaus !== undefined) {
+            resStaus = Number(resStaus);
+            if (resStaus !== _this.status) {
+              alert('🚨🚨🚨 Увага‼️ Виникла помилка! Сторінка оновиться і повторіть дію знову!');
+              window.location.reload();
+            } else {
+              if (_this.status === 1) {
+                (0,_check_notification__WEBPACK_IMPORTED_MODULE_2__.playSoundPlay)();
+              } else if (_this.status === -1) {
+                (0,_check_notification__WEBPACK_IMPORTED_MODULE_2__.pauseSoundPlay)();
+              }
+            }
+          }
           if (changeStatus) {
             if (msg !== undefined && msg !== '') {
               _this.runTick();
             } else {
+              alert('🚨🚨🚨 Увага‼️ Виникла помилка! Сторінка оновиться і повторіть дію знову!');
               window.location.reload();
             }
+          }
+          if (res.title !== undefined && res.title !== '') {
+            $(document).find('title').text(res.title);
           }
           if (msg !== undefined && msg !== '') {
             alert(msg);
@@ -9646,6 +9662,9 @@ var Stopwatch = /*#__PURE__*/function () {
               var costs_sum = res.costs_sum;
               var costs_sum_hour_pause = res.costs_sum_hour_pause;
               var costs_sum_pause = res.costs_sum_pause;
+              if (res.title !== undefined && res.title !== '') {
+                $(document).find('title').text(res.title);
+              }
               if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(pauses)) pauses = JSON.parse(pauses);
               if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(costs_data)) costs_data = JSON.parse(costs_data);
               _this.stopwatches = pauses;
@@ -9663,6 +9682,7 @@ var Stopwatch = /*#__PURE__*/function () {
                 _this.$doc.find('.timer').addClass('pause');
                 _this.$doc.find('.timer').removeClass('play');
                 _this.runTick();
+                (0,_check_notification__WEBPACK_IMPORTED_MODULE_2__.pauseSoundPlay)();
               } else {
                 _this.$doc.find('.timer').removeClass('pause');
                 _this.$doc.find('.timer').removeClass('play');
@@ -9726,6 +9746,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ checkingNotifications),
 /* harmony export */   newMessageSoundPlay: () => (/* binding */ newMessageSoundPlay),
+/* harmony export */   pauseSoundPlay: () => (/* binding */ pauseSoundPlay),
+/* harmony export */   playSoundPlay: () => (/* binding */ playSoundPlay),
 /* harmony export */   setNotificationsNumber: () => (/* binding */ setNotificationsNumber)
 /* harmony export */ });
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_helpers */ "./resources/js/_helpers.js");
@@ -9775,14 +9797,30 @@ function newMessageSoundPlay() {
     });
     sound.play();
   }
-  // if (audioElement) {
-  //     audioElement.muted = false;
-  //     audioElement.play();
-  //     audioElement.oncanplaythrough = function () {
-  //         audioElement.play();
-  //     };
-  //     audioElement.load();
-  // }
+}
+function pauseSoundPlay() {
+  var audioElement = document.getElementById('pause-sound');
+  var src = audioElement.getAttribute('src');
+  if (src) {
+    var audio = new Audio(src);
+    audio.play();
+    var sound = new howler__WEBPACK_IMPORTED_MODULE_2__.Howl({
+      src: [src]
+    });
+    sound.play();
+  }
+}
+function playSoundPlay() {
+  var audioElement = document.getElementById('play-sound');
+  var src = audioElement.getAttribute('src');
+  if (src) {
+    var audio = new Audio(src);
+    audio.play();
+    var sound = new howler__WEBPACK_IMPORTED_MODULE_2__.Howl({
+      src: [src]
+    });
+    sound.play();
+  }
 }
 
 /***/ }),
@@ -11006,7 +11044,6 @@ $(document).ready(function () {
     e.preventDefault();
     var $t = $(this);
     var id = $t.attr('data-id');
-    console.log(id);
     if (id === undefined) {
       return;
     }
@@ -11019,11 +11056,18 @@ $(document).ready(function () {
         id: id
       }
     }).done(function (r) {
+      $t.closest('div').remove();
       if (r) {
         $(document).find('.notifications').html(r);
+        $(document).find('.notifications > *').show();
       }
     });
   });
+  document.onvisibilitychange = function () {
+    if (document.visibilityState === "visible") {
+      getNotice();
+    }
+  };
 });
 function updateNotice() {
   var minute = 60000;
@@ -11040,6 +11084,7 @@ function getNotice() {
   }).done(function (r) {
     if (r) {
       $(document).find('.notifications').html(r);
+      $(document).find('.notifications > *').show();
     }
   });
 }

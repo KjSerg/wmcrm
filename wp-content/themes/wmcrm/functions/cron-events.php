@@ -1,5 +1,45 @@
 <?php
 add_action( 'create_notification_action_hook', 'create_notification', 10, 4 );
+add_action( 'create_notification_timer_action_hook', 'create_default_notification', 10, 2 );
+
+function create_default_notification( $text = '', $users_ids = array() ) {
+	$telegram_m     = '';
+	$text           = $text ?? '';
+	$users_ids      = $users_ids ?? array();
+	$administrators = get_administrators();
+	$telegram_users = array();
+	$post_title     = $text;
+	$m              = '<h1>' . $post_title . '</h1> <hr><br>';
+	$m              .= $text;
+	$telegram_m     .= PHP_EOL;
+	$telegram_m     .= PHP_EOL;
+	$telegram_m     .= get_telegram_text_without_link( $text );
+	$users          = array_unique( $users_ids );
+	foreach ( $users as $user_id ) {
+		$telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' );
+		if ( $telegram_id && carbon_get_user_meta( $user_id, 'telegram_notification' ) ) {
+			$telegram_users[] = $telegram_id;
+		}
+		$user = get_user_by( 'id', $user_id );
+		send_message( $m, $user->user_email, $post_title );
+	}
+	if ( $telegram_users ) {
+		$keyboard = array();
+		foreach ( $telegram_users as $telegram_id ) {
+			if ( is_working_hours() ) {
+				send_telegram_message( $telegram_id, $telegram_m, $keyboard );
+			} else {
+				wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
+					$telegram_id,
+					$telegram_m,
+					$keyboard,
+					false,
+					'html'
+				) );
+			}
+		}
+	}
+}
 
 function create_notification( $project_id = 0, $comment_id = 0, $text = '', $users_ids = array() ) {
 	$telegram_m                = '';
@@ -102,7 +142,7 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 				if ( $comment_author == $user_id ) {
 					$user_test = false;
 				}
-				if(carbon_get_user_meta( $user_id, 'fired' )) {
+				if ( carbon_get_user_meta( $user_id, 'fired' ) ) {
 					$user_test = false;
 				}
 			}
@@ -162,6 +202,15 @@ function create_cron_notification( $args = array() ) {
 	wp_schedule_single_event( time() + 10, 'create_notification_action_hook', array(
 		(int) $project_id,
 		(int) $comment_id,
+		$text,
+		$users_ids
+	) );
+}
+
+function create_notification_timer( $args = array() ) {
+	$text      = $args['text'] ?? '';
+	$users_ids = $args['users_ids'] ?? array();
+	wp_schedule_single_event( time() + 900, 'create_notification_timer_action_hook', array(
 		$text,
 		$users_ids
 	) );

@@ -15,6 +15,12 @@ $current_week  = date( "W", $time );
 $current_year  = date( "Y", $time );
 $current_month = (int) date( "m", $time );
 $current_date  = date( "d-m-Y", $time );
+if($current_month === 12){
+	if((int)$current_week === 1){
+		$current_year  = (int) $current_year + 1;
+    }
+}
+$weeks_in_year = (new DateTime("$current_year-12-28"))->format("W");
 $dates_week    = get_dates_of_week( $current_year, $current_week );
 $users         = get_active_users();
 $get_user_id   = $_GET['user_id'] ?? '';

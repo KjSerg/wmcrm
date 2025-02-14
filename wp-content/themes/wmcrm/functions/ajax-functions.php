@@ -628,12 +628,28 @@ function save_user_time() {
 				$txt              = $user->display_name;
 				$current_date     = date( 'd-m-Y H:i:s', $time );
 				if ( $status != $old_status ) {
+					$t                       = "Увага, $txt! 15хв назад було зміненно статус робочого дня на ПАУЗА!";
+					$notification_timer_args = array(
+						'text'      => $t,
+						'users_ids' => array( $user_id )
+					);
+					if ( $status == - 1 ) {
+						$post_data        = array(
+							'post_type'   => 'notice',
+							'post_title'  => "Увага, $txt! $current_date було зміненно статус робочого дня на ПАУЗА!",
+							'post_status' => 'publish',
+							'post_author' => $user_id
+						);
+						$notice_id        = wp_insert_post( $post_data, true );
+						$res['notice_id'] = $notice_id;
+					}
 					if ( $old_status == 0 && $status == 1 ) {
 						$txt .= ' розпочав(ла) робочий день о ' . $current_date;
 					} elseif ( $old_status == 1 && $status == 0 ) {
 						$txt .= ' завершив(ла) робочий день о ' . $current_date;
 					} else {
 						$txt .= ' змінив(ла) робочий статус з "' . get_text_user_status( $old_status ) . '" на "' . get_text_user_status( $status ) . '" о ' . $current_date;
+
 					}
 					$_temp = array(
 						'text'       => $txt,
@@ -687,8 +703,9 @@ function save_user_time() {
 			$pause_time_str = $pause_time_hour['hours'] . ":" . $pause_time_hour['minutes'] . ":" . $pause_time_hour['seconds'];
 			carbon_set_post_meta( $id, 'costs_sum_hour', $time_str );
 			carbon_set_post_meta( $id, 'costs_sum_hour_pause', $pause_time_str );
-
-			$res['ID'] = $id;
+			$costs_status_title = carbon_get_post_meta( $cost_id, 'costs_status' );
+			$res['ID']          = $id;
+			$res['title']       = get_user_status( $costs_status_title ?: 0 );
 			if ( $get_result_modal == '1' ) {
 				ob_start();
 				the_timer_modal( array(
@@ -831,6 +848,8 @@ function get_user_time() {
 		$res['cost_id'] = $cost_id;
 		$res['user_id'] = $user_id;
 		if ( $cost_id ) {
+			$costs_status_title = carbon_get_post_meta( $cost_id, 'costs_status' );
+			$res['title']       = get_user_status( $costs_status_title ?: 0 );
 			if ( $costs_pause_list = carbon_get_post_meta( $cost_id, 'costs_pause_list' ) ) {
 				$arr = array();
 				foreach ( $costs_pause_list as $item ) {

@@ -19,15 +19,26 @@ $statuses       = array(
 	'archive' => 'Завершена',
 	'pending' => 'В черзі'
 );
+$user_id        = get_current_user_id();
+$is_vlad        = $user_id == 7;
+$gif            = $assets . 'img/loading.gif';
+if($is_vlad) {
+	$gif            = $assets . 'img/forvlad.gif';
+}
 ?>
 
 </main>
 
 
-
 <div class="sounds" style="display:none;">
     <audio id="new-message-sound" autoplay type="audio/mp3" muted
            src="<?php echo $assets ?>/sounds/tone.mp3"></audio>
+
+    <audio id="play-sound" autoplay type="audio/mp3" muted
+           src="<?php echo $assets ?>/sounds/play.mp3"></audio>
+
+    <audio id="pause-sound" autoplay type="audio/mp3" muted
+           src="<?php echo $assets ?>/sounds/pause.mp3"></audio>
 </div>
 
 <?php if ( $is_admin ): ?>
@@ -135,7 +146,7 @@ $statuses       = array(
                 <label class="form-group half">
                     <span class="form-group__title"> Посада</span>
                     <input type="text" name="position"
-                           value=""placeholder="Введіть посаду">
+                           value="" placeholder="Введіть посаду">
                 </label>
                 <label class="form-group half">
                     <span class="form-group__title"> День народження</span>
@@ -256,7 +267,7 @@ $statuses       = array(
 <div class="window-main" id="window-main-js"></div>
 
 <div class="preloader">
-    <img src="<?php echo $assets; ?>img/loading.gif" alt="loading.gif">
+    <img src="<?php echo $gif; ?>" alt="loading.gif">
 </div>
 
 <footer class="footer"></footer>

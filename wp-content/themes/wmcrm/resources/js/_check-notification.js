@@ -44,12 +44,34 @@ export function newMessageSoundPlay() {
 
         sound.play();
     }
-    // if (audioElement) {
-    //     audioElement.muted = false;
-    //     audioElement.play();
-    //     audioElement.oncanplaythrough = function () {
-    //         audioElement.play();
-    //     };
-    //     audioElement.load();
-    // }
+}
+
+export function pauseSoundPlay() {
+    const audioElement = document.getElementById('pause-sound');
+    const src = audioElement.getAttribute('src');
+    if (src) {
+        const audio = new Audio(src);
+        audio.play();
+
+        const sound = new Howl({
+            src: [src]
+        });
+
+        sound.play();
+    }
+}
+
+export function playSoundPlay() {
+    const audioElement = document.getElementById('play-sound');
+    const src = audioElement.getAttribute('src');
+    if (src) {
+        const audio = new Audio(src);
+        audio.play();
+
+        const sound = new Howl({
+            src: [src]
+        });
+
+        sound.play();
+    }
 }

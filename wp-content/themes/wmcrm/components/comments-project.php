@@ -27,7 +27,7 @@ function the_comments( $id ) {
 			while ( $query->have_posts() ) {
 				$query->the_post();
 				$comment_id = get_the_ID();
-				the_comment_project( $comment_id );
+				the_comment_project( $comment_id, false, $id );
 			}
 			?></div><?php
 			?>
@@ -50,7 +50,7 @@ function the_comments( $id ) {
 	}
 }
 
-function the_comment_project( $comment_id, $user_id = false ) {
+function the_comment_project( $comment_id, $user_id = false, $project_id = false ) {
 	$user_id     = $user_id ?: get_current_user_id();
 	$post_type   = get_post_type( $comment_id );
 	$time        = carbon_get_post_meta( $comment_id, 'comment_worksection_date_added' ) ?: get_the_date( 'U', $comment_id );
@@ -64,6 +64,7 @@ function the_comment_project( $comment_id, $user_id = false ) {
 	$avatar      = false;
 	$is_read     = false;
 	$users_read  = carbon_get_post_meta( $comment_id, 'discussion_read_users' );
+
 	if ( $users_read ) {
 		$users_read = explode( ',', $users_read );
 		$is_read    = in_array( $user_id, $users_read );
@@ -129,6 +130,9 @@ function the_comment_project( $comment_id, $user_id = false ) {
                     <a href="#" data-id="<?php echo $comment_id ?>" class="comment-change change-btn comment-change-js">
 						<?php _s( _i( 'edit' ) ) ?>
                     </a>
+
+
+
 				<?php endif; ?>
 			<?php else: ?>
                 <div class=" text">

@@ -39,7 +39,7 @@ function crb_attach_in_projects() {
 		'singular_name' => 'елемент',
 	);
 	Container::make( 'post_meta', 'Основна інформація' )
-	         ->show_on_post_type( 'projects' )
+		->where( 'post_type', '=', 'projects' )
 	         ->add_fields(
 		         array(
 			         Field::make( "text", "project_user_from_id", "ID користувача який поставив задачу" )->set_width( 50 ),
@@ -52,7 +52,7 @@ function crb_attach_in_projects() {
 	         );
 
 	Container::make( 'post_meta', 'Основні коментарі' )
-	         ->show_on_post_type( 'projects' )
+	         ->where( 'post_type', '=', 'projects' )
 	         ->add_fields(
 		         array(
 			         Field::make( "textarea", "project_comment_ids", "ID коментарів" ),
@@ -60,7 +60,7 @@ function crb_attach_in_projects() {
 	         );
 
 	Container::make( 'post_meta', 'Worksection' )
-	         ->show_on_post_type( 'projects' )
+	         ->where( 'post_type', '=', 'projects' )
 	         ->add_fields(
 		         array(
 			         Field::make( "separator", "crb_style_options1", "Основні данні" ),
@@ -89,7 +89,7 @@ function crb_attach_in_projects() {
 	         );
 
 	Container::make( 'post_meta', 'Worksection коментарі' )
-	         ->show_on_post_type( 'projects' )
+	         ->where( 'post_type', '=', 'projects' )
 	         ->add_fields(
 		         array(
 			         Field::make( "textarea", "worksection_comment_ids", "ID архівних коментарів" ),
@@ -105,7 +105,7 @@ function crb_attach_in_comments() {
 		'singular_name' => 'елемент',
 	);
 	Container::make( 'post_meta', 'Проєкт' )
-	         ->show_on_post_type( 'comments' )
+	         ->where( 'post_type', '=', 'comments' )
 	         ->add_fields(
 		         array(
 			         Field::make( "text", "comment_project_id", "ID проєка" ),
@@ -114,7 +114,7 @@ function crb_attach_in_comments() {
 	         );
 
 	Container::make( 'post_meta', 'Worksection' )
-	         ->show_on_post_type( 'comments' )
+	         ->where( 'post_type', '=', 'comments' )
 	         ->add_fields(
 		         array(
 			         Field::make( "separator", "crb_style_options1", "Основні данні" ),
@@ -134,7 +134,7 @@ function crb_attach_in_comments() {
 add_action( 'carbon_fields_register_fields', 'crb_attach_in_absences' );
 function crb_attach_in_absences() {
 	Container::make( 'post_meta', 'Інформація' )
-	         ->show_on_post_type( 'absences' )
+	         ->where( 'post_type', '=', 'absences' )
 	         ->add_fields(
 		         array(
 			         Field::make( "separator", "crb_style_options1", "Дата" ),
@@ -151,7 +151,7 @@ function crb_attach_in_discussion() {
 		'singular_name' => 'елемент',
 	);
 	Container::make( 'post_meta', 'Інформація' )
-	         ->show_on_post_type( 'discussion' )
+	         ->where( 'post_type', '=', 'discussion' )
 	         ->add_fields(
 		         array(
 			         Field::make( "text", "discussion_project_id", "ID проєка" ),
@@ -174,7 +174,7 @@ function crb_attach_in_events() {
 		'singular_name' => 'елемент',
 	);
 	Container::make( 'post_meta', 'Інформація' )
-	         ->show_on_post_type( 'events' )
+	         ->where( 'post_type', '=', 'events' )
 	         ->add_fields(
 		         array(
 			         Field::make( "text", "event_date", "Дата" ),
@@ -190,7 +190,7 @@ function crb_attach_in_events() {
 		         )
 	         );
 	Container::make( 'post_meta', 'Результати' )
-	         ->show_on_post_type( 'event_results' )
+	         ->where( 'post_type', '=', 'events' )
 	         ->add_fields(
 		         array(
 			         Field::make( "text", "event_id", "ID опитування" ),
@@ -207,7 +207,7 @@ function crb_attach_in_presets() {
 		'singular_name' => 'елемент',
 	);
 	Container::make( 'post_meta', 'Інформація' )
-	         ->show_on_post_type( 'presets' )
+	         ->where( 'post_type', '=', 'presets' )
 	         ->add_fields(
 		         array(
 			         Field::make( "text", "preset_parent_project", "ID батьківського елемента" ),
@@ -226,7 +226,7 @@ function crb_attach_in_costs() {
 		'singular_name' => 'елемент',
 	);
 	Container::make( 'post_meta', 'День' )
-	         ->show_on_post_type( 'costs' )
+	         ->where( 'post_type', '=', 'costs' )
 	         ->add_tab( 'Інформація',
 		         array(
 			         Field::make( "text", "costs_date", "Дата" ),
@@ -294,7 +294,7 @@ function crb_attach_in_costs() {
 	         );
 
 	Container::make( 'post_meta', 'Проєкт' )
-	         ->show_on_post_type( 'project_costs' )
+	         ->where( 'post_type', '=', 'project_costs' )
 	         ->add_tab( 'Інформація',
 		         array(
 			         Field::make( "text", "project_costs", "ID проєкту" ),
@@ -315,7 +315,7 @@ function crb_attach_in_tags() {
 		'singular_name' => 'елемент',
 	);
 	Container::make( 'term_meta', 'Налаштування' )
-	         ->show_on_taxonomy( 'tags' )
+	         ->where( 'term_taxonomy', '=', 'tags' )
 	         ->add_fields(
 		         array(
 			         Field::make( "color", "tag_color", "Колір тега" ),
@@ -330,7 +330,7 @@ function crb_attach_in_reasons() {
 		'singular_name' => 'елемент',
 	);
 	Container::make( 'term_meta', 'Налаштування' )
-	         ->show_on_taxonomy( 'reasons' )
+	         ->where( 'term_taxonomy', '=', 'reasons' )
 	         ->add_fields(
 		         array(
 			         Field::make( "text", "reason_color", "Колір тега" ),
@@ -345,7 +345,7 @@ function crb_attach_in_colors() {
 		'singular_name' => 'елемент',
 	);
 	Container::make( 'term_meta', 'Налаштування' )
-	         ->show_on_taxonomy( 'colors' )
+	         ->where( 'term_taxonomy', '=', 'colors' )
 	         ->add_fields(
 		         array(
 			         Field::make( "color", "color_hex", "Колір" )->set_required( true )

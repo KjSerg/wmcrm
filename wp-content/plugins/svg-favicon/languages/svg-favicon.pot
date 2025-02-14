@@ -1,0 +1,341 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: SVG Favicon\n"
+"POT-Creation-Date: 2022-03-01 22:31-0800\n"
+"PO-Revision-Date: 2022-03-01 22:30-0800\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"X-Generator: Poedit 3.0.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: svg-favicon.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.min.js\n"
+"X-Poedit-SearchPathExcluded-1: vendor\n"
+"X-Poedit-SearchPathExcluded-2: node_modules\n"
+
+#: admin/js/svg-favicon-admin-bundle.js:6995
+#: javascript/components/baseComponent.js:348
+#: javascript/components/safariComponent.js:206
+#: javascript/components/settingsFields.js:51
+msgid "Reset SVG Favicon Settings?"
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:6996
+#: javascript/components/settingsFields.js:53
+msgid "Reset SVG Favicon Settings? This is undoable"
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:6999
+#: javascript/components/settingsFields.js:59
+msgid "Reset Safari SVG Mask Icon Settings?"
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:7000
+#: javascript/components/settingsFields.js:61
+msgid "Reset Safari SVG Mask Icon Settings? This is undoable."
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:7509
+#: javascript/components/settingsFields.js:375
+msgid "Need Support?"
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:7509
+#: javascript/components/settingsFields.js:378
+msgid "If you are having problems with this plugin, please browse it's "
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:7513
+#: javascript/components/settingsFields.js:387
+msgid "documentation"
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:7513
+#: javascript/components/settingsFields.js:390
+msgid " or talk about them in the "
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:7517
+#: javascript/components/settingsFields.js:399
+msgid "support"
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:7517
+#: javascript/components/settingsFields.js:402
+msgid " forum."
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:7517
+#: javascript/components/settingsFields.js:409
+msgid "Do you like this plugin?"
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:7521
+#: javascript/components/settingsFields.js:425
+msgid " on WordPress.org "
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:7521
+#: javascript/components/settingsFields.js:429
+msgid " Blog about it & link to the "
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:7525
+#: javascript/components/settingsFields.js:439
+msgid "plugin page"
+msgstr ""
+
+#: admin/js/svg-favicon-admin-bundle.js:7529
+#: javascript/components/settingsFields.js:451
+msgid "Consider a donation"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+#: inc/classes/admin/AdminSettings.php:29
+#: inc/classes/admin/AdminSettings.php:30
+msgid "SVG Favicon"
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:43
+msgid "Settings"
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:73
+#: javascript/components/baseComponent.js:324
+#: javascript/components/safariComponent.js:183
+msgid "Save"
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:85
+msgid "Reset SVG Favicon Settings"
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:97
+#: javascript/components/baseComponent.js:145
+msgid "Remove SVG Favicon"
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:108
+#: javascript/components/baseComponent.js:166
+msgid "Manifest"
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:147
+#: inc/classes/services/Requests.php:137
+#: javascript/components/baseComponent.js:175
+msgid "Please enter a valid name"
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:159
+#: javascript/components/safariComponent.js:132
+msgid "Please enter a valid mask color"
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:160
+#: javascript/components/safariComponent.js:137
+msgid "Set the pinned tab favicon color for Safari."
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:170
+#: javascript/components/baseComponent.js:251
+msgid "Please enter a valid theme color"
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:171
+#: javascript/components/baseComponent.js:256
+msgid "Set theme color for Android browsers."
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:181
+#: javascript/components/baseComponent.js:209
+msgid "Please enter a valid background color"
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:182
+#: javascript/components/baseComponent.js:214
+msgid "Set background color for Android browsers."
+msgstr ""
+
+#: inc/classes/admin/AdminSettings.php:193
+msgid "Use this site manifest instead of the default generated site manifest."
+msgstr ""
+
+#: inc/classes/models/PluginInfo.php:68
+msgid "Thanks for 415 Plugins!"
+msgstr ""
+
+#: inc/classes/services/Requests.php:100
+#, php-format
+msgid "Please enter a valid hex %s."
+msgstr ""
+
+#: inc/classes/services/Requests.php:210
+msgid "SVG uploads not permitted!"
+msgstr ""
+
+#: inc/classes/services/Requests.php:224
+msgid "This is not a valid SVG"
+msgstr ""
+
+#: javascript/components/baseComponent.js:66
+#: javascript/components/safariComponent.js:54
+msgid "An error has occured, please refresh and try again"
+msgstr ""
+
+#: javascript/components/baseComponent.js:140
+msgid "Upload SVG Favicon"
+msgstr ""
+
+#: javascript/components/baseComponent.js:171
+msgid "Name"
+msgstr ""
+
+#: javascript/components/baseComponent.js:201
+msgid "Background Color"
+msgstr ""
+
+#: javascript/components/baseComponent.js:245
+msgid "Theme Color"
+msgstr ""
+
+#: javascript/components/baseComponent.js:285
+msgid "Use this site manifest"
+msgstr ""
+
+#: javascript/components/baseComponent.js:360
+#: javascript/components/safariComponent.js:219
+msgid "Summary"
+msgstr ""
+
+#: javascript/components/baseComponent.js:364
+msgid ""
+"The manifest, used by Android and Chrome, provides information about your "
+"website."
+msgstr ""
+
+#: javascript/components/baseComponent.js:369
+#: javascript/components/safariComponent.js:240
+msgid "Note"
+msgstr ""
+
+#: javascript/components/baseComponent.js:373
+msgid ""
+"SVG favicons with rel=\"icon\" will not show up in Safari and will default "
+"to the favicon set in the customizer. Please click the Safari Tab to add a "
+"mask-icon"
+msgstr ""
+
+#: javascript/components/baseComponent.js:378
+#: javascript/components/safariComponent.js:249
+msgid "Caching"
+msgstr ""
+
+#: javascript/components/baseComponent.js:382
+msgid ""
+"Firefox can be stubborn against programmatic cache-busting. To test, "
+"manually empty Firefox's cache and restart."
+msgstr ""
+
+#: javascript/components/baseComponent.js:389
+msgid "Cache Busting"
+msgstr ""
+
+#: javascript/components/baseComponent.js:394
+msgid ""
+"If you are running a WordPress caching plugin, it is recommended to delete "
+"the cache for front-end viewers to see your SVG favicon updates."
+msgstr ""
+
+#: javascript/components/baseComponent.js:403
+#: javascript/components/safariComponent.js:262
+msgid "Dark Mode"
+msgstr ""
+
+#: javascript/components/baseComponent.js:406
+msgid "Here is an example of how to enable "
+msgstr ""
+
+#: javascript/components/baseComponent.js:407
+msgid "dark mode "
+msgstr ""
+
+#: javascript/components/baseComponent.js:408
+msgid "in your svg favicon using the "
+msgstr ""
+
+#: javascript/components/baseComponent.js:409
+msgid "prefers-color-scheme"
+msgstr ""
+
+#: javascript/components/baseComponent.js:410
+msgid " media query:"
+msgstr ""
+
+#: javascript/components/safariComponent.js:95
+msgid "Upload Mask Icon"
+msgstr ""
+
+#: javascript/components/safariComponent.js:99
+msgid "Clear Safari mask icon?"
+msgstr ""
+
+#: javascript/components/safariComponent.js:121
+msgid "Safari Pinned Tab Icon"
+msgstr ""
+
+#: javascript/components/safariComponent.js:126
+msgid "Mask color"
+msgstr ""
+
+#: javascript/components/safariComponent.js:223
+#, javascript-format
+msgid ""
+"SVG mask icons a.k.a. \"Pinned Tab Icons\" for Safari should be 100% black "
+"with a transparent background."
+msgstr ""
+
+#: javascript/components/safariComponent.js:230
+msgid "Important"
+msgstr ""
+
+#: javascript/components/safariComponent.js:235
+msgid ""
+"Important: The SVG file must be a single layer and the viewBox attribute "
+"must be set to \"0 0 16 16\"."
+msgstr ""
+
+#: javascript/components/safariComponent.js:244
+msgid "Pinned tab icons will override the standard SVG favicon in Safari."
+msgstr ""
+
+#: javascript/components/safariComponent.js:253
+msgid ""
+"Programmatic cache busting of mask icons in Safari currently does not work. "
+"Quit and restart after deleting the browser cache to see changes take effect."
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://a415production.com/products/plugins/svg-plugin/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Quickly upload a SVG favicon to your site"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "a 415 Production"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://a415production.com"
+msgstr ""

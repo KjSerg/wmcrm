@@ -11,6 +11,7 @@ import {
     closeWindow, showPreloader
 } from "./_helpers";
 import {setInterval} from "worker-timers";
+import {pauseSoundPlay, playSoundPlay} from "./_check-notification";
 
 export default class Stopwatch {
     constructor() {
@@ -152,6 +153,7 @@ export default class Stopwatch {
                 _this.getCurrentData();
             }
         };
+
     }
 
     tick(data) {
@@ -326,7 +328,7 @@ export default class Stopwatch {
             _workTimes[workTimesLastIndex].finish = unix;
             _this.workTimes = _workTimes;
         }
-        _this.saveData(false, true,true);
+        _this.saveData(false, true, true);
     }
 
     finish() {
@@ -349,7 +351,7 @@ export default class Stopwatch {
         }
         clearInterval(_this.interval);
         _this.renderResults();
-        _this.saveData(true, true,true);
+        _this.saveData(true, true, true);
     }
 
     getCurrentTimestamp() {
@@ -387,17 +389,14 @@ export default class Stopwatch {
 
     saveData(getResultModal = false, showLoader = false, changeStatus = false) {
         const _this = this;
-        console.log(_this.date)
+        const _status = _this.status;
         if (_this.date === false) _this.date = getCurrentDate();
-        console.log(_this.date)
-        console.log(getCurrentDate())
-        console.log(_this.date !== getCurrentDate())
         if (_this.date !== getCurrentDate()) {
             _this.clearStorage();
         }
-        if (_this.loading === true){
+        if (_this.loading === true) {
             console.log('loading: ' + _this.loading);
-            if(changeStatus){
+            if (changeStatus) {
                 alert('🚨🚨🚨 Увага‼️ Виникла помилка! Сторінка оновиться і повторіть дію знову!');
             }
             window.location.reload();
@@ -407,7 +406,6 @@ export default class Stopwatch {
         const _startTimestamp = _this.startTimestamp;
         const _stopwatches = _this.stopwatches;
         const _workTimes = _this.workTimes;
-        const _status = _this.status;
         const sum = _this.getWorkTimesSum();
         const sumPauses = _this.getStopwatchSum();
         const currentDate = getCurrentDate();
@@ -425,7 +423,7 @@ export default class Stopwatch {
             pause_time: sumPauses,
             pause_time_hour: _this.convertMillisecondsToTime(sumPauses),
         };
-        if(changeStatus){
+        if (changeStatus) {
             data.status = _status;
         }
         if (showLoader) {
@@ -442,12 +440,32 @@ export default class Stopwatch {
                 const res = JSON.parse(r);
                 const html = res.timer_modal_html;
                 const msg = res.msg;
-                if(changeStatus){
+                let resStaus = res.__status;
+                if (resStaus !== undefined) {
+                    resStaus = Number(resStaus);
+                    if (resStaus !== _this.status) {
+                        alert('🚨🚨🚨 Увага‼️ Виникла помилка! Сторінка оновиться і повторіть дію знову!');
+                        window.location.reload();
+                    } else {
+                        if (_this.status === 1) {
+                            playSoundPlay();
+                        } else if (_this.status === -1) {
+                            pauseSoundPlay();
+                        }
+                    }
+                }
+                if (changeStatus) {
                     if (msg !== undefined && msg !== '') {
                         _this.runTick();
-                    }else {
+                    } else {
+                        alert('🚨🚨🚨 Увага‼️ Виникла помилка! Сторінка оновиться і повторіть дію знову!');
                         window.location.reload();
                     }
+
+
+                }
+                if (res.title !== undefined && res.title !== '') {
+                    $(document).find('title').text(res.title);
                 }
                 if (msg !== undefined && msg !== '') {
                     alert(msg);
@@ -493,7 +511,7 @@ export default class Stopwatch {
                 console.log(res.cost_id)
                 if (res) {
                     _this.$doc.find('.timer').removeClass('not-active');
-                    if(res.cost_id !== 0){
+                    if (res.cost_id !== 0) {
                         let pauses = res.pauses || [];
                         let costs_data = res.costs_data || [];
                         const costs_status = res.costs_status;
@@ -504,6 +522,9 @@ export default class Stopwatch {
                         const costs_sum = res.costs_sum;
                         const costs_sum_hour_pause = res.costs_sum_hour_pause;
                         const costs_sum_pause = res.costs_sum_pause;
+                        if (res.title !== undefined && res.title !== '') {
+                            $(document).find('title').text(res.title);
+                        }
                         if (isJsonString(pauses)) pauses = JSON.parse(pauses);
                         if (isJsonString(costs_data)) costs_data = JSON.parse(costs_data);
                         _this.stopwatches = pauses;
@@ -517,10 +538,12 @@ export default class Stopwatch {
                             _this.$doc.find('.timer').removeClass('pause');
                             _this.$doc.find('.timer').addClass('play');
                             _this.runTick();
+
                         } else if (_this.status === -1) {
                             _this.$doc.find('.timer').addClass('pause');
                             _this.$doc.find('.timer').removeClass('play');
                             _this.runTick();
+                            pauseSoundPlay();
                         } else {
                             _this.$doc.find('.timer').removeClass('pause');
                             _this.$doc.find('.timer').removeClass('play');
