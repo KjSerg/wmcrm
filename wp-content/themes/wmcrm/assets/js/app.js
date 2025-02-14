@@ -10703,11 +10703,20 @@ $(document).ready(function () {
       });
     }
   });
-  $doc.on('click', '.discussion-item:not(.change-user-time-item)', function (e) {
+  $doc.on('click auxclick mousedown', '.discussion-item:not(.change-user-time-item)', function (e) {
     e.preventDefault();
     var $t = $(this);
     var $title = $t.find('.discussion-item__title');
     var url = $title.attr('href');
+    var target = e.target;
+    var $el = $(target);
+    if ($el.attr('href') && $el.attr('href') !== url) {
+      if (e.button === 1) {
+        console.log("Середня кнопка миші натиснута!");
+        window.open($el.attr('href'), "_blank");
+        return;
+      }
+    }
     (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.renderMain)({
       url: url,
       addToHistory: true

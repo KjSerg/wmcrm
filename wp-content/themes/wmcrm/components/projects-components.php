@@ -212,7 +212,7 @@ function the_project_tags_html( $tags, $tag_list ) {
 			$tag_color = $tags ? carbon_get_term_meta( $tags[0]->term_id, 'tag_color' ) : '';
 			?>
             <form class="form-js project-tag-form" method="post"
-                  style="background-color: <?php echo $tag_color ?: '#7BB500'; ?>;"
+                  style="background-color: <?php echo $tag_color ?: '#7BB500'; ?>; display: none"
                   id="project-tag-form-<?php echo get_the_ID() . '-' . $subtype; ?>">
                 <input type="hidden" name="action" value="change_project_tag">
                 <input type="hidden" name="id" value="<?php echo get_the_ID() ?>">

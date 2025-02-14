@@ -197,12 +197,20 @@ $(document).ready(function () {
             });
         }
     });
-    $doc.on('click', '.discussion-item:not(.change-user-time-item)', function (e) {
+    $doc.on('click auxclick mousedown', '.discussion-item:not(.change-user-time-item)', function (e) {
         e.preventDefault();
         let $t = $(this);
         let $title = $t.find('.discussion-item__title');
         let url = $title.attr('href');
-
+        let target = e.target;
+        let $el = $(target);
+        if ($el.attr('href') && $el.attr('href') !== url) {
+            if (e.button === 1) {
+                console.log("Середня кнопка миші натиснута!");
+                window.open($el.attr('href'), "_blank");
+                return;
+            }
+        }
         renderMain({
             url: url,
             addToHistory: true
@@ -261,7 +269,7 @@ $(document).ready(function () {
             scrollTop: $el.offset().top
         });
         $el.addClass('shake');
-        setTimeout(function (){
+        setTimeout(function () {
             $el.removeClass('shake');
             $t.removeClass('active');
         }, 1000);

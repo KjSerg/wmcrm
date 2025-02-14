@@ -14,7 +14,6 @@ get_header();
 $id           = get_the_ID();
 $isLighthouse = isLighthouse();
 $size         = isLighthouse() ? 'thumbnail' : 'full';
-
 the_events_section();
 set_discussion_query_data();
 ?>

@@ -526,7 +526,8 @@ function the_buttons( $complex, $class_list = '' ) {
                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17.3 10.5"
                                                 style="enable-background:new 0 0 17.3 10.5" xml:space="preserve"><path
                                                     style="fill:#fff"
-                                                    d="M8.2 10.4c.1.1.2.1.3.1.1 0 .2 0 .4-.1l3.9-2.3L17 5.8c.1-.1.2-.1.2-.2.1-.1.1-.2.1-.3 0-.1 0-.2-.1-.3-.1-.1-.1-.2-.2-.2l-4.1-2.4-4-2.3C8.8 0 8.7 0 8.6 0c-.1 0-.2 0-.3.1L8 .4v.4l.7 3.1H1.4c-.2 0-.4 0-.5.1-.2.1-.4.2-.5.3s-.2.3-.3.4c-.1.2-.1.4-.1.6 0 .2 0 .4.1.5.1.2.2.3.3.5.1.1.3.2.5.3.1 0 .3.1.5.1h7.3L8 9.8v.4c.1 0 .1.1.2.2zm.3-.5.9-3.8h-8c-.1 0-.2 0-.3-.1-.1 0-.2 0-.3-.1-.1-.1-.2-.2-.2-.3 0-.1-.1-.2-.1-.3 0-.1 0-.2.1-.3 0-.1.1-.2.2-.3.1-.1.2-.2.3-.2.1 0 .2-.1.3-.1h8L8.5.7V.6h.1l3.9 2.3 4.1 2.4-4.1 2.4L8.7 10c-.1 0-.1 0-.2-.1 0 .1 0 .1 0 0z"/></svg></span></span></a>
+                                                    d="M8.2 10.4c.1.1.2.1.3.1.1 0 .2 0 .4-.1l3.9-2.3L17 5.8c.1-.1.2-.1.2-.2.1-.1.1-.2.1-.3 0-.1 0-.2-.1-.3-.1-.1-.1-.2-.2-.2l-4.1-2.4-4-2.3C8.8 0 8.7 0 8.6 0c-.1 0-.2 0-.3.1L8 .4v.4l.7 3.1H1.4c-.2 0-.4 0-.5.1-.2.1-.4.2-.5.3s-.2.3-.3.4c-.1.2-.1.4-.1.6 0 .2 0 .4.1.5.1.2.2.3.3.5.1.1.3.2.5.3.1 0 .3.1.5.1h7.3L8 9.8v.4c.1 0 .1.1.2.2zm.3-.5.9-3.8h-8c-.1 0-.2 0-.3-.1-.1 0-.2 0-.3-.1-.1-.1-.2-.2-.2-.3 0-.1-.1-.2-.1-.3 0-.1 0-.2.1-.3 0-.1.1-.2.2-.3.1-.1.2-.2.3-.2.1 0 .2-.1.3-.1h8L8.5.7V.6h.1l3.9 2.3 4.1 2.4-4.1 2.4L8.7 10c-.1 0-.1 0-.2-.1 0 .1 0 .1 0 0z"/></svg></span></span>
+            </a>
 
 		<?php elseif ( $link['_type'] == 'link' ): ?>
             <a class="btn_st  <?php echo $link['crb_select'];
@@ -536,7 +537,8 @@ function the_buttons( $complex, $class_list = '' ) {
                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17.3 10.5"
                                                 style="enable-background:new 0 0 17.3 10.5" xml:space="preserve"><path
                                                     style="fill:#fff"
-                                                    d="M8.2 10.4c.1.1.2.1.3.1.1 0 .2 0 .4-.1l3.9-2.3L17 5.8c.1-.1.2-.1.2-.2.1-.1.1-.2.1-.3 0-.1 0-.2-.1-.3-.1-.1-.1-.2-.2-.2l-4.1-2.4-4-2.3C8.8 0 8.7 0 8.6 0c-.1 0-.2 0-.3.1L8 .4v.4l.7 3.1H1.4c-.2 0-.4 0-.5.1-.2.1-.4.2-.5.3s-.2.3-.3.4c-.1.2-.1.4-.1.6 0 .2 0 .4.1.5.1.2.2.3.3.5.1.1.3.2.5.3.1 0 .3.1.5.1h7.3L8 9.8v.4c.1 0 .1.1.2.2zm.3-.5.9-3.8h-8c-.1 0-.2 0-.3-.1-.1 0-.2 0-.3-.1-.1-.1-.2-.2-.2-.3 0-.1-.1-.2-.1-.3 0-.1 0-.2.1-.3 0-.1.1-.2.2-.3.1-.1.2-.2.3-.2.1 0 .2-.1.3-.1h8L8.5.7V.6h.1l3.9 2.3 4.1 2.4-4.1 2.4L8.7 10c-.1 0-.1 0-.2-.1 0 .1 0 .1 0 0z"/></svg></span></span></a>
+                                                    d="M8.2 10.4c.1.1.2.1.3.1.1 0 .2 0 .4-.1l3.9-2.3L17 5.8c.1-.1.2-.1.2-.2.1-.1.1-.2.1-.3 0-.1 0-.2-.1-.3-.1-.1-.1-.2-.2-.2l-4.1-2.4-4-2.3C8.8 0 8.7 0 8.6 0c-.1 0-.2 0-.3.1L8 .4v.4l.7 3.1H1.4c-.2 0-.4 0-.5.1-.2.1-.4.2-.5.3s-.2.3-.3.4c-.1.2-.1.4-.1.6 0 .2 0 .4.1.5.1.2.2.3.3.5.1.1.3.2.5.3.1 0 .3.1.5.1h7.3L8 9.8v.4c.1 0 .1.1.2.2zm.3-.5.9-3.8h-8c-.1 0-.2 0-.3-.1-.1 0-.2 0-.3-.1-.1-.1-.2-.2-.2-.3 0-.1-.1-.2-.1-.3 0-.1 0-.2.1-.3 0-.1.1-.2.2-.3.1-.1.2-.2.3-.2.1 0 .2-.1.3-.1h8L8.5.7V.6h.1l3.9 2.3 4.1 2.4-4.1 2.4L8.7 10c-.1 0-.1 0-.2-.1 0 .1 0 .1 0 0z"/></svg></span></span>
+            </a>
 
 		<?php endif; endforeach; endif;
 }
@@ -1058,7 +1060,12 @@ function get_percent( $from, $number ) {
 	return round( $res, 2 );
 }
 
-function get_discussion_ids_by_user( $user_id = false ) {
+function get_discussion_ids_by_user( $user_id = false ): array {
+	$key = md5( 'get_discussion_ids_by_user' . $user_id );
+	$res = get_transient( $key );
+	if ( $res !== false ) {
+		return $res;
+	}
 	$user_id     = $user_id ?: get_current_user_id();
 	$comment_ids = array();
 	$user        = get_user_by( 'id', $user_id );
@@ -1078,12 +1085,18 @@ function get_discussion_ids_by_user( $user_id = false ) {
 	}
 	wp_reset_postdata();
 	wp_reset_query();
+	set_transient( $key, $comment_ids, 300 );
 
 	return $comment_ids;
 }
 
-function get_discussion_ids_by_user_projects( $user_id = false ) {
-	$user_id        = $user_id ?: get_current_user_id();
+function get_discussion_ids_by_user_projects( $user_id = false ): array {
+	$user_id = $user_id ?: get_current_user_id();
+	$key     = md5( 'get_discussion_ids_by_user_projects' . $user_id );
+	$res     = get_transient( $key );
+	if ( $res !== false ) {
+		return $res;
+	}
 	$worksection_id = carbon_get_user_meta( $user_id, 'worksection_id' );
 	$array          = array();
 	$user           = get_user_by( 'id', $user_id );
@@ -1151,6 +1164,7 @@ function get_discussion_ids_by_user_projects( $user_id = false ) {
 		wp_reset_postdata();
 		wp_reset_query();
 	}
+	set_transient( $key, $comment_ids, 30 );
 
 	return $comment_ids;
 }
