@@ -167,6 +167,7 @@ get_header();
 								if ( $get_user_id ) {
 									if ( $get_user_id != $_userID ) {
 										$_attr = 'style="display:none"';
+                                        continue;
 									}
 								}
 								?>
