@@ -1388,8 +1388,8 @@ function change_user_notifications() {
 		$res['$telegram_start']  = $telegram_start;
 		$res['$telegram_finish'] = $telegram_finish;
 		if ( $telegram_start && $telegram_finish ) {
-			carbon_set_user_meta( $user_id, 'telegram_start', $telegram_start . ':00' );
-			carbon_set_user_meta( $user_id, 'telegram_finish', $telegram_finish . ':00' );
+			carbon_set_user_meta( $user_id, 'telegram_start', get_formated_carbon_time( $telegram_start )  );
+			carbon_set_user_meta( $user_id, 'telegram_finish', get_formated_carbon_time( $telegram_finish ) );
 		}
 	} else {
 		$res['type'] = 'error';

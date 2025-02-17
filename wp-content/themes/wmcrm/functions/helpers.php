@@ -1725,8 +1725,7 @@ function is_working_hours( $user_id = false ): bool {
 
 function get_next_work_timestamp( $user_id = false ): bool|int {
 	$user_id        = $user_id ?: get_current_user_id();
-	$telegram_start = carbon_get_user_meta( $user_id, 'telegram_start' ) ?: '09:00';
-	$telegram_start .= ':00';
+	$telegram_start = carbon_get_user_meta( $user_id, 'telegram_start' ) ?: '09:00:00';
 	date_default_timezone_set( "Europe/Kiev" );
 	$now         = time();
 	$currentDate = date( 'Y-m-d', $now );
@@ -1977,4 +1976,10 @@ function the_user_week_result( $user_stopwatches ) {
 	$string       = $prefix . $formated_sum;
 	$html         = "<div class='days-table-week-result $cls'>$string</div>";
 	echo $html;
+}
+
+function get_formated_carbon_time( $time ) {
+	$arr = explode( ':', $time );
+
+	return count( $arr ) < 3 ? $time . ":00" : $time;
 }

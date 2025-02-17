@@ -28,6 +28,10 @@ function the_profile(): void {
 	$BOT_USERNAME          = carbon_get_theme_option( 'telegram_bot_name' );
 	$BOT_TOKEN             = carbon_get_theme_option( 'telegram_token' );
 	$REDIRECT_URI          = $url;
+    if($user_id == 4){
+        var_dump(get_next_work_timestamp($user_id));
+        var_dump(is_working_hours($user_id));
+    }
 	require_once ABSPATH . 'wp-admin/includes/image.php';
 	require_once ABSPATH . 'wp-admin/includes/file.php';
 	require_once ABSPATH . 'wp-admin/includes/media.php';
