@@ -3595,6 +3595,19 @@ input {
 .profile-notifications {
   margin-top: 2rem;
 }
+@media (max-width: 450px) {
+  .profile-notifications .row {
+    flex-direction: column;
+  }
+}
+.profile-notifications .form-group--half input {
+  width: 100%;
+}
+@media (max-width: 450px) {
+  .profile-notifications .form-group--half {
+    width: 100%;
+  }
+}
 
 .users-section {
   padding: 3rem 0;

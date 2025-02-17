@@ -52,11 +52,13 @@
         border-radius: 50%;
         overflow: hidden;
         cursor: pointer;
+
         img {
           width: 100%;
           height: 100%;
           object-fit: cover;
         }
+
         .remove-avatar {
           position: absolute;
           display: flex;
@@ -71,16 +73,19 @@
           pointer-events: none;
           padding: 5px;
           border-radius: 50%;
-          border: 1px solid rgba(255,255,255,0);
+          border: 1px solid rgba(255, 255, 255, 0);
+
           svg {
             width: 100%;
             height: 100%;
           }
-          &:hover{
+
+          &:hover {
             opacity: 1;
-            border-color: rgba(255,255,255,1);
+            border-color: rgba(255, 255, 255, 1);
           }
         }
+
         &.uploaded-avatar .remove-avatar {
           display: flex;
           pointer-events: auto;
@@ -139,6 +144,7 @@
       @media (max-width: 414px) {
         flex-direction: column;
       }
+
       &__item {
         display: flex;
         align-items: center;
@@ -148,6 +154,7 @@
         @media (max-width: 414px) {
           width: 100%;
         }
+
         &:not(:last-child) {
           margin-right: 4rem;
           @media (max-width: 414px) {
@@ -220,7 +227,24 @@
       background-color: #fff;
     }
   }
+
   &-notifications {
     margin-top: 2rem;
+
+    .row {
+      @media (max-width: 450px) {
+        flex-direction: column;
+      }
+    }
+
+    .form-group--half {
+      input {
+        width: 100%;
+      }
+
+      @media (max-width: 450px) {
+        width: 100%;
+      }
+    }
   }
 }
