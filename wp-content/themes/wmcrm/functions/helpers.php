@@ -1605,7 +1605,7 @@ function get_first_week_number_month( $year, $month ) {
 	return $firstWeekNumber;
 }
 
-function is_date_in_range( $date, $startDate, $endDate ) {
+function is_date_in_range( $date, $startDate, $endDate ): bool {
 	$date      = DateTime::createFromFormat( 'd-m-Y', $date );
 	$startDate = DateTime::createFromFormat( 'd-m-Y', $startDate );
 	$endDate   = DateTime::createFromFormat( 'd-m-Y', $endDate );
@@ -1627,7 +1627,7 @@ function calculate_days_between_dates( $startDate, $endDate ) {
 	return $interval->days;
 }
 
-function get_absences_list( $get_month, $current_year, $author ) {
+function get_absences_list( $get_month, $current_year, $author ): array {
 	$res   = array();
 	$d     = "$get_month-$current_year";
 	$args  = array(
@@ -1677,7 +1677,7 @@ function get_absences_list( $get_month, $current_year, $author ) {
 	return $res;
 }
 
-function get_notices() {
+function get_notices(): array {
 	$res = array();
 	if ( $user_id = get_current_user_id() ) {
 		$args  = array(

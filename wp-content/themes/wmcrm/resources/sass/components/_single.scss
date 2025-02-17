@@ -301,8 +301,16 @@
       }
     }
   }
+
+  &-copy-link{
+    transform: scale(0.5);
+    opacity: 0;
+    &:hover{
+      opacity: 0.8;
+    }
+  }
   &:hover{
-    .comment-change, .comment-remove{
+    .comment-change, .comment-remove, .comment-copy-link{
       opacity: 1;
     }
   }

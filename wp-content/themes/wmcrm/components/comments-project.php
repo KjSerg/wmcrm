@@ -1,6 +1,6 @@
 <?php
-function the_comments( $id ) {
-	$comments_count          = $_GET['comments_count'] ?? '';
+function the_comments( $id ): void {
+	$comments_count          = filter_input( INPUT_GET, 'comments_count', FILTER_SANITIZE_NUMBER_INT );
 	$link                    = get_the_permalink( $id );
 	$default_posts_per_page  = get_option( 'posts_per_page' );
 	$worksection_comment_ids = carbon_get_post_meta( $id, 'worksection_comment_ids' );
@@ -9,7 +9,7 @@ function the_comments( $id ) {
 		$worksection_comment_ids = explode( ',', $worksection_comment_ids );
 		$comment_ids             = explode( ',', $comment_ids );
 		$comments_collection     = array_merge( $worksection_comment_ids, $comment_ids );
-		$paged                   = $_GET['pagenumber'] ?? 1;
+		$paged                   = filter_input( INPUT_GET, 'pagenumber', FILTER_SANITIZE_NUMBER_INT ) ?: 1;
 		$query_args              = array(
 			'post_type'      => array( 'comments', 'discussion' ),
 			'post_status'    => 'publish',
@@ -24,17 +24,18 @@ function the_comments( $id ) {
 		if ( $query->have_posts() ) {
 			?>
             <div class="section-comments-list container-js"><?php
-			while ( $query->have_posts() ) {
-				$query->the_post();
-				$comment_id = get_the_ID();
-				the_comment_project( $comment_id, false, $id );
-			}
-			?></div><?php
-			?>
+				while ( $query->have_posts() ) {
+					$query->the_post();
+					$comment_id = get_the_ID();
+					the_comment_project( $comment_id, false, $id );
+				}
+				?>
+            </div>
             <div class="pagination-wrapper pagination-js">
 				<?php echo get_comments_next_link( $query->max_num_pages, $link ); ?>
             </div>
 			<?php
+
 		} else {
 			?>
             <div class="title empty-title title-left">Обговорення відсутнє</div>
@@ -48,9 +49,12 @@ function the_comments( $id ) {
         <div class="title empty-title title-left">Обговорення відсутнє</div>
 		<?php
 	}
+
 }
 
 function the_comment_project( $comment_id, $user_id = false, $project_id = false ) {
+	$paged       = filter_input( INPUT_GET, 'pagenumber', FILTER_SANITIZE_NUMBER_INT ) ?: 1;
+	$paged       = intval( $paged );
 	$user_id     = $user_id ?: get_current_user_id();
 	$post_type   = get_post_type( $comment_id );
 	$time        = carbon_get_post_meta( $comment_id, 'comment_worksection_date_added' ) ?: get_the_date( 'U', $comment_id );
@@ -85,6 +89,11 @@ function the_comment_project( $comment_id, $user_id = false, $project_id = false
 	$discussion_files      = carbon_get_post_meta( $comment_id, 'discussion_files' );
 	$discussion_edit_users = carbon_get_post_meta( $comment_id, 'discussion_edit_users' );
 	$discussion_edit_users = $discussion_edit_users ? explode( ',', $discussion_edit_users ) : array();
+	$copy_link_href        = get_the_permalink( $project_id );
+	if ( $paged > 1 ) {
+		$copy_link_href .= '?comments_count=-1';
+	}
+	$copy_link_href .= '#comment-' . $comment_id;
 	?>
     <div class="comment project-section-wrapper <?php echo $is_archive ? 'archive-comment' : '';
 	echo ' ' . $cls; ?> <?php echo $is_service ? 'service-comment' : ''; ?>"
@@ -120,7 +129,11 @@ function the_comment_project( $comment_id, $user_id = false, $project_id = false
 				echo $is_archive ? ' [архів]' : ''; ?>
             </div>
 			<?php if ( ! $is_service ): ?>
+                <a href="<?php echo $copy_link_href ?>" class="copy-link comment-copy-link">
+					<?php _s( _i( 'link' ) ) ?>
+                </a>
 				<?php if ( $author_test && ! $is_archive ): ?>
+
 					<?php if ( $author_id == $user_id ): ?>
                         <a href="#" data-id="<?php echo $comment_id ?>"
                            class="comment-remove remove-btn comment-remove-js">
@@ -130,7 +143,6 @@ function the_comment_project( $comment_id, $user_id = false, $project_id = false
                     <a href="#" data-id="<?php echo $comment_id ?>" class="comment-change change-btn comment-change-js">
 						<?php _s( _i( 'edit' ) ) ?>
                     </a>
-
 
 
 				<?php endif; ?>

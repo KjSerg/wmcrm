@@ -2927,7 +2927,14 @@ input {
 .comment-change svg path {
   fill: #fff;
 }
-.comment:hover .comment-change, .comment:hover .comment-remove {
+.comment-copy-link {
+  transform: scale(0.5);
+  opacity: 0;
+}
+.comment-copy-link:hover {
+  opacity: 0.8;
+}
+.comment:hover .comment-change, .comment:hover .comment-remove, .comment:hover .comment-copy-link {
   opacity: 1;
 }
 .comment-files {
