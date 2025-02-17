@@ -78,6 +78,9 @@
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+    @media (max-width: 780px) {
+      padding-right: 0;
+    }
   }
 
   &-control {
@@ -183,6 +186,9 @@
       &-form {
         margin-bottom: 5px;
         padding: 2rem;
+        @media (max-width: 450px) {
+          padding: 1rem;
+        }
         .button {
           margin-top: 1rem;
         }
@@ -196,6 +202,10 @@
   padding: 2rem;
   margin-bottom: 5px;
   background: #F2F3F9;
+
+  @media (max-width: 450px) {
+    padding: 1rem;
+  }
   &.service-comment {
     background: #e7e8f4;
     .comment-head {
@@ -243,6 +253,8 @@
       width: 5rem;
       height: 5rem;
       overflow: hidden;
+      flex-grow: 0;
+      flex-shrink: 0;
       border-radius: 50%;
     }
   }

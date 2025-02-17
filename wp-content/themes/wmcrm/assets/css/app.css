@@ -2706,6 +2706,11 @@ input {
   font-weight: 700;
   line-height: normal;
 }
+@media (max-width: 780px) {
+  .project-title {
+    padding-right: 0;
+  }
+}
 .project-control {
   display: flex;
   align-items: center;
@@ -2810,6 +2815,11 @@ input {
   margin-bottom: 5px;
   padding: 2rem;
 }
+@media (max-width: 450px) {
+  .project-section-comments-form {
+    padding: 1rem;
+  }
+}
 .project-section-comments-form .button {
   margin-top: 1rem;
 }
@@ -2818,6 +2828,11 @@ input {
   padding: 2rem;
   margin-bottom: 5px;
   background: #F2F3F9;
+}
+@media (max-width: 450px) {
+  .comment {
+    padding: 1rem;
+  }
 }
 .comment.service-comment {
   background: #e7e8f4;
@@ -2866,6 +2881,8 @@ input {
   width: 5rem;
   height: 5rem;
   overflow: hidden;
+  flex-grow: 0;
+  flex-shrink: 0;
   border-radius: 50%;
 }
 .comment-content {
@@ -4917,6 +4934,12 @@ textarea::placeholder {
 .window-main .close-window svg path {
   fill: #686D86;
 }
+@media (max-width: 450px) {
+  .window-main {
+    padding: 4rem 0;
+  }
+}
+
 .switch {
   position: relative;
   display: flex;
