@@ -391,6 +391,8 @@ function crb_attach_in_user() {
 			         Field::make( 'text', 'telegram', 'Telegram' ),
 			         Field::make( 'text', 'telegram_id', 'Telegram ID' ),
 			         Field::make( 'text', 'telegram_image', 'Telegram аватар' ),
+			         Field::make( 'time', 'telegram_start', 'Початок роботи' ),
+			         Field::make( 'time', 'telegram_finish', 'Закінчення роботи' ),
 		         )
 	         );
 	Container::make( 'user_meta', 'Worksection' )

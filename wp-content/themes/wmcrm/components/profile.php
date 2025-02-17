@@ -1,5 +1,5 @@
 <?php
-function the_profile() {
+function the_profile(): void {
 	get_header();
 	$user_id               = get_current_user_id();
 	$var                   = variables();
@@ -23,7 +23,7 @@ function the_profile() {
 	$project_notification  = carbon_get_user_meta( $user_id, 'project_notification' );
 	$birthday_notification = carbon_get_user_meta( $user_id, 'birthday_notification' );
 	$telegram_notification = carbon_get_user_meta( $user_id, 'telegram_notification' );
-	$email_notification = carbon_get_user_meta( $user_id, 'email_notification' );
+	$email_notification    = carbon_get_user_meta( $user_id, 'email_notification' );
 	$avatar                = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $user_id );
 	$BOT_USERNAME          = carbon_get_theme_option( 'telegram_bot_name' );
 	$BOT_TOKEN             = carbon_get_theme_option( 'telegram_token' );
@@ -113,7 +113,7 @@ function the_profile() {
                     </label>
                     <label class="form-group " style="width: 100%">
                         <span class="form-group__title">Головна сторінка</span>
-                        <select name="main_page"  class="selectric">
+                        <select name="main_page" class="selectric">
                             <option value="">
                                 Зробіть вибір
                             </option>
@@ -167,13 +167,16 @@ function the_profile() {
                         </label>
                     </div>
                     <div class="switcher">
-                        <div class="switcher__text">Телеграм сповіщення (працює із 09:00 до 20:00)</div>
+                        <label class="switcher__text">
+                            Телеграм сповіщення
+                        </label>
                         <label class="switch">
                             <input type="checkbox" name="telegram_notification"
 								<?php echo $telegram_notification ? 'checked' : '' ?>
                                    value="yes" class="switch-input">
                             <span class="switch-element"></span>
                         </label>
+
                     </div>
                     <div class="switcher">
                         <div class="switcher__text">Email сповіщення</div>
@@ -190,6 +193,16 @@ function the_profile() {
                             data-telegram-login="<?= $BOT_USERNAME ?>" data-size="medium"
                             data-auth-url="<?= $REDIRECT_URI ?>" data-request-access="write"></script>
 				<?php endif; ?>
+                <div class="row">
+                    <label class="form-group form-group--half">
+                        <span class="form-group__title">Початок роботи телеграм сповіщень</span>
+                        <input type="time" name="telegram_start" value="<?php echo carbon_get_user_meta($user_id, 'telegram_start') ?: "09:00:00" ?>">
+                    </label>
+                    <label class="form-group form-group--half">
+                        <span class="form-group__title">Закінчення роботи телеграм сповіщень</span>
+                        <input type="time" name="telegram_finish" required="" value="<?php echo carbon_get_user_meta($user_id, 'telegram_finish') ?: "19:00:00" ?>">
+                    </label>
+                </div>
             </form>
         </div>
     </section>

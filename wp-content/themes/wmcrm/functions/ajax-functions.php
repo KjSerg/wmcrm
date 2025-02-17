@@ -1378,11 +1378,19 @@ function change_user_notifications() {
 		$birthday_notification = $_POST['birthday_notification'] ?? '';
 		$telegram_notification = $_POST['telegram_notification'] ?? '';
 		$email_notification    = $_POST['email_notification'] ?? '';
+		$telegram_start        = filter_input( INPUT_POST, 'telegram_start' );
+		$telegram_finish       = filter_input( INPUT_POST, 'telegram_finish' );
 		carbon_set_user_meta( $user_id, 'project_notification', $project_notification == 'yes' );
 		carbon_set_user_meta( $user_id, 'comment_notification', $comment_notification == 'yes' );
 		carbon_set_user_meta( $user_id, 'birthday_notification', $birthday_notification == 'yes' );
 		carbon_set_user_meta( $user_id, 'telegram_notification', $telegram_notification == 'yes' );
 		carbon_set_user_meta( $user_id, 'email_notification', $email_notification == 'yes' );
+		$res['$telegram_start'] = $telegram_start;
+		$res['$telegram_finish'] = $telegram_finish;
+		if ( $telegram_start && $telegram_finish ) {
+			carbon_set_user_meta( $user_id, 'telegram_start', $telegram_start . ':00'  );
+			carbon_set_user_meta( $user_id, 'telegram_finish', $telegram_finish. ':00' );
+		}
 	} else {
 		$res['type'] = 'error';
 		$res['msg']  = 'Помилка';
