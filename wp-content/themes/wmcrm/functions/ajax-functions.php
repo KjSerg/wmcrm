@@ -1385,11 +1385,11 @@ function change_user_notifications() {
 		carbon_set_user_meta( $user_id, 'birthday_notification', $birthday_notification == 'yes' );
 		carbon_set_user_meta( $user_id, 'telegram_notification', $telegram_notification == 'yes' );
 		carbon_set_user_meta( $user_id, 'email_notification', $email_notification == 'yes' );
-		$res['$telegram_start'] = $telegram_start;
+		$res['$telegram_start']  = $telegram_start;
 		$res['$telegram_finish'] = $telegram_finish;
 		if ( $telegram_start && $telegram_finish ) {
-			carbon_set_user_meta( $user_id, 'telegram_start', $telegram_start . ':00'  );
-			carbon_set_user_meta( $user_id, 'telegram_finish', $telegram_finish. ':00' );
+			carbon_set_user_meta( $user_id, 'telegram_start', $telegram_start . ':00' );
+			carbon_set_user_meta( $user_id, 'telegram_finish', $telegram_finish . ':00' );
 		}
 	} else {
 		$res['type'] = 'error';
@@ -1826,21 +1826,14 @@ function add_absences() {
 						if ( $email_notification ) {
 							send_message( $message_txt, $user_id->user_email, $title );
 						}
+
 						if ( $telegram_notification && $telegram_id ) {
 							$message_txt = str_replace( '<br>', PHP_EOL, $message_txt );
 							$message_txt = str_replace( '<hr>', PHP_EOL, $message_txt );
 							$message_txt .= ': ' . $link;
-							if ( is_working_hours() ) {
-								send_telegram_message( $telegram_id, $message_txt, $keyboard );
-							} else {
-								wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
-									$telegram_id,
-									$message_txt,
-									$keyboard,
-									false,
-									'html'
-								) );
-							}
+							send_or_schedule_telegram( $user_id, $message_txt, [
+								'keyboard' => $keyboard
+							] );
 						}
 					}
 				}
@@ -1974,22 +1967,7 @@ function delete_user_absence() {
 					if ( carbon_get_user_meta( $user_id, 'email_notification' ) ) {
 						send_message( $text, $user->user_email, 'Відмінено відсутність' );
 					}
-					if ( carbon_get_user_meta( $user_id, 'telegram_notification' ) ) {
-						if ( $telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' ) ) {
-
-							if ( is_working_hours() ) {
-								send_telegram_message( $telegram_id, $text );
-							} else {
-								wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
-									$telegram_id,
-									$text,
-									array(),
-									false,
-									'html'
-								) );
-							}
-						}
-					}
+					send_or_schedule_telegram($user_id, $text);
 					$post_data = array(
 						'post_type'   => 'notice',
 						'post_title'  => $text,

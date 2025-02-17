@@ -44,7 +44,7 @@ function get_user_by_telegram( $telegram_id ) {
 	return empty( $res ) ? false : $res;
 }
 
-function on_telegram_auth() {
+function on_telegram_auth(): void {
 	if ( isset( $_GET['hash'] ) ) {
 		try {
 			$var       = variables();
@@ -74,10 +74,8 @@ function on_telegram_auth() {
 	}
 }
 
-function send_telegram_message( $chat_id, $message, $keyboard = array(), $bot_token = false, $parse_mode = 'html' ) {
-
+function send_telegram_message( $chat_id, $message, $keyboard = array(), $bot_token = false, $parse_mode = 'html' ): bool|string {
 	$bot_token = $bot_token ?: carbon_get_theme_option( 'telegram_token' );
-//	$sessions  = carbon_get_theme_option( 'sessions' ) ?: array();
 	$data      = [
 		'chat_id'    => (int) $chat_id,
 		'text'       => $message,
@@ -91,18 +89,13 @@ function send_telegram_message( $chat_id, $message, $keyboard = array(), $bot_to
 	curl_setopt( $ch, CURLOPT_HEADER, false );
 	$resultQuery = curl_exec( $ch );
 	curl_close( $ch );
-//	$sessions[] = array(
-//		'connect_id'   => $message,
-//		'last_message' => json_encode( $resultQuery ),
-//	);
-//	carbon_set_theme_option( 'sessions', $sessions );
 
 	return $resultQuery;
 }
 
 add_action( 'send_telegram_message_action_hook', 'send_telegram_message', 10, 5 );
 
-function get_telegram_text( $text ) {
+function get_telegram_text( $text ): string {
 	$message = str_replace(
 		array(
 			"<p></p>",
@@ -119,7 +112,8 @@ function get_telegram_text( $text ) {
 			'strong'
 		),
 		$text );
-	$message = strip_tags(
+
+	return strip_tags(
 		$message,
 		array(
 			'a',
@@ -133,11 +127,9 @@ function get_telegram_text( $text ) {
 			'pre',
 		)
 	);
-
-	return $message;
 }
 
-function get_telegram_text_without_link( $text ) {
+function get_telegram_text_without_link( $text ): string {
 	$message = str_replace(
 		array(
 			"<p></p>",
@@ -175,11 +167,11 @@ add_action( 'rest_api_init', function () {
 	register_rest_route( 'crm/v1', '/telegram_callback', array(
 		'methods'             => 'POST',
 		'callback'            => 'handle_telegram_callback',
-		'permission_callback' => '__return_true', // Для тестування, потім краще зробити перевірку
+		'permission_callback' => '__return_true',
 	) );
 } );
 
-function handle_telegram_callback( WP_REST_Request $request ) {
+function handle_telegram_callback( WP_REST_Request $request ): WP_REST_Response {
 	$body   = $request->get_body();
 	$update = json_decode( $body, true );
 	$token  = carbon_get_theme_option( 'telegram_token' );
@@ -222,21 +214,7 @@ function handle_telegram_callback( WP_REST_Request $request ) {
 								if ( carbon_get_user_meta( $user_id, 'email_notification' ) ) {
 									send_message( $text, $user->user_email, 'Погоджено відсутність' );
 								}
-								if ( carbon_get_user_meta( $user_id, 'telegram_notification' ) ) {
-									if ( $telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' ) ) {
-										if ( is_working_hours() ) {
-											send_telegram_message( $telegram_id, $text );
-										} else {
-											wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
-												$telegram_id,
-												$text,
-												array(),
-												false,
-												'html'
-											) );
-										}
-									}
-								}
+								send_or_schedule_telegram($user_id, $text);
 								$post_data = array(
 									'post_type'   => 'notice',
 									'post_title'  => $text,
@@ -248,22 +226,22 @@ function handle_telegram_callback( WP_REST_Request $request ) {
 									carbon_set_post_meta( $notice_id, 'notice_type', 'notification' );
 								}
 								$response .= PHP_EOL . $text . " для " . $user->display_name;
-							}else{
+							} else {
 								$response .= "Користувача не існує";
 							}
-						}else{
+						} else {
 							$response .= "Користувача вже звільнено відсутність неактуальна";
 						}
-					}else{
+					} else {
 						$response .= "Користувача не існує";
 					}
-				}else{
+				} else {
 					$response .= $id->get_error_message();
 				}
-			}else{
+			} else {
 				$response .= "Відпустку ID:$value не знайдено або вже погодженно!";
 			}
-		}else{
+		} else {
 			$response .= "Передані не вірні параметри $param:$value";
 		}
 		$url         = "https://api.telegram.org/bot$token/sendMessage";
@@ -285,4 +263,26 @@ function handle_telegram_callback( WP_REST_Request $request ) {
 	}
 
 	return new WP_REST_Response( 'No callback query found', 400 );
+}
+
+function send_or_schedule_telegram( $user_id, $text, $args = [] ): void {
+	if ( ! carbon_get_user_meta( $user_id, 'telegram_notification' ) ) {
+		return;
+	}
+	$telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' );
+	if ( ! $telegram_id ) {
+		return;
+	}
+	$keyboard = $args['keyboard'] ?? [];
+	if ( is_working_hours( $user_id ) ) {
+		send_telegram_message( $telegram_id, $text, $keyboard );
+	} else {
+		wp_schedule_single_event( get_next_work_timestamp( $user_id ), 'send_telegram_message_action_hook', array(
+			$telegram_id,
+			$text,
+			$keyboard,
+			false,
+			'html'
+		) );
+	}
 }

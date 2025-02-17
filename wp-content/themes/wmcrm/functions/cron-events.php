@@ -2,46 +2,25 @@
 add_action( 'create_notification_action_hook', 'create_notification', 10, 4 );
 add_action( 'create_notification_timer_action_hook', 'create_default_notification', 10, 2 );
 
-function create_default_notification( $text = '', $users_ids = array() ) {
-	$telegram_m     = '';
-	$text           = $text ?? '';
-	$users_ids      = $users_ids ?? array();
-	$administrators = get_administrators();
-	$telegram_users = array();
-	$post_title     = $text;
-	$m              = '<h1>' . $post_title . '</h1> <hr><br>';
-	$m              .= $text;
-	$telegram_m     .= PHP_EOL;
-	$telegram_m     .= PHP_EOL;
-	$telegram_m     .= get_telegram_text_without_link( $text );
-	$users          = array_unique( $users_ids );
+function create_default_notification( $text = '', $users_ids = array() ): void {
+	$telegram_m = '';
+	$text       = $text ?? '';
+	$users_ids  = $users_ids ?? array();
+	$post_title = $text;
+	$m          = '<h1>' . $post_title . '</h1> <hr><br>';
+	$m          .= $text;
+	$telegram_m .= PHP_EOL;
+	$telegram_m .= PHP_EOL;
+	$telegram_m .= get_telegram_text_without_link( $text );
+	$users      = array_unique( $users_ids );
 	foreach ( $users as $user_id ) {
-		$telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' );
-		if ( $telegram_id && carbon_get_user_meta( $user_id, 'telegram_notification' ) ) {
-			$telegram_users[] = $telegram_id;
-		}
 		$user = get_user_by( 'id', $user_id );
 		send_message( $m, $user->user_email, $post_title );
-	}
-	if ( $telegram_users ) {
-		$keyboard = array();
-		foreach ( $telegram_users as $telegram_id ) {
-			if ( is_working_hours() ) {
-				send_telegram_message( $telegram_id, $telegram_m, $keyboard );
-			} else {
-				wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
-					$telegram_id,
-					$telegram_m,
-					$keyboard,
-					false,
-					'html'
-				) );
-			}
-		}
+		send_or_schedule_telegram( $user_id, $telegram_m );
 	}
 }
 
-function create_notification( $project_id = 0, $comment_id = 0, $text = '', $users_ids = array() ) {
+function create_notification( $project_id = 0, $comment_id = 0, $text = '', $users_ids = array() ): void {
 	$telegram_m                = '';
 	$keyboard                  = array();
 	$project_id                = $project_id ?? 0;
@@ -51,7 +30,6 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 	$users                     = carbon_get_post_meta( $project_id, 'project_users_to_id' );
 	$worksection_user_to_email = carbon_get_post_meta( $project_id, 'worksection_user_to_email' );
 	$administrators            = get_administrators();
-	$telegram_users            = array();
 	$post_title                = 'notification';
 	$post_type                 = get_post_type( $project_id );
 	$comment_author_id         = $comment_id ? get_post_author_id( $comment_id ) : 0;
@@ -167,31 +145,14 @@ function create_notification( $project_id = 0, $comment_id = 0, $text = '', $use
 						if ( carbon_get_user_meta( $user_id, 'email_notification' ) ) {
 							send_message( $m, $user->user_email, $post_title );
 						}
-						$telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' );
-						if ( $telegram_id && carbon_get_user_meta( $user_id, 'telegram_notification' ) ) {
-							$telegram_users[] = $telegram_id;
-						}
+						send_or_schedule_telegram( $user_id, $telegram_m, [
+							'keyboard' => $keyboard,
+						] );
 					}
 				}
 			}
 		}
 	}
-	if ( $telegram_users ) {
-		foreach ( $telegram_users as $telegram_id ) {
-			if ( is_working_hours() ) {
-				send_telegram_message( $telegram_id, $telegram_m, $keyboard );
-			} else {
-				wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
-					$telegram_id,
-					$telegram_m,
-					$keyboard,
-					false,
-					'html'
-				) );
-			}
-		}
-	}
-//	send_telegram_message( 532699566,$telegram_m, $keyboard );
 }
 
 function create_cron_notification( $args = array() ) {
@@ -245,7 +206,7 @@ function create_cron_birthday( $user_id ) {
 
 add_action( 'create_birthday_action_hook', 'birthday_notification', 10, 1 );
 
-function birthday_notification( $user_id ) {
+function birthday_notification( $user_id ): void {
 	if ( $user_id ) {
 		$user = get_user_by( 'id', $user_id );
 		if ( $user ) {
@@ -272,21 +233,7 @@ function birthday_notification( $user_id ) {
 									if ( carbon_get_user_meta( $userID, 'email_notification' ) ) {
 										send_message( $m, $_user->user_email, $subject );
 									}
-									$_telegram_notification = carbon_get_user_meta( $userID, 'telegram_notification' );
-									$_telegram_id           = carbon_get_user_meta( $userID, 'telegram_id' );
-									if ( $_telegram_notification && $_telegram_id ) {
-										if ( is_working_hours() ) {
-											send_telegram_message( $_telegram_id, $m );
-										} else {
-											wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
-												$_telegram_id,
-												$m,
-												array(),
-												false,
-												'html'
-											) );
-										}
-									}
+									send_or_schedule_telegram( $user_id, $m );
 								}
 							}
 						}

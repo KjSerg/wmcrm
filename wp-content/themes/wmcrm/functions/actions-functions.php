@@ -36,21 +36,7 @@ function absences_action() {
 							if ( carbon_get_user_meta( $user_id, 'email_notification' ) ) {
 								send_message( $text, $user->user_email, 'Погоджено відсутність' );
 							}
-							if ( carbon_get_user_meta( $user_id, 'telegram_notification' ) ) {
-								if ( $telegram_id = carbon_get_user_meta( $user_id, 'telegram_id' ) ) {
-									if ( is_working_hours() ) {
-										send_telegram_message( $telegram_id, $text );
-									} else {
-										wp_schedule_single_event( get_next_work_timestamp(), 'send_telegram_message_action_hook', array(
-											$telegram_id,
-											$text,
-											array(),
-											false,
-											'html'
-										) );
-									}
-								}
-							}
+							send_or_schedule_telegram($user_id, $text);
 							$post_data = array(
 								'post_type'   => 'notice',
 								'post_title'  => $text,

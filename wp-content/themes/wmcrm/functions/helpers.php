@@ -1711,22 +1711,28 @@ function get_notices() {
 	return $res;
 }
 
-function is_working_hours() {
+function is_working_hours( $user_id = false ): bool {
+	$user_id         = $user_id ?: get_current_user_id();
+	$telegram_start  = carbon_get_user_meta( $user_id, 'telegram_start' ) ?: '09:00';
+	$telegram_finish = carbon_get_user_meta( $user_id, 'telegram_finish' ) ?: '20:00';
 	date_default_timezone_set( "Europe/Kiev" );
-	$start_time   = strtotime( '09:00' );
-	$end_time     = strtotime( '20:00' );
-	$current_time = strtotime( date( 'H:i' ) );
+	$start_time   = strtotime( $telegram_start );
+	$end_time     = strtotime( $telegram_finish );
+	$current_time = strtotime( current_time( 'H:i' ) );
 
 	return ( $current_time >= $start_time && $current_time <= $end_time );
 }
 
-function get_next_work_timestamp() {
+function get_next_work_timestamp( $user_id = false ): bool|int {
+	$user_id        = $user_id ?: get_current_user_id();
+	$telegram_start = carbon_get_user_meta( $user_id, 'telegram_start' ) ?: '09:00';
+	$telegram_start .= ':00';
 	date_default_timezone_set( "Europe/Kiev" );
 	$now         = time();
 	$currentDate = date( 'Y-m-d', $now );
-	$next9AM     = strtotime( $currentDate . ' 09:00:00' );
+	$next9AM     = strtotime( $currentDate . ' ' . $telegram_start );
 	if ( $now >= $next9AM ) {
-		$next9AM = strtotime( '+1 day 09:00:00', $now );
+		$next9AM = strtotime( '+1 day ' . $telegram_start, $now );
 	}
 
 	return $next9AM;
