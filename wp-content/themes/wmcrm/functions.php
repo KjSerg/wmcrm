@@ -45,16 +45,6 @@ get_template_part( 'functions/actions-functions' );
 function custom_logout_and_redirect() {
 	$user_id = get_current_user_id();
 	if ( $user_id && ! is_current_user_admin() ) {
-//		$str        = 'iPhone';
-//		$user_agent = get_user_agent();
-//		$pos        = strpos( $user_agent, $str );
-//		if ( $pos !== false) {
-//			if ( is_user_logged_in() && $user_id != 4 ) {
-//				wp_logout();
-//				wp_redirect( home_url() );
-//				exit();
-//			}
-//		}
 		$fired = carbon_get_user_meta( $user_id, 'fired' );
 		if ( $fired ) {
 			if ( is_user_logged_in() ) {
@@ -72,24 +62,6 @@ add_action( 'init', 'disable_smilies' );
 
 function disable_smilies() {
 	update_option( 'use_smilies', 0 );
-}
-
-//add_action( 'init', 'logout_ira_iphone' );
-function logout_ira_iphone() {
-	$user_id = get_current_user_id();
-	if ( $user_id ) {
-		if ( $user_id == 9 ) {
-			$user_agent = get_user_agent();
-			$pos        = strpos( $user_agent, 'iPhone;' );
-			if ( $pos !== false ) {
-				if ( is_user_logged_in() ) {
-					wp_logout();
-					wp_redirect( home_url() );
-					exit();
-				}
-			}
-		}
-	}
 }
 
 add_action( 'init', 'set_current_user_status' );

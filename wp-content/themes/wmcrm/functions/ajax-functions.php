@@ -1388,7 +1388,7 @@ function change_user_notifications() {
 		$res['$telegram_start']  = $telegram_start;
 		$res['$telegram_finish'] = $telegram_finish;
 		if ( $telegram_start && $telegram_finish ) {
-			carbon_set_user_meta( $user_id, 'telegram_start', get_formated_carbon_time( $telegram_start )  );
+			carbon_set_user_meta( $user_id, 'telegram_start', get_formated_carbon_time( $telegram_start ) );
 			carbon_set_user_meta( $user_id, 'telegram_finish', get_formated_carbon_time( $telegram_finish ) );
 		}
 	} else {
@@ -1967,7 +1967,7 @@ function delete_user_absence() {
 					if ( carbon_get_user_meta( $user_id, 'email_notification' ) ) {
 						send_message( $text, $user->user_email, 'Відмінено відсутність' );
 					}
-					send_or_schedule_telegram($user_id, $text);
+					send_or_schedule_telegram( $user_id, $text );
 					$post_data = array(
 						'post_type'   => 'notice',
 						'post_title'  => $text,
