@@ -40,6 +40,8 @@ get_template_part( 'components/create-project' );
 get_template_part( 'components/edit-project' );
 get_template_part( 'components/events-section' );
 get_template_part( 'components/users-page' );
+get_template_part( 'components/Board' );
+get_template_part( 'components/the-board' );
 get_template_part( 'functions/actions-functions' );
 
 function custom_logout_and_redirect() {

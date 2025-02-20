@@ -11,11 +11,12 @@ if ( ! $user_id ) {
 }
 user_filter_redirect();
 $is_admin = is_current_user_admin();
-$route    = $_GET['route'] ?? '';
+$route    = filter_input( INPUT_GET, 'route' ) ?: '';
 if ( $route == 'create' ) {
 	the_create_project_page();
 	die();
 }
+
 get_header();
 global $wp_query;
 set_query_data();
@@ -60,7 +61,9 @@ $current_user_admin = is_current_user_admin();
     <div class="container">
         <div class="section-projects-head">
             <div class="title">
-                Проєкти (<span class="found-posts"><?php echo $wp_query->found_posts; ?></span>)
+                Проєкти (
+                <span class="found-posts"><?php echo $wp_query->found_posts; ?></span>
+                )
             </div>
             <form action="<?php echo $projects_url ?>" method="get" class="projects-filter filter-project-form">
                 <input type="hidden" name="order" class="order-input" value="<?php echo $order; ?>">

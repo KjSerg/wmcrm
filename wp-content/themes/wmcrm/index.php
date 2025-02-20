@@ -5,7 +5,11 @@ $is_admin = is_current_user_admin();
 on_telegram_auth();
 if ( $user_id ) {
 	start_work_time();
-	$route = $_GET['route'] ?? '';
+	$route    = filter_input( INPUT_GET, 'route' ) ?: '';
+	if ( $route === 'board' && $is_admin ) {
+		the_board();
+		die();
+	}
 	if ( $route == 'profile' ) {
 		the_profile();
 	} elseif ( $route == 'users' && $is_admin ) {
