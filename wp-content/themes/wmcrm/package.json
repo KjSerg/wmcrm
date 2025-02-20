@@ -18,8 +18,10 @@
     "howler": "^2.2.4",
     "jq": "^1.7.2",
     "jquery": "^3.7.1",
-    "jquery-ui": "^1.13.3",
+    "jquery-sortablejs": "^1.0.1",
+    "jquery-ui": "^1.14.1",
     "selectric": "^1.13.0",
+    "sortablejs": "^1.15.6",
     "soundmanager2": "^2.97.20170602",
     "worker-timers": "^8.0.0"
   },

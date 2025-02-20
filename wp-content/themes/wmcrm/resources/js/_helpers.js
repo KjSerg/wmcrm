@@ -2,6 +2,7 @@ import initQuill, {setQiullText} from "./_quill-init";
 import Invite from "./Invite";
 import {initPlugins} from './_js';
 import CommentObserver from "./CommentObserver";
+import Board from "./Board";
 
 let $doc = $(document);
 let load = false;
@@ -103,6 +104,8 @@ export function renderMain(args) {
                 $menuItem.closest('li').addClass('current-menu-item');
             }
             const commentObserver = new CommentObserver();
+            const board = new Board();
+            board.initBoard();
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         loading = false;

@@ -11,7 +11,8 @@ function the_board(): void {
                 </div>
             </div>
             <div class="board-wrapper">
-				<?php $board->render(); ?>
+                <div class="board-container"><?php $board->render(); ?></div>
+
             </div>
         </div>
     </section>

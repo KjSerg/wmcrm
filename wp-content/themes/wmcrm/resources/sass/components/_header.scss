@@ -22,7 +22,7 @@
     margin-bottom: 2rem;
     border-bottom: 1px solid rgba(#fff, 0.08);
     transition: 0.5s ease;
-    @media (max-width: 870px) {
+    @media (max-width: 1050px) {
       border-color: rgba(#fff, 0);
       margin-bottom: 0;
       padding-bottom: 0;
@@ -164,7 +164,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    @media (max-width: 870px) {
+    @media (max-width: 1050px) {
       flex-direction: column;
       display: none;
     }
@@ -173,7 +173,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      @media (max-width: 870px) {
+      @media (max-width: 1050px) {
         width: 100%;
         max-width: 30rem;
         flex-direction: column;
@@ -182,14 +182,14 @@
 
       & > * {
         height: 5rem;
-        @media (max-width: 870px) {
+        @media (max-width: 1050px) {
           width: 100%;
         }
       }
 
       & > *:not(:last-child) {
         margin-right: 1rem;
-        @media (max-width: 870px) {
+        @media (max-width: 1050px) {
           margin-right: 0;
           margin-bottom: 1rem;
         }
@@ -202,6 +202,9 @@
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
+    @media (max-width: 450px) {
+      flex-direction: column;
+    }
 
     a {
       display: flex;
@@ -215,7 +218,10 @@
       text-transform: uppercase;
       border-bottom: 3px solid rgba(#C9085F, 0);
       transition: 0.4s ease;
-      @media (max-width: 870px) {
+      @media (max-width: 1050px) {
+        font-weight:400;
+      }
+      @media (max-width: 1050px) {
         font-size: 1.4rem;
 
       }
@@ -230,11 +236,16 @@
 
     li {
       margin-right: 2rem;
-
-      @media (max-width: 870px) {
+      @media (max-width: 1050px) {
+        margin-right: 1rem;
+      }
+      @media (max-width: 1050px) {
         margin-right: 2rem;
       }
-
+      @media (max-width: 450px) {
+        margin-right: 0;
+        margin-bottom: 2rem;
+      }
       &:last-child {
         margin-right: 0;
       }
@@ -253,7 +264,7 @@
     @media (max-width: 980px){
       width: 20rem;
     }
-    @media (max-width: 870px) {
+    @media (max-width: 1050px) {
       width: 100%;
       max-width: 30rem;
     }
@@ -342,7 +353,7 @@
 
 .burger {
   display: none;
-  @media (max-width: 870px) {
+  @media (max-width: 1050px) {
     display: flex;
   }
   flex-direction: column;

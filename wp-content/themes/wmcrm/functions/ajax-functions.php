@@ -2169,6 +2169,54 @@ function search_projects_list() {
 	die();
 }
 
+add_action( 'wp_ajax_nopriv_update_status_projects', 'update_status_projects' );
+add_action( 'wp_ajax_update_status_projects', 'update_status_projects' );
+function update_status_projects() {
+	$status = filter_input( INPUT_POST, 'status' );
+	$items  = filter_input( INPUT_POST, 'sortedItems', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+	if ( ! $status ) {
+		send_error( 'Status empty' );
+	}
+	if ( ! $items ) {
+		send_error( 'sortedItems empty' );
+	}
+	$items     = array_map( 'intval', $items );
+	$time      = current_time( 'mysql' );
+	$date_time = new DateTime( $time );
+	global $wpdb;
+	foreach ( $items as $project_id ) {
+		if ( get_post( $project_id ) ) {
+			$date_time->modify( '-1 second' );
+			$gmt_timezone      = new DateTimeZone( 'GMT' );
+			$modified_time     = $date_time->format( 'Y-m-d H:i:s' );
+			$modified_time_gmt = $date_time->setTimezone( $gmt_timezone )->format( 'Y-m-d H:i:s' );
+			$wpdb->query(
+				$wpdb->prepare(
+					"UPDATE $wpdb->posts 
+					        SET post_status = %s, 
+					            post_modified = %s, 
+					            post_modified_gmt = %s 
+					        WHERE ID = %d",
+					$status,
+					$modified_time,
+					$modified_time_gmt,
+					$project_id
+				)
+			);
+		}
+
+		clean_post_cache( $project_id );
+		wp_cache_flush();
+	}
+	die();
+
+}
+
+function send_error( $msg ) {
+	echo json_encode( array( 'error' => $msg ) );
+	die();
+}
+
 function get_cost_id( $arr = array() ) {
 	$res     = 0;
 	$user_id = $arr['user_id'] ?? false;
