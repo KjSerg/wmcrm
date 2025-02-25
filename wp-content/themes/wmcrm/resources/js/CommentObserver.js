@@ -33,7 +33,7 @@ export default class CommentObserver {
     }
 
     highlightText(element, textToHighlight) {
-        $(element).html(function(_, html) {
+        $(element).html(function (_, html) {
             let regex = new RegExp('(' + textToHighlight + ')', 'gi');
             return html.replace(regex, '<mark>$1</mark>');
         });
@@ -43,19 +43,16 @@ export default class CommentObserver {
         const _this = this;
         const hash = _this.getHash();
         const params = _this.getQueryParams();
-        console.log(hash)
-        if(hash === undefined) return;
-        if(hash === '') return;
-        if (params.string !== undefined) {
-            _this.highlightText('.content', params.string);
-            const $el = $(document).find('#' + hash);
-            if ($el.length === 0) return;
-            $el.addClass('showing-element');
-            setTimeout(function () {
-                $el.removeClass('showing-element');
-            }, 5000);
-
-        }
+        if (hash === undefined) return;
+        if (hash === '') return;
+        const $el = $(document).find('#' + hash);
+        if ($el.length === 0) return;
+        $el.addClass('showing-element');
+        setTimeout(function () {
+            $el.removeClass('showing-element');
+        }, 5000);
+        if (params.string === undefined) return;
+        _this.highlightText('.content', params.string);
     }
 
     readingComment(id) {

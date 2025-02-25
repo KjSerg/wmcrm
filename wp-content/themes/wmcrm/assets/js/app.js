@@ -9052,18 +9052,16 @@ var CommentObserver = /*#__PURE__*/function () {
       var _this = this;
       var hash = _this.getHash();
       var params = _this.getQueryParams();
-      console.log(hash);
       if (hash === undefined) return;
       if (hash === '') return;
-      if (params.string !== undefined) {
-        _this.highlightText('.content', params.string);
-        var $el = $(document).find('#' + hash);
-        if ($el.length === 0) return;
-        $el.addClass('showing-element');
-        setTimeout(function () {
-          $el.removeClass('showing-element');
-        }, 5000);
-      }
+      var $el = $(document).find('#' + hash);
+      if ($el.length === 0) return;
+      $el.addClass('showing-element');
+      setTimeout(function () {
+        $el.removeClass('showing-element');
+      }, 5000);
+      if (params.string === undefined) return;
+      _this.highlightText('.content', params.string);
     }
   }, {
     key: "readingComment",
