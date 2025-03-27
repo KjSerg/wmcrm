@@ -196,9 +196,12 @@ function remove_comment() {
 	$author_id             = get_post_field( 'post_author', $comment_id );
 	$discussion_project_id = carbon_get_post_meta( $comment_id, 'discussion_project_id' );
 	$test                  = true;
-	if ( $author_id != $user_id ) {
-		$test = false;
+	if(!is_current_user_admin()){
+		if ( $author_id != $user_id ) {
+			$test = false;
+		}
 	}
+
 	if ( $comment_id && get_post( $comment_id ) && $test ) {
 		$arr = carbon_get_post_meta( $comment_id, 'discussion_files' );
 		if ( $arr ) {

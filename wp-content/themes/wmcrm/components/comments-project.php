@@ -134,7 +134,7 @@ function the_comment_project( $comment_id, $user_id = false, $project_id = false
                 </a>
 				<?php if ( $author_test && ! $is_archive ): ?>
 
-					<?php if ( $author_id == $user_id ): ?>
+					<?php if ( $author_id == $user_id || is_current_user_admin() ): ?>
                         <a href="#" data-id="<?php echo $comment_id ?>"
                            class="comment-remove remove-btn comment-remove-js">
 							<?php _s( _i( 'remove' ) ) ?>
