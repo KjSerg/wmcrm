@@ -1060,7 +1060,7 @@ function get_percent( $from, $number ) {
 	return round( $res, 2 );
 }
 
-function get_discussion_ids_by_user( $user_id = false ): array {
+function get_discussion_ids_by_user_old( $user_id = false ): array {
 	$key = md5( 'get_discussion_ids_by_user' . $user_id );
 	$res = get_transient( $key );
 	if ( $res !== false ) {
@@ -1090,7 +1090,50 @@ function get_discussion_ids_by_user( $user_id = false ): array {
 	return $comment_ids;
 }
 
-function get_discussion_ids_by_user_projects( $user_id = false ): array {
+function get_discussion_ids_by_user( $user_id = false ): array {
+	global $wpdb;
+
+	// Generate cache key
+	$key = md5( 'get_discussion_ids_by_user' . $user_id );
+
+	// Check cache
+	$cached_ids = get_transient( $key );
+	if ( false !== $cached_ids ) {
+		return $cached_ids;
+	}
+
+	// Default to current user if no ID provided
+	$user_id = $user_id ?: get_current_user_id();
+	$user    = get_user_by( 'id', $user_id );
+
+	// If user doesn't exist, return empty array
+	if ( ! $user ) {
+		set_transient( $key, [], 300 );
+
+		return [];
+	}
+
+	// Prepare SQL query to search for discussions
+	$sql = $wpdb->prepare(
+		"SELECT ID
+         FROM {$wpdb->posts}
+         WHERE post_type = 'discussion'
+         AND post_status = 'publish'
+         AND (post_title LIKE %s OR post_content LIKE %s)",
+		'%' . $wpdb->esc_like( $user->display_name ) . '%',
+		'%' . $wpdb->esc_like( $user->display_name ) . '%'
+	);
+
+	// Execute query and get results
+	$comment_ids = $wpdb->get_col( $sql );
+
+	// Cache results for 5 minutes (300 seconds)
+	set_transient( $key, $comment_ids, 300 );
+
+	return array_map( 'intval', $comment_ids );
+}
+
+function get_discussion_ids_by_user_projects_old( $user_id = false ): array {
 	$user_id = $user_id ?: get_current_user_id();
 	$key     = md5( 'get_discussion_ids_by_user_projects' . $user_id );
 	$res     = get_transient( $key );
@@ -1167,6 +1210,70 @@ function get_discussion_ids_by_user_projects( $user_id = false ): array {
 	set_transient( $key, $comment_ids, 30 );
 
 	return $comment_ids;
+}
+
+function get_discussion_ids_by_user_projects( $user_id = false ): array {
+	global $wpdb;
+
+	// Default to current user if no ID provided
+	$user_id = $user_id ?: get_current_user_id();
+
+	// Generate cache key
+	$key = md5( 'get_discussion_ids_by_user_projects' . $user_id );
+
+	// Check cache
+	$cached_ids = get_transient( $key );
+	if ( false !== $cached_ids ) {
+		return $cached_ids;
+	}
+
+	// If user doesn't exist, return empty array
+	$user = get_user_by( 'id', $user_id );
+	if ( ! $user ) {
+		set_transient( $key, [], 300 );
+
+		return [];
+	}
+
+	// Get worksection ID from user meta
+	$worksection_id = carbon_get_user_meta( $user_id, 'worksection_id' );
+
+	// Build meta conditions for projects
+	$meta_conditions = [
+		$wpdb->prepare( "(pm.meta_key = '_project_users_to_id' AND pm.meta_value LIKE %s)", '%' . $wpdb->esc_like( $user_id ) . '%' ),
+		$wpdb->prepare( "(pm.meta_key = '_project_users_observer_id' AND pm.meta_value LIKE %s)", '%' . $wpdb->esc_like( $user_id ) . '%' )
+	];
+
+	if ( $worksection_id ) {
+		$meta_conditions[] = $wpdb->prepare( "(pm.meta_key = '_worksection_user_to_id' AND pm.meta_value = %s)", $worksection_id );
+	}
+
+	$meta_conditions_sql = implode( ' OR ', $meta_conditions );
+
+	// Combined SQL query to get discussion IDs
+	$sql = $wpdb->prepare(
+		"SELECT DISTINCT d.ID
+         FROM {$wpdb->posts} d
+         INNER JOIN {$wpdb->postmeta} dm ON d.ID = dm.post_id
+         INNER JOIN {$wpdb->posts} p ON p.ID = dm.meta_value
+         INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+         WHERE d.post_type = 'discussion'
+         AND d.post_status = 'publish'
+         AND d.post_author != %d
+         AND dm.meta_key = '_discussion_project_id'
+         AND p.post_type = 'projects'
+         AND p.post_status IN ('publish', 'archive', 'pending')
+         AND ($meta_conditions_sql)",
+		$user_id
+	);
+
+	// Get discussion IDs
+	$discussion_ids = $wpdb->get_col( $sql );
+
+	// Cache results for 5 minutes
+	set_transient( $key, $discussion_ids, 300 );
+
+	return array_map( 'intval', $discussion_ids );
 }
 
 function set_discussion_query_data() {
