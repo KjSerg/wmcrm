@@ -25,20 +25,22 @@ $(document).ready(function () {
             }
         });
     });
-    document.onvisibilitychange = () => {
-        if (document.visibilityState === "visible") {
-            getNotice();
-        }
-    };
+
+});
+document.addEventListener('visibilitychange', () => {
+    console.log(document.visibilityState);
+    if (document.visibilityState === 'visible') {
+        getNotice();
+    }
 });
 
 function updateNotice() {
-    let minute = 60000;
-    let time = minute * 60;
+    let time = 60000;
     setInterval(getNotice, time);
 }
 
 export function getNotice() {
+    console.log('getNotice')
     $.ajax({
         type: "POST",
         url: adminAjax,
@@ -48,7 +50,7 @@ export function getNotice() {
     }).done(function (r) {
         if (r) {
             $(document).find('.notifications').html(r);
-            $(document).find('.notifications > *').show();
+            $(document).find('.notifications > *').slideDown();
         }
     });
 }

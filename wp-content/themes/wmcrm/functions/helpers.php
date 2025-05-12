@@ -2090,3 +2090,30 @@ function get_formated_carbon_time( $time ) {
 
 	return count( $arr ) < 3 ? $time . ":00" : $time;
 }
+
+function get_comment_liked_users_html( $id ): bool|string {
+	$likes      = get_post_meta( $id, '_likes', true );
+	$likes      = $likes ? json_decode( $likes, true ) : [];
+	$likes      = array_map( 'intval', $likes );
+	$like_count = count( $likes );
+	ob_start();
+	if ( $likes ) {
+		foreach ( $likes as $_user_id ) {
+			if ( $user = get_user_by( 'id', $_user_id ) ) {
+				$avatar     = carbon_get_user_meta( $_user_id, 'avatar' );
+				$avatar     = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $_user_id );
+				$last_name  = $user->last_name;
+				$first_name = $user->first_name;
+				$name       = $last_name;
+				if ( $first_name ) {
+					$name .= ' ' . mb_substr( $first_name, 0, 1 ) . '.';
+				}
+				echo "<div class='comment-like-wrapper-list-item'>";
+				echo "<div class='avatar'><img class='cover' loading='lazy' src='$avatar' alt=''/></div>" . $name;
+				echo '</div>';
+			}
+		}
+	}
+
+	return ob_get_clean();
+}

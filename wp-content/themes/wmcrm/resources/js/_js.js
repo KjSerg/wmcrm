@@ -415,6 +415,7 @@ $(document).ready(function () {
         e.preventDefault();
         let $t = $(this);
         showPreloader();
+        $t.closest('.comment-like-wrapper').removeAttr('data-time');
         $.ajax({
             type: 'GET',
             url: $t.attr('href'),
@@ -429,7 +430,9 @@ $(document).ready(function () {
                     const likes = res.likes || [];
                     const userID = res.userID || 0;
                     const counter = res.count || 0;
+                    const html = res.html || '';
                     $t.closest('.comment-like-wrapper').find('.comment-likes-counter').text(counter);
+                    $t.closest('.comment-like-wrapper').find('.comment-like-wrapper-list').html(html);
                     if (likes.includes(userID)) {
                         $t.addClass('active');
                     } else {
@@ -439,6 +442,44 @@ $(document).ready(function () {
                     showMassage(r);
                 }
                 hidePreloader();
+            }
+        });
+    });
+    $doc.on('mouseenter', '.comment-like-wrapper', function (e) {
+        e.preventDefault();
+        let $t = $(this);
+        const start = Date.now() / 1000;
+        let last = $t.attr('data-time');
+        if (last !== undefined) {
+            last = Number(last);
+            console.log(last);
+            console.log(start);
+            const diff = start - last;
+            console.log(diff);
+            if (diff <= 60) return;
+        }
+        $t.attr('data-time', start);
+        $.ajax({
+            type: 'POST',
+            url: adminAjax,
+            data: {
+                'action': 'get_comment_liked',
+                'id': $t.attr('data-id')
+            }
+        }).done(function (r) {
+            if (r) {
+                if (isJsonString(r)) {
+                    let res = JSON.parse(r);
+                    if (res.msg !== '' && res.msg !== undefined) {
+                        showMassage(res.msg);
+                        return;
+                    }
+                    const html = res.html || '';
+                    const time = res.time || 0;
+                    $t.find('.comment-like-wrapper-list').html(html);
+                } else {
+                    showMassage(r);
+                }
             }
         });
     });

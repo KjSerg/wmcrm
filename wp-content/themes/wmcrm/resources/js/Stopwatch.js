@@ -145,11 +145,9 @@ export default class Stopwatch {
         });
         document.onvisibilitychange = () => {
             if (document.visibilityState === "hidden") {
-                console.log("tab inactive");
                 _this.$doc.find('.timer').addClass('not-active');
             }
             if (document.visibilityState === "visible") {
-                console.log("tab active");
                 _this.getCurrentData();
             }
         };

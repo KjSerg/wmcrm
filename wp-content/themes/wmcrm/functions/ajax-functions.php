@@ -2223,26 +2223,59 @@ function comment_like() {
 	if ( ! $user_id ) {
 		send_error( 'Помилка авторизації' );
 	}
+	if ( ! $id || ! get_post( $id ) ) {
+		send_error( 'Помилка' );
+	}
 	$likes    = get_post_meta( $id, '_likes', true );
 	$likes    = $likes ? json_decode( $likes, true ) : [];
 	$likes    = array_map( 'intval', $likes );
-	$is_liked = in_array($user_id,  $likes );
+	$is_liked = in_array( $user_id, $likes );
 	if ( $is_liked ) {
-		$key = array_search($user_id, $likes);
-		if ($key !== false) {
-			unset($likes[$key]);
+		$key = array_search( $user_id, $likes );
+		if ( $key !== false ) {
+			unset( $likes[ $key ] );
 		}
 	} else {
 		$likes[] = $user_id;
 	}
-	$likes      = array_unique( $likes );
+	$likes = array_unique( $likes );
 	update_post_meta( $id, '_likes', json_encode( $likes ) );
 	$like_count = count( $likes );
 	$res        = [
+		'likes'     => $likes,
+		'count'     => $like_count,
+		'userID'    => $user_id,
+		'$is_liked' => $is_liked,
+		'html'      => get_comment_liked_users_html( $id ),
+	];
+	echo json_encode( $res );
+	die();
+}
+
+add_action( 'wp_ajax_nopriv_get_comment_liked', 'get_comment_liked' );
+add_action( 'wp_ajax_get_comment_liked', 'get_comment_liked' );
+function get_comment_liked() {
+	$res     = [];
+	$id      = filter_input( INPUT_POST, 'id', FILTER_VALIDATE_INT );
+	$user_id = get_current_user_id();
+	$user_id = get_current_user_id();
+	if ( ! $user_id ) {
+		send_error( 'Помилка авторизації' );
+	}
+	if ( ! $id || ! get_post( $id ) ) {
+		send_error( 'Помилка' );
+	}
+	$likes      = get_post_meta( $id, '_likes', true );
+	$likes      = $likes ? json_decode( $likes, true ) : [];
+	$likes      = array_map( 'intval', $likes );
+	$like_count = count( $likes );
+
+	$res = [
 		'likes'  => $likes,
 		'count'  => $like_count,
 		'userID' => $user_id,
-		'$is_liked' => $is_liked,
+		'html'   => get_comment_liked_users_html( $id ),
+		'time'   => intval( current_time( 'unix' ) ),
 	];
 	echo json_encode( $res );
 	die();
