@@ -411,6 +411,37 @@ $(document).ready(function () {
             }
         });
     });
+    $doc.on('click', '.comment-like-js', function (e) {
+        e.preventDefault();
+        let $t = $(this);
+        showPreloader();
+        $.ajax({
+            type: 'GET',
+            url: $t.attr('href'),
+        }).done(function (r) {
+            if (r) {
+                if (isJsonString(r)) {
+                    let res = JSON.parse(r);
+                    if (res.msg !== '' && res.msg !== undefined) {
+                        showMassage(res.msg);
+                        return;
+                    }
+                    const likes = res.likes || [];
+                    const userID = res.userID || 0;
+                    const counter = res.count || 0;
+                    $t.closest('.comment-like-wrapper').find('.comment-likes-counter').text(counter);
+                    if (likes.includes(userID)) {
+                        $t.addClass('active');
+                    } else {
+                        $t.removeClass('active');
+                    }
+                } else {
+                    showMassage(r);
+                }
+                hidePreloader();
+            }
+        });
+    });
     $doc.on('input', 'input[type="tel"]', function () {
         $(this).val($(this).val().replace(/[A-Za-zА-Яа-яЁё]/, ''))
     });

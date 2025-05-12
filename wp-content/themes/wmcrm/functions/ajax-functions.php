@@ -196,7 +196,7 @@ function remove_comment() {
 	$author_id             = get_post_field( 'post_author', $comment_id );
 	$discussion_project_id = carbon_get_post_meta( $comment_id, 'discussion_project_id' );
 	$test                  = true;
-	if(!is_current_user_admin()){
+	if ( ! is_current_user_admin() ) {
 		if ( $author_id != $user_id ) {
 			$test = false;
 		}
@@ -2213,6 +2213,39 @@ function update_status_projects() {
 	}
 	die();
 
+}
+
+add_action( 'wp_ajax_nopriv_comment_like', 'comment_like' );
+add_action( 'wp_ajax_comment_like', 'comment_like' );
+function comment_like() {
+	$id      = filter_input( INPUT_GET, 'id', FILTER_VALIDATE_INT );
+	$user_id = get_current_user_id();
+	if ( ! $user_id ) {
+		send_error( 'Помилка авторизації' );
+	}
+	$likes    = get_post_meta( $id, '_likes', true );
+	$likes    = $likes ? json_decode( $likes, true ) : [];
+	$likes    = array_map( 'intval', $likes );
+	$is_liked = in_array($user_id,  $likes );
+	if ( $is_liked ) {
+		$key = array_search($user_id, $likes);
+		if ($key !== false) {
+			unset($likes[$key]);
+		}
+	} else {
+		$likes[] = $user_id;
+	}
+	$likes      = array_unique( $likes );
+	update_post_meta( $id, '_likes', json_encode( $likes ) );
+	$like_count = count( $likes );
+	$res        = [
+		'likes'  => $likes,
+		'count'  => $like_count,
+		'userID' => $user_id,
+		'$is_liked' => $is_liked,
+	];
+	echo json_encode( $res );
+	die();
 }
 
 function send_error( $msg ) {
