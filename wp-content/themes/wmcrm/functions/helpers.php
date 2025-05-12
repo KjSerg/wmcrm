@@ -1060,7 +1060,7 @@ function get_percent( $from, $number ) {
 	return round( $res, 2 );
 }
 
-function get_discussion_ids_by_user_old( $user_id = false ): array {
+function get_discussion_ids_by_user( $user_id = false ): array {
 	$key = md5( 'get_discussion_ids_by_user' . $user_id );
 	$res = get_transient( $key );
 	if ( $res !== false ) {
@@ -1090,7 +1090,7 @@ function get_discussion_ids_by_user_old( $user_id = false ): array {
 	return $comment_ids;
 }
 
-function get_discussion_ids_by_user( $user_id = false ): array {
+function get_discussion_ids_by_user_old( $user_id = false ): array {
 	global $wpdb;
 
 	// Generate cache key
@@ -1133,7 +1133,7 @@ function get_discussion_ids_by_user( $user_id = false ): array {
 	return array_map( 'intval', $comment_ids );
 }
 
-function get_discussion_ids_by_user_projects_old( $user_id = false ): array {
+function get_discussion_ids_by_user_projects( $user_id = false ): array {
 	$user_id = $user_id ?: get_current_user_id();
 	$key     = md5( 'get_discussion_ids_by_user_projects' . $user_id );
 	$res     = get_transient( $key );
@@ -1212,7 +1212,7 @@ function get_discussion_ids_by_user_projects_old( $user_id = false ): array {
 	return $comment_ids;
 }
 
-function get_discussion_ids_by_user_projects( $user_id = false ): array {
+function get_discussion_ids_by_user_projects_old( $user_id = false ): array {
 	global $wpdb;
 
 	// Default to current user if no ID provided

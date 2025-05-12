@@ -68,7 +68,6 @@ export function renderMain(args) {
         url: url
     };
     $.ajax(param).done(function (r) {
-        hidePreloader();
         loading = false;
         if (r) {
             let $requestBody = $(parser.parseFromString(r, "text/html"));
@@ -107,6 +106,7 @@ export function renderMain(args) {
             const board = new Board();
             board.initBoard();
         }
+        hidePreloader();
     }).fail(function (jqXHR, textStatus, errorThrown) {
         loading = false;
         renderMain({

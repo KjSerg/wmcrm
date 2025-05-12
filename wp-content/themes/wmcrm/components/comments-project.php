@@ -90,6 +90,10 @@ function the_comment_project( $comment_id, $user_id = false, $project_id = false
 	$discussion_edit_users = carbon_get_post_meta( $comment_id, 'discussion_edit_users' );
 	$discussion_edit_users = $discussion_edit_users ? explode( ',', $discussion_edit_users ) : array();
 	$copy_link_href        = get_the_permalink( $project_id );
+	$likes = get_post_meta($comment_id, '_likes', true);
+	$likes = $likes ? json_decode($likes, true) : [];
+	$like_count = count($likes);
+	$is_liked = in_array($user_id, $likes);
 	if ( $paged > 1 ) {
 		$copy_link_href .= '?comments_count=-1';
 	}
@@ -104,7 +108,7 @@ function the_comment_project( $comment_id, $user_id = false, $project_id = false
         <div class="comment-head">
             <div class="comment-author">
 				<?php if ( $avatar ) {
-					echo "<div class='comment-author__avatar'><img class='cover' src='$avatar' alt=''/></div>";
+					echo "<div class='comment-author__avatar'><img class='cover' loading='lazy' src='$avatar' alt=''/></div>";
 				} ?>
 				<?php
 				echo $name;
@@ -122,7 +126,6 @@ function the_comment_project( $comment_id, $user_id = false, $project_id = false
 					}
 				}
 				?>
-
             </div>
             <div class="comment-date">
 				<?php echo date( 'd-m-Y H:i', $time );
@@ -133,7 +136,6 @@ function the_comment_project( $comment_id, $user_id = false, $project_id = false
 					<?php _s( _i( 'link' ) ) ?>
                 </a>
 				<?php if ( $author_test && ! $is_archive ): ?>
-
 					<?php if ( $author_id == $user_id || is_current_user_admin() ): ?>
                         <a href="#" data-id="<?php echo $comment_id ?>"
                            class="comment-remove remove-btn comment-remove-js">
@@ -146,6 +148,15 @@ function the_comment_project( $comment_id, $user_id = false, $project_id = false
 
 
 				<?php endif; ?>
+                <div class="comment-like-wrapper" data-id="<?php echo $comment_id ?>">
+                    <a href="<?php echo site_url('wp-admin/admin-ajax.php?action=comment_like&id='.$comment_id); ?>"
+                       class="comment-like comment-like-js <?php echo $is_liked ? 'active' : '' ?>" >
+                        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"> <path
+                                    d="M28.706 20.3952C29.3208 19.611 29.6157 18.7704 29.578 17.9046C29.5404 16.9511 29.1138 16.2045 28.7625 15.7465C29.1703 14.7302 29.3271 13.1305 27.9658 11.8883C26.9683 10.9787 25.2744 10.5709 22.9281 10.6838C21.2782 10.7591 19.898 11.0665 19.8415 11.079H19.8353C19.5216 11.1355 19.1891 11.2045 18.8503 11.2798C18.8252 10.8783 18.8942 9.8808 19.6345 7.63488C20.5128 4.96236 20.4626 2.91719 19.4714 1.54956C18.43 0.112924 16.7675 0 16.2782 0C15.8077 0 15.3748 0.194479 15.0674 0.55207C14.371 1.36135 14.4526 2.85445 14.5404 3.54454C13.7123 5.76537 11.3911 11.2108 9.42748 12.7227C9.38984 12.7478 9.35847 12.7792 9.32711 12.8105C8.74994 13.4191 8.36098 14.0778 8.0975 14.655C7.72736 14.4542 7.30703 14.3413 6.85534 14.3413H3.02849C1.58558 14.3413 0.418701 15.5144 0.418701 16.9511V27.1455C0.418701 28.5885 1.59185 29.7553 3.02849 29.7553H6.85534C7.41368 29.7553 7.93438 29.5797 8.36098 29.2785L9.83526 29.4542C10.0611 29.4856 14.0762 29.9937 18.1979 29.9122C18.9444 29.9686 19.6471 30 20.2995 30C21.4225 30 22.4011 29.9122 23.2167 29.7365C25.1364 29.3287 26.4476 28.5132 27.1126 27.3149C27.6207 26.399 27.6207 25.4893 27.5392 24.9122C28.7876 23.7829 29.0072 22.5345 28.9632 21.6562C28.9381 21.1481 28.8252 20.7152 28.706 20.3952ZM3.02849 28.0615C2.52033 28.0615 2.11255 27.6474 2.11255 27.1455V16.9448C2.11255 16.4366 2.52661 16.0289 3.02849 16.0289H6.85534C7.36349 16.0289 7.77127 16.4429 7.77127 16.9448V27.1393C7.77127 27.6474 7.35722 28.0552 6.85534 28.0552H3.02849V28.0615ZM27.1 19.6612C26.8365 19.9373 26.7863 20.3576 26.9871 20.6838C26.9871 20.6901 27.2443 21.1292 27.2757 21.7315C27.3196 22.5533 26.9243 23.2811 26.0962 23.9021C25.8014 24.128 25.6822 24.5169 25.8077 24.8683C25.8077 24.8745 26.0774 25.7026 25.6383 26.4868C25.2179 27.2396 24.2832 27.7792 22.8654 28.0803C21.7299 28.325 20.1866 28.3689 18.292 28.2183C18.2669 28.2183 18.2355 28.2183 18.2041 28.2183C14.1703 28.3061 10.0925 27.7792 10.0486 27.7729H10.0423L9.40866 27.6976C9.4463 27.522 9.46512 27.3337 9.46512 27.1455V16.9448C9.46512 16.675 9.42121 16.4115 9.34593 16.1669C9.45885 15.7465 9.77253 14.8118 10.5128 14.0151C13.3296 11.7817 16.0837 4.24718 16.2029 3.92095C16.2531 3.78921 16.2656 3.64492 16.2405 3.50063C16.1339 2.79799 16.1715 1.93852 16.3221 1.6813C16.6546 1.68758 17.5517 1.78168 18.0912 2.52823C18.7311 3.4128 18.706 4.99373 18.0159 7.08908C16.962 10.2823 16.8742 11.9636 17.7085 12.7039C18.1226 13.074 18.6747 13.0928 19.0762 12.9486C19.4589 12.8607 19.8227 12.7854 20.1678 12.729C20.1929 12.7227 20.2242 12.7164 20.2493 12.7102C22.1753 12.2898 25.6257 12.0326 26.824 13.1242C27.8403 14.0527 27.1188 15.2823 27.0373 15.4141C26.8051 15.7654 26.8742 16.2233 27.1878 16.5056C27.1941 16.5119 27.8528 17.133 27.8842 17.9674C27.9093 18.5257 27.6458 19.0966 27.1 19.6612Z"></path> </svg>
+                    </a>
+                    (<span class="comment-likes-counter"><?php echo $like_count ?></span>)
+                    <div class="comment-like-wrapper-list"></div>
+                </div>
 			<?php else: ?>
                 <div class=" text">
 					<?php echo replace_url( get_content_by_id( $comment_id ) ); ?>

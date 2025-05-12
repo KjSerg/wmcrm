@@ -1,4 +1,4 @@
-const $ = require('jq').jQuery;
+
 
 function burgerInit(){
     const $doc = $(document);

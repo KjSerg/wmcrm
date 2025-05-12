@@ -311,7 +311,6 @@ function appendContainer(href, $button = false) {
         param.data = {type: 'next_project_page'};
     }
     $.ajax(param).done(function (r) {
-        hidePreloader();
         loading = false;
         if (r) {
             let $requestBody = $(parser.parseFromString(r, "text/html"));
@@ -322,6 +321,7 @@ function appendContainer(href, $button = false) {
             $pagination.html('');
         }
         const commentObserver = new CommentObserver();
+        hidePreloader();
     }).fail(function (jqXHR, textStatus, errorThrown) {
         appendContainer(href, $button);
     });
@@ -340,7 +340,6 @@ export function renderContainer(url) {
         url: url
     };
     $.ajax(param).done(function (r) {
-        hidePreloader();
         loading = false;
         if (r) {
             let $requestBody = $(parser.parseFromString(r, "text/html"));
@@ -352,6 +351,7 @@ export function renderContainer(url) {
             $pagination.html('');
         }
         const commentObserver = new CommentObserver();
+        hidePreloader();
     }).fail(function (jqXHR, textStatus, errorThrown) {
         renderContainer(url);
     });
