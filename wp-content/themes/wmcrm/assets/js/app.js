@@ -24027,6 +24027,8 @@ $(document).ready(function () {
           }
           var html = res.html || '';
           var time = res.time || 0;
+          var counter = res.count || 0;
+          $t.closest('.comment-like-wrapper').find('.comment-likes-counter').text(counter);
           $t.find('.comment-like-wrapper-list').html(html);
         } else {
           (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showMassage)(r);

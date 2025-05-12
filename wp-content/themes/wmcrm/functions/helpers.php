@@ -2117,3 +2117,28 @@ function get_comment_liked_users_html( $id ): bool|string {
 
 	return ob_get_clean();
 }
+
+function create_like_notice( $comment_id, $user_id ) {
+	$id             = $comment_id;
+	$comment_author = get_post_author_id( $id );
+    if($user_id === intval($comment_author)) {
+        return 0;
+    }
+	$user           = get_user_by( 'id', $user_id );
+	$last_name      = $user->last_name;
+	$first_name     = $user->first_name;
+	$name           = $last_name;
+	if ( $first_name ) {
+		$name .= ' ' . mb_substr( $first_name, 0, 1 ) . '.';
+	}
+	$title     = get_the_title( intval( carbon_get_post_meta( $id, 'discussion_project_id' ) ) );
+	$text      = $name . ' схоже вподобав(ла) ваше повідомлення до проєкту "' . $title . '"';
+	$post_data = array(
+		'post_type'   => 'notice',
+		'post_title'  => $text,
+		'post_status' => 'publish',
+		'post_author' => $comment_author
+	);
+
+	return wp_insert_post( $post_data, true );
+}

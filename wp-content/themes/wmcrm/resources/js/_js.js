@@ -476,6 +476,8 @@ $(document).ready(function () {
                     }
                     const html = res.html || '';
                     const time = res.time || 0;
+                    const counter = res.count || 0;
+                    $t.closest('.comment-like-wrapper').find('.comment-likes-counter').text(counter);
                     $t.find('.comment-like-wrapper-list').html(html);
                 } else {
                     showMassage(r);

@@ -2230,6 +2230,7 @@ function comment_like() {
 	$likes    = $likes ? json_decode( $likes, true ) : [];
 	$likes    = array_map( 'intval', $likes );
 	$is_liked = in_array( $user_id, $likes );
+	$notice = 0;
 	if ( $is_liked ) {
 		$key = array_search( $user_id, $likes );
 		if ( $key !== false ) {
@@ -2237,6 +2238,7 @@ function comment_like() {
 		}
 	} else {
 		$likes[] = $user_id;
+		$notice  = create_like_notice( $id, $user_id );
 	}
 	$likes = array_unique( $likes );
 	update_post_meta( $id, '_likes', json_encode( $likes ) );
@@ -2247,6 +2249,7 @@ function comment_like() {
 		'userID'    => $user_id,
 		'$is_liked' => $is_liked,
 		'html'      => get_comment_liked_users_html( $id ),
+		'$notice'   => $notice,
 	];
 	echo json_encode( $res );
 	die();

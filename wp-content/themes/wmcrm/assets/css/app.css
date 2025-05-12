@@ -2983,7 +2983,7 @@ input {
   pointer-events: none;
   max-height: 10rem;
   overflow: auto;
-  width: 15rem;
+  width: 18rem;
 }
 .comment-like-wrapper-list-item {
   align-items: center;
@@ -2992,6 +2992,9 @@ input {
   gap: 1rem;
   opacity: 0;
   background-color: #fff;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .comment-like-wrapper-list-item .avatar {
   border-radius: 50%;
@@ -5679,6 +5682,11 @@ button {
 
 .shake {
   animation: horizontal-shaking linear infinite 0.5s;
+}
+
+.notifications {
+  max-height: 7rem;
+  overflow: auto;
 }
 
 @keyframes horizontal-shaking {

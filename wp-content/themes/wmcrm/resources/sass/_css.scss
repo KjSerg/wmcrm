@@ -1347,6 +1347,11 @@ button {
   animation: horizontal-shaking linear infinite 0.5s;
 }
 
+.notifications{
+  max-height: 7rem;
+  overflow: auto;
+}
+
 @keyframes horizontal-shaking {
   0% {
     transform: translateX(0)

@@ -356,7 +356,7 @@
         pointer-events: none;
         max-height: 10rem;
         overflow: auto;
-        width: 15rem;
+        width: 18rem;
         &-item{
           align-items: center;
           display: flex;
@@ -364,6 +364,10 @@
           gap: 1rem;
           opacity: 0;
           background-color: #fff;
+
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
           .avatar{
             border-radius: 50%;
             overflow: hidden;
