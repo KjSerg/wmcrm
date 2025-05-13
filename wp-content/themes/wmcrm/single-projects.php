@@ -5,12 +5,12 @@
 $string         = $_GET['string'] ?? '';
 $comments_count = $_GET['comments_count'] ?? '';
 $redirected     = $_GET['redirected'] ?? 'false';
-$id                        = get_the_ID();
+$id             = get_the_ID();
 if ( $string && $redirected == 'false' ) {
 	$permalink  = get_the_permalink();
 	$comment_id = get_comment_id_by_string( $string, $id );
 	if ( $comment_id ) {
-        var_dump($comment_id);
+		var_dump( $comment_id );
 		header( 'Location: ' . $permalink . "?comments_count=$comments_count&string=$string&redirected=true#comment-$comment_id" );
 		die();
 	}
@@ -74,7 +74,8 @@ require_once ABSPATH . 'wp-admin/includes/media.php';
                                         fill="none">
 <path d="M0.174904 5.57196C-0.058285 5.80515 -0.058285 6.19475 0.174904 6.42853L5.55538 11.8228C5.79156 12.059 6.17458 12.059 6.41016 11.8228C6.64634 11.5866 6.64634 11.203 6.41016 10.9668L1.45709 5.99997L6.41076 1.0337C6.64694 0.796928 6.64694 0.41391 6.41076 0.177134C6.17458 -0.0590446 5.79156 -0.0590446 5.55598 0.177134L0.174904 5.57196Z"
       fill="#5C6DF9"/>
-</svg></span>До головної задачі
+</svg></span>
+                    До головної задачі
                 </a>
 			<?php else: ?>
                 <a href="<?php echo $projects_url; ?>" class="nav-list__item link-js">
@@ -82,7 +83,8 @@ require_once ABSPATH . 'wp-admin/includes/media.php';
                                         fill="none">
 <path d="M0.174904 5.57196C-0.058285 5.80515 -0.058285 6.19475 0.174904 6.42853L5.55538 11.8228C5.79156 12.059 6.17458 12.059 6.41016 11.8228C6.64634 11.5866 6.64634 11.203 6.41016 10.9668L1.45709 5.99997L6.41076 1.0337C6.64694 0.796928 6.64694 0.41391 6.41076 0.177134C6.17458 -0.0590446 5.79156 -0.0590446 5.55598 0.177134L0.174904 5.57196Z"
       fill="#5C6DF9"/>
-</svg></span>Назад до списку задач
+</svg></span>
+                    Назад до списку задач
                 </a>
 			<?php endif; ?>
         </div>
@@ -222,7 +224,7 @@ if ( $children ) {
         </form>
         <div class="section-comments-content ">
 			<?php
-			the_comments( $id );
+			\WMCRM\core\Comments::render( $id );
 			?>
         </div>
     </div>

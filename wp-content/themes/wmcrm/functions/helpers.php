@@ -1072,16 +1072,13 @@ function get_discussion_ids_by_user( $user_id = false ): array {
 	$args        = array(
 		'post_type'      => 'discussion',
 		'post_status'    => 'publish',
-		'posts_per_page' => - 1
+		'posts_per_page' => - 1,
+		'fields'         => 'ids',
 	);
 	$args['s']   = $user->display_name;
 	$query       = new WP_Query( $args );
 	if ( $query->have_posts() ) {
-		while ( $query->have_posts() ) {
-			$query->the_post();
-			$comment_id    = get_the_ID();
-			$comment_ids[] = $comment_id;
-		}
+		$comment_ids = $query->posts;
 	}
 	wp_reset_postdata();
 	wp_reset_query();
@@ -1099,7 +1096,7 @@ function get_discussion_ids_by_user_old( $user_id = false ): array {
 	// Check cache
 	$cached_ids = get_transient( $key );
 	if ( false !== $cached_ids ) {
-		return $cached_ids;
+//		return $cached_ids;
 	}
 
 	// Default to current user if no ID provided
@@ -1147,6 +1144,7 @@ function get_discussion_ids_by_user_projects( $user_id = false ): array {
 		'post_type'      => 'projects',
 		'post_status'    => array( 'publish', 'archive', 'pending' ),
 		'posts_per_page' => - 1,
+		'fields'         => 'ids',
 		'meta_query'     => array(
 			'relation' => 'OR',
 			array(
@@ -1169,11 +1167,7 @@ function get_discussion_ids_by_user_projects( $user_id = false ): array {
 	}
 	$query = new WP_Query( $args );
 	if ( $query->have_posts() ) {
-		while ( $query->have_posts() ) {
-			$query->the_post();
-			$_id     = get_the_ID();
-			$array[] = $_id;
-		}
+		$array = $query->posts;
 	}
 	wp_reset_postdata();
 	wp_reset_query();
@@ -1182,6 +1176,7 @@ function get_discussion_ids_by_user_projects( $user_id = false ): array {
 		$args               = array(
 			'post_type'      => 'discussion',
 			'post_status'    => 'publish',
+			'fields'         => 'ids',
 			'posts_per_page' => - 1
 		);
 		$args['meta_query'] = array(
@@ -1195,19 +1190,13 @@ function get_discussion_ids_by_user_projects( $user_id = false ): array {
 		);
 		$query              = new WP_Query( $args );
 		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) {
-				$query->the_post();
-				$comment_id = get_the_ID();
-				$author     = get_post_author_id( $comment_id );
-				if ( $author != $user_id ) {
-					$comment_ids[] = $comment_id;
-				}
-			}
+			$comment_ids = $query->posts;
 		}
 		wp_reset_postdata();
 		wp_reset_query();
 	}
-	set_transient( $key, $comment_ids, 30 );
+
+//	set_transient( $key, $comment_ids, 30 );
 
 	return $comment_ids;
 }
@@ -1224,7 +1213,7 @@ function get_discussion_ids_by_user_projects_old( $user_id = false ): array {
 	// Check cache
 	$cached_ids = get_transient( $key );
 	if ( false !== $cached_ids ) {
-		return $cached_ids;
+//		return $cached_ids;
 	}
 
 	// If user doesn't exist, return empty array
@@ -1281,7 +1270,7 @@ function set_discussion_query_data() {
 	if ( ! $is_admin ) {
 		global $wp_query;
 		$user_id = get_current_user_id();
-		$args    = array();
+		$args    = [];
 		$arr     = array();
 		if ( $discussion_ids_by_user = get_discussion_ids_by_user( $user_id ) ) {
 			$arr = $discussion_ids_by_user;
@@ -2121,13 +2110,13 @@ function get_comment_liked_users_html( $id ): bool|string {
 function create_like_notice( $comment_id, $user_id ) {
 	$id             = $comment_id;
 	$comment_author = get_post_author_id( $id );
-    if($user_id === intval($comment_author)) {
-        return 0;
-    }
-	$user           = get_user_by( 'id', $user_id );
-	$last_name      = $user->last_name;
-	$first_name     = $user->first_name;
-	$name           = $last_name;
+	if ( $user_id === intval( $comment_author ) ) {
+		return 0;
+	}
+	$user       = get_user_by( 'id', $user_id );
+	$last_name  = $user->last_name;
+	$first_name = $user->first_name;
+	$name       = $last_name;
 	if ( $first_name ) {
 		$name .= ' ' . mb_substr( $first_name, 0, 1 ) . '.';
 	}

@@ -43,7 +43,8 @@ set_discussion_query_data();
 							while ( have_posts() ) {
 								the_post();
 								$id = get_the_ID();
-								the_project_comment();
+                                var_dump($id);
+                                \WMCRM\core\Comment::the_project_comment();
 							}
 						} else {
 							?>

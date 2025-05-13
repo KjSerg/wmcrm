@@ -162,7 +162,7 @@ function new_comment() {
 				}
 				ob_start();
 				if ( $update_comment_id && get_post( $update_comment_id ) ) {
-					the_comment_project( $comment_id );
+					\WMCRM\core\Comment::the_comment_project($comment_id);
 					$res['comment_html_update'] = ob_get_clean();
 					$res['comment_id']          = $comment_id;
 				} else {
