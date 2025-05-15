@@ -166,7 +166,7 @@ function new_comment() {
 					$res['comment_html_update'] = ob_get_clean();
 					$res['comment_id']          = $comment_id;
 				} else {
-					the_comments( $project_id );
+					\WMCRM\core\Comments::render($project_id);
 					$res['comments_html'] = ob_get_clean();
 				}
 				carbon_set_post_meta( $comment_id, 'discussion_project_hush', $hush );
@@ -276,7 +276,7 @@ function change_project_status() {
 					) );
 					if ( $comment_id ) {
 						ob_start();
-						the_comments( $id );
+						\WMCRM\core\Comments::render($id);
 						$res['comments_html'] = ob_get_clean();
 					}
 				} else {

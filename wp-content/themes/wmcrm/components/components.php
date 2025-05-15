@@ -199,7 +199,8 @@ function the_user_select_list() {
 }
 
 function the_timer_list() {
-	if ( $timers = get_current_timers() ): ?>
+	if ( $timers = get_current_timers() ):
+        ?>
         <ul class="timer-list">
 			<?php foreach ( $timers as $obj ):
 				$timer_ID = $obj['ID'];

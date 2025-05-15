@@ -1490,9 +1490,10 @@ function get_current_timers() {
 	$time  = time();
 	$today = date( 'd-m-Y', $time );
 	$args  = array(
-		'post_type'   => 'costs',
-		'post_status' => array( 'publish' ),
-		'meta_query'  => array(
+		'post_type'      => 'costs',
+		'post_status'    => array( 'publish' ),
+		'posts_per_page' => - 1,
+		'meta_query'     => array(
 			array(
 				'key'   => '_costs_date',
 				'value' => $today,
@@ -1503,8 +1504,8 @@ function get_current_timers() {
 	if ( $query->have_posts() ) {
 		while ( $query->have_posts() ) {
 			$query->the_post();
-			$id              = get_the_ID();
-			$user            = get_post_author_id( $id );
+			$id   = get_the_ID();
+			$user = get_post_author_id( $id );
 			$costs_date      = carbon_get_post_meta( $id, 'costs_date' );
 			$status          = carbon_get_post_meta( $id, 'costs_status' );
 			$sum_hour        = carbon_get_post_meta( $id, 'costs_sum_hour' );
