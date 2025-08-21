@@ -1070,10 +1070,14 @@ function get_discussion_ids_by_user( $user_id = false ): array {
 	$comment_ids = array();
 	$user        = get_user_by( 'id', $user_id );
 	$args        = array(
-		'post_type'      => 'discussion',
-		'post_status'    => 'publish',
-		'posts_per_page' => - 1,
-		'fields'         => 'ids',
+		'post_type'              => 'discussion',
+		'post_status'            => 'publish',
+		'posts_per_page'         => - 1,
+		'fields'                 => 'ids',
+		'author__not_in'         => [ $user_id ],
+		'no_found_rows'          => true,
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
 	);
 	$args['s']   = $user->display_name;
 	$query       = new WP_Query( $args );
@@ -1132,6 +1136,7 @@ function get_discussion_ids_by_user_old( $user_id = false ): array {
 
 function get_discussion_ids_by_user_projects( $user_id = false ): array {
 	$user_id = $user_id ?: get_current_user_id();
+	$user_id = intval( $user_id );
 	$key     = md5( 'get_discussion_ids_by_user_projects' . $user_id );
 	$res     = get_transient( $key );
 	if ( $res !== false ) {
@@ -1141,11 +1146,15 @@ function get_discussion_ids_by_user_projects( $user_id = false ): array {
 	$array          = array();
 	$user           = get_user_by( 'id', $user_id );
 	$args           = array(
-		'post_type'      => 'projects',
-		'post_status'    => array( 'publish', 'archive', 'pending' ),
-		'posts_per_page' => - 1,
-		'fields'         => 'ids',
-		'meta_query'     => array(
+		'post_type'              => 'projects',
+		'post_status'            => array( 'publish', 'archive', 'pending' ),
+		'posts_per_page'         => - 1,
+		'fields'                 => 'ids',
+		'author__not_in'         => [ $user_id ],
+		'no_found_rows'          => true,
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'meta_query'             => array(
 			'relation' => 'OR',
 			array(
 				'key'     => '_project_users_to_id',
@@ -1196,7 +1205,7 @@ function get_discussion_ids_by_user_projects( $user_id = false ): array {
 		wp_reset_query();
 	}
 
-//	set_transient( $key, $comment_ids, 30 );
+	set_transient( $key, $comment_ids, 30 );
 
 	return $comment_ids;
 }
@@ -1265,7 +1274,7 @@ function get_discussion_ids_by_user_projects_old( $user_id = false ): array {
 	return array_map( 'intval', $discussion_ids );
 }
 
-function set_discussion_query_data() {
+function set_discussion_query_data(): void {
 	$is_admin = is_current_user_admin();
 	if ( ! $is_admin ) {
 		global $wp_query;
@@ -1285,6 +1294,7 @@ function set_discussion_query_data() {
 				$args['post__in'] = array( 0 );
 			}
 		}
+		$args['author__not_in'] = [ $user_id ];
 		if ( ! empty( $args ) ) {
 			$query = array_merge( $wp_query->query, $args );
 			query_posts( $query );
@@ -1504,8 +1514,8 @@ function get_current_timers() {
 	if ( $query->have_posts() ) {
 		while ( $query->have_posts() ) {
 			$query->the_post();
-			$id   = get_the_ID();
-			$user = get_post_author_id( $id );
+			$id              = get_the_ID();
+			$user            = get_post_author_id( $id );
 			$costs_date      = carbon_get_post_meta( $id, 'costs_date' );
 			$status          = carbon_get_post_meta( $id, 'costs_status' );
 			$sum_hour        = carbon_get_post_meta( $id, 'costs_sum_hour' );
