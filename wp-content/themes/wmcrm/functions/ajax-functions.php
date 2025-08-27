@@ -73,18 +73,18 @@ function new_comment() {
 			} else {
 				$project_comment_ids = array();
 			}
-			$array         = get_text_with_users( $text );
-			$text1         = $array['result_text'];
-			$users_ids     = $array['users_ids'];
-			$res['users_ids']  = $users_ids;
-			$res['$text1'] = $text1;
-			$post_data     = array(
+			$array            = get_text_with_users( $text );
+			$text1            = $array['result_text'];
+			$users_ids        = $array['users_ids'];
+			$res['users_ids'] = $users_ids;
+			$res['$text1']    = $text1;
+			$post_data        = array(
 				'post_type'    => 'discussion',
 				'post_title'   => 'Comment',
 				'post_status'  => 'publish',
 				'post_content' => $text1,
 			);
-			$comment_id    = 0;
+			$comment_id       = 0;
 			if ( $update_comment_id && get_post( $update_comment_id ) ) {
 				$author_id         = (int) get_post_author_id( $update_comment_id );
 				$res['$author_id'] = $author_id;
@@ -161,7 +161,8 @@ function new_comment() {
 					}
 
 				}
-				$res['set_comment_to_users'] = \WMCRM\core\Comment::set_comment_to_users( $comment_id, array_keys($users_ids) );
+				$res['set_comment_to_users']      = \WMCRM\core\Comment::set_comment_to_users( $comment_id, array_keys( $users_ids ) );
+				$res['set_comment_term_to_users'] = \WMCRM\core\Comment::set_comment_term_to_users( $project_id, $comment_id );
 				ob_start();
 				if ( $update_comment_id && get_post( $update_comment_id ) ) {
 					\WMCRM\core\Comment::the_comment_project( $comment_id );

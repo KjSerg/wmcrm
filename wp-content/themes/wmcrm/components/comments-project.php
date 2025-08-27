@@ -324,12 +324,12 @@ class Comment {
 		}
 		$users_id = array_map( 'intval', $users_id );
 		foreach ( $users_id as $user_id ) {
-            if(!$user = get_user_by( 'id', $user_id )) {
-                continue;
-            }
-            if(!$r = self::add_user_to_discussion_as_term($user_id, $comment_id)) {
-                continue;
-            }
+			if ( ! $user = get_user_by( 'id', $user_id ) ) {
+				continue;
+			}
+			if ( ! $r = self::add_user_to_discussion_as_term( $user_id, $comment_id ) ) {
+				continue;
+			}
 			$arr[] = $user_id;
 		}
 
@@ -347,7 +347,7 @@ class Comment {
 		}
 		$comments_id = array_map( 'intval', $comments_id );
 		foreach ( $comments_id as $id ) {
-			if ( !self::add_user_to_discussion_as_term( $user_id, $id ) ) {
+			if ( ! self::add_user_to_discussion_as_term( $user_id, $id ) ) {
 				continue;
 			}
 			$arr[] = $id;
@@ -373,5 +373,37 @@ class Comment {
 		}
 
 		return true;
+	}
+
+	public static function set_comment_term_to_users( $project_id, $comment_id ) {
+		$arr        = [];
+		$project_id = intval( $project_id );
+		$comment_id = intval( $comment_id );
+		if ( ! get_post( $comment_id ) ) {
+			return $arr;
+		}
+		if ( ! get_post( $project_id ) ) {
+			return $arr;
+		}
+		$users                     = [];
+		$project_user_from_id      = carbon_get_post_meta( $project_id, 'project_user_from_id' );
+		$project_users_to_id       = carbon_get_post_meta( $project_id, 'project_users_to_id' );
+		$project_users_observer_id = carbon_get_post_meta( $project_id, 'project_users_observer_id' );
+		$users[]                   = $project_user_from_id;
+		if ( $project_users_to_id ) {
+			$project_users_to_id = explode( ',', $project_users_to_id );
+			$users               = array_merge( $users, $project_users_to_id );
+		}
+		if ( $project_users_observer_id ) {
+			$project_users_observer_id = explode( ',', $project_users_observer_id );
+			$users                     = array_merge( $users, $project_users_observer_id );
+		}
+		$users = array_map( 'intval', $users );
+		$users = array_unique( $users );
+		if ( count( $users ) === 0 ) {
+			return $arr;
+		}
+
+		return self::set_comment_to_users( $comment_id, $users );
 	}
 }
