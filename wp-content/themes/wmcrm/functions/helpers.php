@@ -1061,14 +1061,10 @@ function get_percent( $from, $number ) {
 }
 
 function get_discussion_ids_by_user( $user_id = false ): array {
-	$comments = get_user_meta( $user_id, 'comments', true ) ?: [];
-	if ( count( $comments ) > 10 ) {
-		return $comments;
-	}
 	$key = md5( 'get_discussion_ids_by_user' . $user_id );
 	$res = get_transient( $key );
 	if ( $res !== false ) {
-		return $res;
+//		return $res;
 	}
 	$user_id     = $user_id ?: get_current_user_id();
 	$comment_ids = array();
@@ -1091,8 +1087,7 @@ function get_discussion_ids_by_user( $user_id = false ): array {
 	wp_reset_postdata();
 	wp_reset_query();
 	set_transient( $key, $comment_ids, 300 );
-	$comments       = array_merge( $comments, $comment_ids );
-	$comments_added = \WMCRM\core\Comment::set_comments_to_user( $comments, $user_id );
+	$list = \WMCRM\core\Comment::set_comments_to_user( $comment_ids, $user_id );
 
 	return $comment_ids;
 }
@@ -1216,6 +1211,57 @@ function get_discussion_ids_by_user_projects( $user_id = false ): array {
 	return $comment_ids;
 }
 
+function get_user_projects_ids( $user_id = false ): array {
+	$user_id = $user_id ?: get_current_user_id();
+	$user_id = intval( $user_id );
+	$key     = md5( 'get_user_projects_ids' . $user_id );
+	$res     = get_transient( $key );
+	if ( $res !== false ) {
+		return $res;
+	}
+	$worksection_id = carbon_get_user_meta( $user_id, 'worksection_id' );
+	$array          = array();
+	$user           = get_user_by( 'id', $user_id );
+	$args           = array(
+		'post_type'              => 'projects',
+		'post_status'            => array( 'publish', 'archive', 'pending' ),
+		'posts_per_page'         => - 1,
+		'fields'                 => 'ids',
+		'no_found_rows'          => true,
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'meta_query'             => array(
+			'relation' => 'OR',
+			array(
+				'key'     => '_project_users_to_id',
+				'value'   => $user_id,
+				'compare' => 'LIKE',
+			),
+			array(
+				'key'     => '_project_users_observer_id',
+				'value'   => $user_id,
+				'compare' => 'LIKE',
+			)
+		)
+	);
+	if ( $worksection_id ) {
+		$args['meta_query'][] = array(
+			'key'   => '_worksection_user_to_id',
+			'value' => $worksection_id,
+		);
+	}
+	$query = new WP_Query( $args );
+	if ( $query->have_posts() ) {
+		$array = $query->posts;
+	}
+	wp_reset_postdata();
+	wp_reset_query();
+
+	set_transient( $key, $array, 30 );
+
+	return $array;
+}
+
 function get_discussion_ids_by_user_projects_old( $user_id = false ): array {
 	global $wpdb;
 
@@ -1287,20 +1333,34 @@ function set_discussion_query_data(): void {
 		$user_id = get_current_user_id();
 		$args    = [];
 		$arr     = array();
-		if ( $discussion_ids_by_user = get_discussion_ids_by_user( $user_id ) ) {
-			$arr = $discussion_ids_by_user;
-		}
-		if ( $discussion_ids_by_user_projects = get_discussion_ids_by_user_projects( $user_id ) ) {
-			$arr = array_merge( $discussion_ids_by_user_projects, $arr );
-		}
+//		if ( $discussion_ids_by_user = get_discussion_ids_by_user( $user_id ) ) {
+//			$arr = $discussion_ids_by_user;
+//		}
+//		if ( $discussion_ids_by_user_projects = get_discussion_ids_by_user_projects( $user_id ) ) {
+//			$arr = array_merge( $discussion_ids_by_user_projects, $arr );
+//		}
+		$arr = get_user_projects_ids( $user_id );
 		if ( ! empty( $arr ) ) {
-			$args['post__in'] = $arr;
+			$args['meta_query'] = [
+				[
+					'key'     => '_discussion_project_id',
+					'value'   => $arr,
+					'compare' => 'IN'
+				]
+			];
 		} else {
 			if ( ! $is_admin ) {
 				$args['post__in'] = array( 0 );
 			}
 		}
 		$args['author__not_in'] = [ $user_id ];
+		$args['tax_query']      = [
+			[
+				'taxonomy' => 'involved_users',
+				'field'    => 'slug',
+				'terms'    => (string) $user_id,
+			],
+		];
 		if ( ! empty( $args ) ) {
 			$query = array_merge( $wp_query->query, $args );
 			query_posts( $query );

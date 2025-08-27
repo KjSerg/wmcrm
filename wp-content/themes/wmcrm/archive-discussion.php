@@ -16,6 +16,7 @@ $isLighthouse = isLighthouse();
 $size         = isLighthouse() ? 'thumbnail' : 'full';
 the_events_section();
 set_discussion_query_data();
+
 ?>
     <section class="section discussion-section">
         <div class="container">
@@ -43,8 +44,7 @@ set_discussion_query_data();
 							while ( have_posts() ) {
 								the_post();
 								$id = get_the_ID();
-                                var_dump($id);
-                                \WMCRM\core\Comment::the_project_comment();
+								\WMCRM\core\Comment::the_project_comment();
 							}
 						} else {
 							?>

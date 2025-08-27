@@ -2,6 +2,7 @@
 
 namespace WMCRM\core;
 
+use WP_Error;
 use WP_Query;
 
 class Comments {
@@ -323,12 +324,12 @@ class Comment {
 		}
 		$users_id = array_map( 'intval', $users_id );
 		foreach ( $users_id as $user_id ) {
-			$comments = get_user_meta( $user_id, 'comments', true ) ?: [];
-			if ( in_array( $comment_id, $comments ) ) {
-				continue;
-			}
-			$comments[] = $comment_id;
-			update_user_meta( $user_id, 'comments', $comments );
+            if(!$user = get_user_by( 'id', $user_id )) {
+                continue;
+            }
+            if(!$r = self::add_user_to_discussion_as_term($user_id, $comment_id)) {
+                continue;
+            }
 			$arr[] = $user_id;
 		}
 
@@ -346,12 +347,31 @@ class Comment {
 		}
 		$comments_id = array_map( 'intval', $comments_id );
 		foreach ( $comments_id as $id ) {
-			if ( count( self::set_comment_to_users( $id, [ $user_id ] ) ) == 0 ) {
+			if ( !self::add_user_to_discussion_as_term( $user_id, $id ) ) {
 				continue;
 			}
 			$arr[] = $id;
 		}
 
 		return $arr;
+	}
+
+	public static function add_user_to_discussion_as_term( $user_id, $post_id ): WP_Error|bool|array {
+		if ( ! is_numeric( $user_id ) || ! is_numeric( $post_id ) ) {
+			return new WP_Error( 'invalid_data', 'ID користувача та поста повинні бути числами.' );
+		}
+		if ( 'discussion' !== get_post_type( $post_id ) ) {
+			return new WP_Error( 'invalid_post_type', 'Пост не є типом "discussion".' );
+		}
+		$taxonomy = 'involved_users';
+		$term     = (string) $user_id;
+		$result   = wp_set_post_terms( $post_id, $term, $taxonomy, true );
+		if ( is_wp_error( $result ) ) {
+			error_log( 'Помилка при додаванні терму involved_users: ' . $result->get_error_message() );
+
+			return $result;
+		}
+
+		return true;
 	}
 }

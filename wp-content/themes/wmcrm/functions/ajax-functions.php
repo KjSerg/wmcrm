@@ -76,6 +76,7 @@ function new_comment() {
 			$array         = get_text_with_users( $text );
 			$text1         = $array['result_text'];
 			$users_ids     = $array['users_ids'];
+			$res['users_ids']  = $users_ids;
 			$res['$text1'] = $text1;
 			$post_data     = array(
 				'post_type'    => 'discussion',
@@ -160,15 +161,15 @@ function new_comment() {
 					}
 
 				}
+				$res['set_comment_to_users'] = \WMCRM\core\Comment::set_comment_to_users( $comment_id, array_keys($users_ids) );
 				ob_start();
 				if ( $update_comment_id && get_post( $update_comment_id ) ) {
-					\WMCRM\core\Comment::the_comment_project($comment_id);
+					\WMCRM\core\Comment::the_comment_project( $comment_id );
 					$res['comment_html_update'] = ob_get_clean();
 					$res['comment_id']          = $comment_id;
 				} else {
-					\WMCRM\core\Comments::render($project_id);
+					\WMCRM\core\Comments::render( $project_id );
 					$res['comments_html'] = ob_get_clean();
-					\WMCRM\core\Comment::set_comment_to_users($comment_id, $users_ids);
 				}
 				carbon_set_post_meta( $comment_id, 'discussion_project_hush', $hush );
 			} else {
@@ -277,7 +278,7 @@ function change_project_status() {
 					) );
 					if ( $comment_id ) {
 						ob_start();
-						\WMCRM\core\Comments::render($id);
+						\WMCRM\core\Comments::render( $id );
 						$res['comments_html'] = ob_get_clean();
 					}
 				} else {
@@ -2231,7 +2232,7 @@ function comment_like() {
 	$likes    = $likes ? json_decode( $likes, true ) : [];
 	$likes    = array_map( 'intval', $likes );
 	$is_liked = in_array( $user_id, $likes );
-	$notice = 0;
+	$notice   = 0;
 	if ( $is_liked ) {
 		$key = array_search( $user_id, $likes );
 		if ( $key !== false ) {
