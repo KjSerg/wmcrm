@@ -168,6 +168,7 @@ function new_comment() {
 				} else {
 					\WMCRM\core\Comments::render($project_id);
 					$res['comments_html'] = ob_get_clean();
+					\WMCRM\core\Comment::set_comment_to_users($comment_id, $users_ids);
 				}
 				carbon_set_post_meta( $comment_id, 'discussion_project_hush', $hush );
 			} else {

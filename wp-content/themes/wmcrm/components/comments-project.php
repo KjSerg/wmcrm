@@ -59,7 +59,7 @@ class Comments {
 }
 
 class Comment {
-	public static function the_project_comment() {
+	public static function the_project_comment(): void {
 		$user_id        = get_current_user_id();
 		$id             = get_the_ID();
 		$item_time      = get_the_date( 'H:i', $id );
@@ -167,7 +167,7 @@ class Comment {
 		endif;
 	}
 
-	public static function the_comment_project( $comment_id, $user_id = false, $project_id = false ) {
+	public static function the_comment_project( $comment_id, $user_id = false, $project_id = false ): void {
 		$paged       = filter_input( INPUT_GET, 'pagenumber', FILTER_SANITIZE_NUMBER_INT ) ?: 1;
 		$paged       = intval( $paged );
 		$user_id     = $user_id ?: get_current_user_id();
@@ -307,5 +307,51 @@ class Comment {
 			<?php endif; ?>
         </div>
 		<?php
+	}
+
+	public static function set_comment_to_users( $comment_id, $users_id ): array {
+		$arr = [];
+		if ( ! $users_id ) {
+			return $arr;
+		}
+		$comment_id = intval( $comment_id );
+		if ( ! get_post( $comment_id ) ) {
+			return $arr;
+		}
+		if ( get_post_type( $comment_id ) !== 'discussion' ) {
+			return $arr;
+		}
+		$users_id = array_map( 'intval', $users_id );
+		foreach ( $users_id as $user_id ) {
+			$comments = get_user_meta( $user_id, 'comments', true ) ?: [];
+			if ( in_array( $comment_id, $comments ) ) {
+				continue;
+			}
+			$comments[] = $comment_id;
+			update_user_meta( $user_id, 'comments', $comments );
+			$arr[] = $user_id;
+		}
+
+		return $arr;
+	}
+
+	public static function set_comments_to_user( $comments_id, $user_id ): array {
+		$user_id = intval( $user_id );
+		$arr     = [];
+		if ( ! $user = get_user_by( 'id', $user_id ) ) {
+			return $arr;
+		}
+		if ( ! $comments_id ) {
+			return $arr;
+		}
+		$comments_id = array_map( 'intval', $comments_id );
+		foreach ( $comments_id as $id ) {
+			if ( count( self::set_comment_to_users( $id, [ $user_id ] ) ) == 0 ) {
+				continue;
+			}
+			$arr[] = $id;
+		}
+
+		return $arr;
 	}
 }

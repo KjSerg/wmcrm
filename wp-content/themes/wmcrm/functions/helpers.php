@@ -1061,6 +1061,10 @@ function get_percent( $from, $number ) {
 }
 
 function get_discussion_ids_by_user( $user_id = false ): array {
+	$comments = get_user_meta( $user_id, 'comments', true ) ?: [];
+	if ( count( $comments ) > 10 ) {
+		return $comments;
+	}
 	$key = md5( 'get_discussion_ids_by_user' . $user_id );
 	$res = get_transient( $key );
 	if ( $res !== false ) {
@@ -1087,6 +1091,8 @@ function get_discussion_ids_by_user( $user_id = false ): array {
 	wp_reset_postdata();
 	wp_reset_query();
 	set_transient( $key, $comment_ids, 300 );
+	$comments       = array_merge( $comments, $comment_ids );
+	$comments_added = \WMCRM\core\Comment::set_comments_to_user( $comments, $user_id );
 
 	return $comment_ids;
 }
