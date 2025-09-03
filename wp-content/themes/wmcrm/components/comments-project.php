@@ -421,7 +421,6 @@ class Comment {
 		if ( count( $users ) === 0 ) {
 			return $arr;
 		}
-
 		return self::set_comment_to_users( $comment_id, $users );
 	}
 }

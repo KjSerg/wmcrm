@@ -463,6 +463,7 @@ function create_new_project() {
 						create_notification( $project_id, $comment_id, 'Новий проєкт ' . $title );
 					}
 				}
+				$res['set_comment_term_to_users'] = \WMCRM\core\Comment::set_comment_term_to_users( $project_id, $comment_id );
 			} else {
 				$res['type'] = 'error';
 				$res['msg']  = $project_id->get_error_message();
@@ -2357,4 +2358,22 @@ function create_comment( $comment_data ) {
 	} else {
 		return 0;
 	}
+}
+
+function get_current_by_project_id( $project_id ): array {
+	$res = [];
+	if ( ! $project_id ) {
+		return [];
+	}
+	if ( $project_users_to_id = carbon_get_post_meta( $project_id, 'project_users_to_id' ) ) {
+		$res[] = explode( ',', $project_users_to_id );
+	}
+	if ( $project_users_observer_id = carbon_get_post_meta( $project_id, 'project_users_observer_id' ) ) {
+		$res[] = explode( ',', $project_users_observer_id );
+	}
+
+	$res = array_unique( $res );
+	$res = array_map( 'intval', $res );
+
+	return $res;
 }
