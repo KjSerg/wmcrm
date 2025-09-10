@@ -33,7 +33,8 @@ get_template_part( 'functions/cron-events' );
 get_template_part( 'functions/telegram' );
 get_template_part( 'components/login' );
 get_template_part( 'components/projects-components' );
-get_template_part( 'components/comments-project' );
+get_template_part( 'components/Comments' );
+get_template_part( 'components/Comment' );
 get_template_part( 'components/components' );
 get_template_part( 'components/profile' );
 get_template_part( 'components/create-project' );
@@ -44,7 +45,7 @@ get_template_part( 'components/Board' );
 get_template_part( 'components/the-board' );
 get_template_part( 'functions/actions-functions' );
 
-function custom_logout_and_redirect() {
+function custom_logout_and_redirect(): void {
 	$user_id = get_current_user_id();
 	if ( $user_id && ! is_current_user_admin() ) {
 		$fired = carbon_get_user_meta( $user_id, 'fired' );
@@ -92,9 +93,9 @@ function custom_mime_types( $mimes ) {
 add_filter( 'upload_mimes', 'custom_mime_types' );
 
 // Вимкнення oEmbed
-remove_filter('the_content', [$GLOBALS['wp_embed'], 'autoembed'], 8);
-remove_action('wp_head', 'wp_oembed_add_discovery_links');
-remove_action('wp_head', 'wp_oembed_add_host_js');
+remove_filter( 'the_content', [ $GLOBALS['wp_embed'], 'autoembed' ], 8 );
+remove_action( 'wp_head', 'wp_oembed_add_discovery_links' );
+remove_action( 'wp_head', 'wp_oembed_add_host_js' );
 
 
 
