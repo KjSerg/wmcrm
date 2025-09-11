@@ -109,6 +109,21 @@ $doc.ready(function () {
                             let comment_id = res.comment_id;
                             $doc.find('#comment-' + comment_id).replaceWith(res.comment_html_update);
                         }
+                        if (res.comment_answers !== '' && res.comment_answers !== undefined) {
+                            let comment_id = res.comment_id;
+                            $doc.find('#comment-answers-' + comment_id).html(res.comment_answers);
+                            if ($doc.find('#comment-answers-' + comment_id).length > 0) {
+                                if ($form.closest('.window-main').length === 0) {
+                                    $('html, body').animate({
+                                        scrollTop: $doc.find('#comment-answers-' + comment_id).offset().top - 200
+                                    });
+                                } else {
+                                    $form.closest('.window-main').animate({
+                                        scrollTop: $form.closest('.window-main').find('#comment-answers-' + comment_id).offset().top - 200
+                                    });
+                                }
+                            }
+                        }
                         if ($form.hasClass('report-footer-form')) {
                             if (res.time !== '' && res.time !== undefined) {
                                 $doc.find('.report-cart-sum').text(res.time);

@@ -13,9 +13,9 @@ function wmcrm_scripts() {
 
 	wp_enqueue_style( 'wmcrm-jquery-ui', 'https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css', array(), '1.0' );
 
-	wp_enqueue_style( 'wmcrm-app', get_template_directory_uri() . '/assets/css/app.css', array(), '1.0.4.0' );
+	wp_enqueue_style( 'wmcrm-app', get_template_directory_uri() . '/assets/css/app.css', array(), '1.0.4.1' );
 
-	wp_enqueue_script( 'wmcrm-app-scripts', get_template_directory_uri() . '/assets/js/app.js', array(), '1.0.7.3', true );
+	wp_enqueue_script( 'wmcrm-app-scripts', get_template_directory_uri() . '/assets/js/app.js', array(), '1.0.7.4', true );
 
 	wp_localize_script( 'ajax-script', 'AJAX', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 }

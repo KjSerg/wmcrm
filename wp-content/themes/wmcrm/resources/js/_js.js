@@ -175,6 +175,7 @@ $(document).ready(function () {
                     }
                     if (res.html !== '' && res.html !== undefined) {
                         $wrapper.append(res.html);
+                        const invite = new Invite();
                     }
                 }
             }

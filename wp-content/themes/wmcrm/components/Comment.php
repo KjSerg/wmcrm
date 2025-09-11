@@ -397,10 +397,7 @@ class Comment {
 
 	public static function the_comment_footer( $comment_id, $user_id = 0, $author_id = 0 ): void {
 		$parent = get_post_parent( $comment_id );
-		if ( $parent ) {
-			return;
-		}
-		$text = 'Відповісти співробітнику ' . self::get_comment_author( $comment_id, false, 'only_name' );
+		$text   = 'Відповісти співробітнику ' . self::get_comment_author( $comment_id, false, 'only_name' );
 		if ( $user_id == $author_id ) {
 			$text = 'Доповнити коментар';
 		}
@@ -410,7 +407,7 @@ class Comment {
                class="comment-answer__link"
                data-user="<?php echo $user_id == $author_id ? '' : esc_attr( self::get_comment_author( $comment_id, false, 'full' ) ) ?>"
                data-text="<?php echo esc_attr( get_the_excerpt( $comment_id ) ) ?>"
-               data-comment-id="<?php echo $comment_id ?>"><?php echo esc_html( $text ) ?></a>
+               data-comment-id="<?php echo $parent ? $parent->ID : $comment_id ?>"><?php echo esc_html( $text ) ?></a>
         </div>
 		<?php
 	}

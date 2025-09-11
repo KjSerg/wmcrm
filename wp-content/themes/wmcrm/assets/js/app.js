@@ -22034,6 +22034,19 @@ var Invite = /*#__PURE__*/function () {
     value: function setUsersData() {
       var t = this;
       var isLoading = t.loading;
+      var storage = localStorage.getItem('users');
+      var storageDate = localStorage.getItem('users-date') || '';
+      var currentDate = (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.getCurrentDate)();
+      if (currentDate === storageDate && storage) {
+        if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(storage)) {
+          storage = JSON.parse(storage);
+          if (storage && !(0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isObjectEmpty)(storage)) {
+            t.users = storage;
+            t.setUsersAvatar();
+            return;
+          }
+        }
+      }
       if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isObjectEmpty)(t.users) && !isLoading) {
         t.loading = true;
         $.ajax({
@@ -22045,6 +22058,8 @@ var Invite = /*#__PURE__*/function () {
         }).done(function (r) {
           if (r && (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(r)) t.users = JSON.parse(r);
           t.loading = false;
+          localStorage.setItem('users', r);
+          localStorage.setItem('users-date', currentDate);
           t.setUsersAvatar();
         });
       }
@@ -22059,7 +22074,7 @@ var Invite = /*#__PURE__*/function () {
         if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isObjectEmpty)(t.users)) {
           t.setUsersData();
         } else {
-          $doc.find('.invite').each(function () {
+          $(document).find('.invite').each(function () {
             var $t = $(this);
             if ($t.find('.invite__image').length === 0) {
               var id = $t.attr('data-user-id');
@@ -23027,6 +23042,21 @@ $doc.ready(function () {
               var comment_id = res.comment_id;
               $doc.find('#comment-' + comment_id).replaceWith(res.comment_html_update);
             }
+            if (res.comment_answers !== '' && res.comment_answers !== undefined) {
+              var _comment_id = res.comment_id;
+              $doc.find('#comment-answers-' + _comment_id).html(res.comment_answers);
+              if ($doc.find('#comment-answers-' + _comment_id).length > 0) {
+                if ($form.closest('.window-main').length === 0) {
+                  $('html, body').animate({
+                    scrollTop: $doc.find('#comment-answers-' + _comment_id).offset().top - 200
+                  });
+                } else {
+                  $form.closest('.window-main').animate({
+                    scrollTop: $form.closest('.window-main').find('#comment-answers-' + _comment_id).offset().top - 200
+                  });
+                }
+              }
+            }
             if ($form.hasClass('report-footer-form')) {
               if (res.time !== '' && res.time !== undefined) {
                 $doc.find('.report-cart-sum').text(res.time);
@@ -23764,6 +23794,7 @@ $(document).ready(function () {
           }
           if (res.html !== '' && res.html !== undefined) {
             $wrapper.append(res.html);
+            var _invite = new _Invite__WEBPACK_IMPORTED_MODULE_4__["default"]();
           }
         }
       }

@@ -174,14 +174,25 @@ function new_comment() {
 
 				}
 				ob_start();
-				if ( $update_comment_id && get_post( $update_comment_id ) ) {
-					\WMCRM\core\Comment::the_comment_project( $comment_id );
-					$res['comment_html_update'] = ob_get_clean();
-					$res['comment_id']          = $comment_id;
+				if ( $parent_comment_id ) {
+					\WMCRM\core\Comment::the_comment_answers( $parent_comment_id, [
+						'answers_args' => [
+							'wrap' => false
+						]
+					] );
+					$res['comment_answers'] = ob_get_clean();
+					$res['comment_id']      = $parent_comment_id;
 				} else {
-					\WMCRM\core\Comments::render( $project_id );
-					$res['comments_html'] = ob_get_clean();
+					if ( $update_comment_id && get_post( $update_comment_id ) ) {
+						\WMCRM\core\Comment::the_comment_project( $comment_id );
+						$res['comment_html_update'] = ob_get_clean();
+						$res['comment_id']          = $comment_id;
+					} else {
+						\WMCRM\core\Comments::render( $project_id );
+						$res['comments_html'] = ob_get_clean();
+					}
 				}
+
 				carbon_set_post_meta( $comment_id, 'discussion_project_hush', $hush );
 				$res['set_comment_to_users']      = \WMCRM\core\Comment::set_comment_to_users( $comment_id, array_keys( $users_ids ) );
 				$res['set_comment_term_to_users'] = \WMCRM\core\Comment::set_comment_term_to_users( $project_id, $comment_id );
