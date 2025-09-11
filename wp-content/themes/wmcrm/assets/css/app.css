@@ -3120,7 +3120,7 @@ input {
 }
 .comment-answers {
   position: relative;
-  padding-left: 2rem;
+  padding-left: 4rem;
   margin-bottom: 10px;
 }
 @media (max-width: 450px) {
@@ -3152,7 +3152,7 @@ input {
   position: absolute;
   display: block;
   content: "";
-  height: calc(100% + 5px);
+  height: calc(100% - 30px);
   top: -5px;
   left: 0;
   width: 1px;
@@ -3167,8 +3167,8 @@ input {
   content: "";
   height: 1px;
   top: 50%;
-  left: -2rem;
-  width: 2rem;
+  left: -4rem;
+  width: 4rem;
   background-color: #f2f3f9;
 }
 @media (max-width: 450px) {
@@ -3180,6 +3180,21 @@ input {
 .comment-child:last-child {
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
+}
+.comment-child:last-child:after {
+  position: absolute;
+  display: block;
+  content: "";
+  height: 50%;
+  bottom: 0;
+  left: -4rem;
+  width: 1px;
+  background-color: #fff;
+}
+@media (max-width: 450px) {
+  .comment-child:last-child:after {
+    left: -1rem;
+  }
 }
 .comment:hover .comment-change, .comment:hover .comment-remove, .comment:hover .comment-copy-link, .comment:hover .comment-like-wrapper {
   opacity: 1;

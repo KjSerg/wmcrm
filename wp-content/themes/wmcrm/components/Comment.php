@@ -118,13 +118,11 @@ class Comment {
 	public static function the_project_comment(): void {
 		$user_id        = get_current_user_id();
 		$id             = get_the_ID();
+		$parent         = get_post_parent( $id );
 		$item_time      = get_the_date( 'H:i', $id );
-		$item_date      = get_the_date( 'l j F', $id );
-		$post_date_time = get_the_date( 'Y-m-d H:i:s' );
 		$post_date      = get_the_date( 'd-m-Y' );
 		$current_time   = current_time( 'timestamp' );
 		$current_date   = date( 'd-m-Y', $current_time );
-		$human_date     = human_time_diff( strtotime( $post_date ), current_time( 'timestamp' ) ) . ' назад';
 		$formatted_date = $post_date;
 		$color          = '#5C6DF9';
 		if ( $current_date == $post_date ) {
@@ -138,7 +136,6 @@ class Comment {
 			}
 		}
 		$project_id     = carbon_get_post_meta( $id, 'discussion_project_id' );
-		$hush           = carbon_get_post_meta( $id, 'discussion_project_hush' );
 		$post_type      = get_post_type( $project_id );
 		$view_test      = true;
 		if ( $post_type === 'costs' ) {
@@ -153,7 +150,8 @@ class Comment {
 			}
 			$check_cls             = $is_read ? 'read' : 'unread';
 			$link                  = get_post_type_archive_link( 'discussion' );
-			$comment_link          = ( $post_type == 'costs' ) ? get_post_type_archive_link( 'costs' ) : get_the_permalink( $project_id ) . '#comment-' . $id;
+			$comment_link          = get_the_permalink( $project_id ) . '#comment-' . ( $parent ? $parent->ID : $id );
+			$comment_link          = ( $post_type == 'costs' ) ? get_post_type_archive_link( 'costs' ) : $comment_link;
 			$check_cls             .= $post_type == 'costs' ? ' change-user-time-item' : '';
 			$costs_sum_hour_change = carbon_get_post_meta( $project_id, 'costs_sum_hour_change' );
 			$costs_sum             = carbon_get_post_meta( $project_id, 'costs_sum_hour' );
@@ -236,7 +234,8 @@ class Comment {
                title="<?php echo esc_attr( $user->display_name ) ?>"
                class="project-item-performer link-js">
                 <span class="project-item-performer__avatar"><img
-                            src="<?php echo esc_url( $avatar ) ?>" loading="lazy" alt="<?php echo $user->display_name ?>"></span>
+                            src="<?php echo esc_url( $avatar ) ?>" loading="lazy"
+                            alt="<?php echo $user->display_name ?>"></span>
             </a>
 			<?php
 		}
@@ -450,6 +449,8 @@ class Comment {
 		if ( $wrap ) {
 			echo ' </div>';
 		}
+		wp_reset_postdata();
+		wp_reset_query();
 	}
 
 	public static function the_next_child_link_html( $comment_id, $paged = 1, $max_num_pages = 0 ): void {
