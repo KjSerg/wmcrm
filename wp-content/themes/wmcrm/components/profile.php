@@ -79,6 +79,7 @@ function the_profile(): void {
             <form method="post" id="profile-form" novalidate
                   class="profile-form form form-js">
                 <input type="hidden" name="action" value="change_user_data">
+	            <?php echo wp_nonce_field( 'change_user_data', 'true_nonce', true, false ) ?>
                 <div class="row">
                     <label class="form-group form-group--third">
                         <span class="form-group__title">Прізвище</span>
@@ -224,6 +225,7 @@ function the_profile(): void {
               enctype="multipart/form-data"
               id="user-avatar-form">
             <input type="hidden" name="action" value="change_user_avatar">
+	        <?php echo wp_nonce_field( 'change_user_avatar', 'change_user_avatar_nonce', true, false ) ?>
             <div class="avatar-modal-image">
                 <img src="<?php echo $avatar; ?>" alt="">
             </div>

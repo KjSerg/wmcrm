@@ -2,6 +2,10 @@
 add_action( 'wp_ajax_nopriv_login_user', 'login_user' );
 add_action( 'wp_ajax_login_user', 'login_user' );
 function login_user() {
+	$nonce = filter_input( INPUT_POST, 'true_nonce' );
+	if ( ! $nonce || ! wp_verify_nonce( $nonce, 'login_user' ) ) {
+		crm_send_error( 'Error request nonce' );
+	}
 	$time     = time();
 	$res      = array();
 	$var      = variables();
@@ -1186,6 +1190,10 @@ function change_user_time() {
 add_action( 'wp_ajax_nopriv_change_user_data', 'change_user_data' );
 add_action( 'wp_ajax_change_user_data', 'change_user_data' );
 function change_user_data() {
+	$nonce = filter_input( INPUT_POST, 'true_nonce' );
+	if ( ! $nonce || ! wp_verify_nonce( $nonce, 'change_user_data' ) ) {
+		crm_send_error( 'Error request nonce' );
+	}
 	$res         = array();
 	$result      = array();
 	$change_data = array();
@@ -1447,6 +1455,10 @@ function remove_user_avatar( $user_id ) {
 add_action( 'wp_ajax_nopriv_change_user_avatar', 'change_user_avatar' );
 add_action( 'wp_ajax_change_user_avatar', 'change_user_avatar' );
 function change_user_avatar() {
+	$nonce = filter_input( INPUT_POST, 'change_user_avatar_nonce' );
+	if ( ! $nonce || ! wp_verify_nonce( $nonce, 'change_user_avatar' ) ) {
+		crm_send_error( 'Error request nonce' );
+	}
 	$user_id = get_current_user_id();
 	$res     = array();
 	if ( $user_id ) {

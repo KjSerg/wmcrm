@@ -15,6 +15,7 @@ function the_login_page() {
                 </div>
                 <form method="post" novalidate class="form login-form form-js" id="login-form">
                     <input type="hidden" name="action" value="login_user">
+	                <?php echo wp_nonce_field( 'login_user', 'true_nonce', true, false ) ?>
                     <label class="form-group">
                         <input type="email"
                                name="email"
