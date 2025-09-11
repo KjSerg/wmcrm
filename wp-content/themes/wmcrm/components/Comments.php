@@ -6,7 +6,7 @@ use WP_Error;
 use WP_Query;
 
 class Comments {
-	public static function render( $id ) {
+	public static function render( $id ): void {
 		$comments_count          = filter_input( INPUT_GET, 'comments_count', FILTER_SANITIZE_NUMBER_INT );
 		$link                    = get_the_permalink( $id );
 		$default_posts_per_page  = get_option( 'posts_per_page' );
@@ -26,6 +26,7 @@ class Comments {
 			'posts_per_page' => $default_posts_per_page,
 			'paged'          => $paged,
 			'fields'         => 'ids',
+			'post_parent'    => 0,
 		);
 		$test                    = $comment_ids || $worksection_comment_ids;
 		if ( $test ) {
@@ -54,20 +55,22 @@ class Comments {
 		$query = new WP_Query( $query_args );
 		if ( $query->have_posts() ) {
 			?>
-			<div class="section-comments-list container-js"><?php
+            <div class="section-comments-list container-js"><?php
 				foreach ( $query->posts as $comment_id ) {
-					Comment::the_comment_project( $comment_id, false, $id );
+					Comment::the_comment_project( $comment_id, [
+						'project_id' => $id
+					] );
 				}
 				?>
-			</div>
-			<div class="pagination-wrapper pagination-js">
+            </div>
+            <div class="pagination-wrapper pagination-js">
 				<?php echo get_comments_next_link( $query->max_num_pages, $link ); ?>
-			</div>
+            </div>
 			<?php
 
 		} else {
 			?>
-			<div class="title empty-title title-left">Обговорення відсутнє</div>
+            <div class="title empty-title title-left">Обговорення відсутнє</div>
 			<?php
 		}
 		wp_reset_postdata();

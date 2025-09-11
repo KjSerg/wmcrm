@@ -7,7 +7,6 @@ use WP_Query;
 
 class Comment {
 
-
 	public static function set_comment_to_users( $comment_id, $users_id ): array {
 		$arr = [];
 		if ( ! $users_id ) {
@@ -84,7 +83,7 @@ class Comment {
 			return $arr;
 		}
 		if ( ! get_post( $project_id ) ) {
-			error_log( '$comment_id error' );
+			error_log( '$project_id error' );
 
 			return $arr;
 		}
@@ -194,10 +193,12 @@ class Comment {
                            class="link-js discussion-item__title">
 							<?php echo ( $post_type == 'costs' ) ? 'Заявка на зміну робочого часу ' . $string : get_the_title( $project_id ) ?>
                         </a>
-						<?php if ( $project_id )
-							the_project_performers( $project_id ) ?>
+						<?php if ( $project_id ) {
+							the_project_performers( $project_id );
+						} ?>
                     </div>
                     <div class="discussion-item__text text">
+						<?php self::the_discussion_commentator( $id ); ?>
 						<?php echo $id ? replaceUrl( get_the_excerpt( $id ) ) : ''; ?>
 						<?php if ( $post_type == 'costs' && is_current_user_admin() ):
 							$costs_confirmed = carbon_get_post_meta( $project_id, 'costs_confirmed' );
@@ -224,6 +225,23 @@ class Comment {
 		endif;
 	}
 
+	public static function the_discussion_commentator( $id ): void {
+		$id        = intval( $id );
+		$author_id = intval( get_post_field( 'post_author', $id ) );
+		if ( $user = get_user_by( 'id', $author_id ) ) {
+			$avatar = carbon_get_user_meta( $author_id, 'avatar' );
+			$avatar = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $author_id );
+			?>
+            <a href="<?php echo esc_url( get_author_posts_url( $author_id ) ) ?>"
+               title="<?php echo esc_attr( $user->display_name ) ?>"
+               class="project-item-performer link-js">
+                <span class="project-item-performer__avatar"><img
+                            src="<?php echo esc_url( $avatar ) ?>" loading="lazy" alt="<?php echo $user->display_name ?>"></span>
+            </a>
+			<?php
+		}
+	}
+
 	public static function the_edit_users( $comment_id ): void {
 		$discussion_edit_users = carbon_get_post_meta( $comment_id, 'discussion_edit_users' );
 		$discussion_edit_users = $discussion_edit_users ? explode( ',', $discussion_edit_users ) : array();
@@ -242,16 +260,24 @@ class Comment {
 		}
 	}
 
-	public static function get_comment_author( $comment_id, $user = false ) {
+	public static function get_comment_author( $comment_id, $user = false, $type = '' ) {
 		$name = carbon_get_post_meta( $comment_id, 'worksection_user_name' );
 		if ( ! $name ) {
 			$author_id  = get_post_field( 'post_author', $comment_id );
 			$user       = $user ?: get_user_by( 'id', $author_id );
 			$last_name  = $user->last_name;
 			$first_name = $user->first_name;
-			$name       = $last_name;
-			if ( $first_name ) {
-				$name .= ' ' . mb_substr( $first_name, 0, 1 ) . '.';
+			$only_name  = $type == 'only_name';
+			$is_full    = $type == 'full';
+			if ( $only_name ) {
+				$name = $first_name;
+			} elseif ( $is_full ) {
+				$name = $user->display_name;
+			} else {
+				$name = $last_name;
+				if ( $first_name ) {
+					$name .= ' ' . mb_substr( $first_name, 0, 1 ) . '.';
+				}
 			}
 		}
 
@@ -260,19 +286,23 @@ class Comment {
 
 	public static function the_comment_author( $comment_id, $user ): void {
 		$avatar = false;
-		if ( $user ) {
-			$avatar = carbon_get_user_meta( $user->ID, 'avatar' );
-			$avatar = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $user->ID );
+		if ( ! $user ) {
+			return;
 		}
+		$avatar = carbon_get_user_meta( $user->ID, 'avatar' );
+		$avatar = $avatar ? _u( $avatar, 1 ) : get_avatar_url( $user->ID );
+		$url    = get_author_posts_url( $user->ID );
 		?>
-        <div class="comment-author">
+        <div class="comment-author" title="<?php echo esc_attr( carbon_get_user_meta( $user->ID, 'position' ) ) ?>">
 			<?php if ( $avatar ) {
-				echo "<div class='comment-author__avatar'><img class='cover' loading='lazy' src='$avatar' alt=''/></div>";
+				echo "<a href='$url' class='comment-author__avatar'><img class='cover' loading='lazy' src='$avatar' alt=''/></a>";
 			} ?>
-			<?php
-			echo self::get_comment_author( $comment_id, $user );
-			self::the_edit_users( $comment_id );
-			?>
+            <div class="comment-author__name">
+				<?php
+				echo self::get_comment_author( $comment_id, $user );
+				self::the_edit_users( $comment_id );
+				?>
+            </div>
         </div>
 		<?php
 	}
@@ -311,11 +341,15 @@ class Comment {
 			$cls[] = 'service-comment';
 		}
 		$cls[] = $is_read ? 'read' : 'unread';
+		if ( $post_parent = get_post_parent( $comment_id ) ) {
+			$cls[] = 'comment-child';
+			$cls[] = 'comment-child-' . $post_parent->ID;
+		}
 
 		return implode( ' ', $cls );
 	}
 
-	public static function is_user_read_comment( $comment_id, $user_id ) {
+	public static function is_user_read_comment( $comment_id, $user_id ): bool {
 		if ( ! $users_read = carbon_get_post_meta( $comment_id, 'discussion_read_users' ) ) {
 			return false;
 		}
@@ -351,24 +385,114 @@ class Comment {
 		<?php
 	}
 
-	public static function the_comment_project( $comment_id, $args = [] ): void {
-		$user_id        = $args['user_id'] ?? get_current_user_id();
-		$project_id     = $args['project_id'] ?? false;
-		$paged          = filter_input( INPUT_GET, 'pagenumber', FILTER_SANITIZE_NUMBER_INT ) ?: 1;
-		$paged          = intval( $paged );
-		$post_type      = get_post_type( $comment_id );
-		$is_archive     = $post_type == 'comments';
-		$time           = carbon_get_post_meta( $comment_id, 'comment_worksection_date_added' ) ?: get_the_date( 'U', $comment_id );
-		$is_service     = carbon_get_post_meta( $comment_id, 'discussion_is_service' );
-		$author_id      = get_post_field( 'post_author', $comment_id );
-		$user           = get_user_by( 'id', $author_id );
-		$author_test    = ( ! $is_archive && $author_id == $user_id ) || is_current_user_admin();
-		$is_read        = self::is_user_read_comment( $comment_id, $user_id );
+	public static function get_copy_link_href( $comment_id, $project_id, $paged = 1 ): string {
 		$copy_link_href = get_the_permalink( $project_id );
+		$parent         = get_post_parent( $comment_id );
 		if ( $paged > 1 ) {
 			$copy_link_href .= '?comments_count=-1';
 		}
-		$copy_link_href .= '#comment-' . $comment_id;
+		$copy_link_href .= '#comment-' . ( $parent ? $parent->ID : $comment_id );
+
+		return $copy_link_href;
+	}
+
+	public static function the_comment_footer( $comment_id, $user_id = 0, $author_id = 0 ): void {
+		$parent = get_post_parent( $comment_id );
+		if ( $parent ) {
+			return;
+		}
+		$text = 'Відповісти співробітнику ' . self::get_comment_author( $comment_id, false, 'only_name' );
+		if ( $user_id == $author_id ) {
+			$text = 'Доповнити коментар';
+		}
+		?>
+        <div class="comment-footer comment-files">
+            <a href="#section-comments"
+               class="comment-answer__link"
+               data-user="<?php echo $user_id == $author_id ? '' : esc_attr( self::get_comment_author( $comment_id, false, 'full' ) ) ?>"
+               data-text="<?php echo esc_attr( get_the_excerpt( $comment_id ) ) ?>"
+               data-comment-id="<?php echo $comment_id ?>"><?php echo esc_html( $text ) ?></a>
+        </div>
+		<?php
+	}
+
+	public static function the_comment_answers( $comment_id, $args = [] ): void {
+		$parent = get_post_parent( $comment_id );
+		if ( $parent ) {
+			return;
+		}
+		$paged = 1;
+		$wrap  = true;
+		if ( isset( $args['answers_args'] ) ) {
+			$paged = $args['answers_args']['paged'] ?? 1;
+			$wrap  = $args['answers_args']['wrap'] ?? true;
+		}
+		$query_args = array(
+			'post_type'      => array( 'comments', 'discussion' ),
+			'post_status'    => 'publish',
+			'posts_per_page' => 3,
+			'paged'          => $paged,
+			'fields'         => 'ids',
+			'post_parent'    => $comment_id,
+		);
+		$query      = new WP_Query( $query_args );
+		if ( ! $query->have_posts() ) {
+			return;
+		}
+		$max_num_pages = $query->max_num_pages;
+		if ( $wrap ) {
+			echo ' <div class="comment-answers" id="comment-answers-' . $comment_id . '">';
+		}
+		foreach ( $query->posts as $child_comment_id ) {
+			Comment::the_comment_project( $child_comment_id, $args );
+		}
+		self::the_next_child_link_html( $comment_id, $paged, $max_num_pages );
+		if ( $wrap ) {
+			echo ' </div>';
+		}
+	}
+
+	public static function the_next_child_link_html( $comment_id, $paged = 1, $max_num_pages = 0 ): void {
+		if ( $max_num_pages < 1 ) {
+			return;
+		}
+		$paged = intval( $paged );
+		if ( $max_num_pages === $paged ) {
+			return;
+		}
+		$next_page         = $paged + 1;
+		$next_comment_link = admin_url( 'admin-ajax.php' ) . '?action=next_child_comments&comment_id=' . $comment_id . '&nonce=' . wp_create_nonce( 'next_child_comments' ) . '&next_page=' . $next_page;
+		?>
+        <a href="<?php echo esc_url( $next_comment_link ) ?>" class="comment-answers__next-page">
+            показати старіші
+        </a>
+		<?php
+
+	}
+
+	public static function the_date( $comment_id, $is_archive = false ): void {
+		$time = carbon_get_post_meta( $comment_id, 'comment_worksection_date_added' ) ?: get_the_date( 'U', $comment_id );
+		$Hi   = wp_date( 'H:i', $time );
+		$date = wp_date( 'd-m-Y', $time );
+		$str  = "<span class='comment__date'>$date</span> <span class='comment__time'>$Hi</span>";
+		if ( $is_archive ) {
+			$str .= ' [архів]';
+		}
+		echo $str;
+	}
+
+	public static function the_comment_project( $comment_id, $args = [] ): void {
+		$user_id     = $args['user_id'] ?? get_current_user_id();
+		$project_id  = $args['project_id'] ?? false;
+		$paged       = filter_input( INPUT_GET, 'pagenumber', FILTER_SANITIZE_NUMBER_INT ) ?: 1;
+		$paged       = intval( $paged );
+		$post_type   = get_post_type( $comment_id );
+		$is_archive  = $post_type == 'comments';
+		$is_service  = carbon_get_post_meta( $comment_id, 'discussion_is_service' );
+		$author_id   = get_post_field( 'post_author', $comment_id );
+		$user        = get_user_by( 'id', $author_id );
+		$author_test = ( ! $is_archive && $author_id == $user_id ) || is_current_user_admin();
+		$is_read     = self::is_user_read_comment( $comment_id, $user_id );
 		?>
         <div class="<?php echo self::get_comment_css_class( $comment_id, $is_read, $is_service ) ?>"
 			<?php if ( ! $is_read && ! $is_archive ): ?>
@@ -378,11 +502,11 @@ class Comment {
             <div class="comment-head">
 				<?php self::the_comment_author( $comment_id, $user ); ?>
                 <div class="comment-date">
-					<?php echo date( 'd-m-Y H:i', $time );
-					echo $is_archive ? ' [архів]' : ''; ?>
+					<?php self::the_date( $comment_id, $is_archive ); ?>
                 </div>
 				<?php if ( ! $is_service ): ?>
-                    <a href="<?php echo $copy_link_href ?>" class="copy-link comment-copy-link">
+                    <a href="<?php echo self::get_copy_link_href( $comment_id, $project_id, $paged ); ?>"
+                       class="copy-link comment-copy-link">
 						<?php _s( _i( 'link' ) ) ?>
                     </a>
 					<?php if ( $author_test && ! $is_archive ): ?>
@@ -410,7 +534,9 @@ class Comment {
                 </div>
 			<?php endif; ?>
 			<?php self::the_comment_files( $comment_id ); ?>
+			<?php self::the_comment_footer( $comment_id, $user_id, $author_id ); ?>
         </div>
+		<?php self::the_comment_answers( $comment_id, $args ); ?>
 		<?php
 	}
 }

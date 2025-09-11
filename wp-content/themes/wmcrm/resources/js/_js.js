@@ -24,6 +24,11 @@ import Autocomplete from "./Autocomplete";
 
 let $doc = $(document);
 
+export function validateTime(time) {
+    var timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    return timeRegex.test(time);
+}
+
 export function initTriggers() {
     $doc.on('change', '.trigger-on-select', function (e) {
         let $this = $(this);
@@ -128,7 +133,8 @@ $(document).ready(function () {
         e.preventDefault();
         let $t = $(this);
         let url = $t.attr('href');
-        if ($t.hasClass('open-in-modal') && !$t.closest('section').hasClass('project-section-children')) {
+        let test = $t.hasClass('open-in-modal') && !$t.closest('section').hasClass('project-section-children');
+        if (test && $(window).width() > 450) {
             renderMainInModal({
                 url: url
             });
@@ -137,6 +143,41 @@ $(document).ready(function () {
         renderMain({
             url: url,
             addToHistory: true
+        });
+    });
+    $doc.on('click', '.comment-remove_answer', function (e) {
+        e.preventDefault();
+        let $t = $(this);
+        $t.closest('.comment-form-title').slideUp();
+        $doc.find('.parent-comment-id').val(0);
+    });
+    $doc.on('click', '.comment-answers__next-page', function (e) {
+        e.preventDefault();
+        let $t = $(this);
+        let url = $t.attr('href');
+        let $wrapper = $t.closest('.comment-answers');
+        $t.addClass('not-active');
+        if (url === undefined || url === '#') {
+            return;
+        }
+        showPreloader();
+        $.ajax({
+            type: "GET",
+            url: url,
+        }).done(function (r) {
+            $t.remove();
+            hidePreloader();
+            if (r) {
+                if (isJsonString(r)) {
+                    let res = JSON.parse(r);
+                    if (res.msg !== undefined) {
+                        showMassage(res.msg);
+                    }
+                    if (res.html !== '' && res.html !== undefined) {
+                        $wrapper.append(res.html);
+                    }
+                }
+            }
         });
     });
     $doc.on('click', '.window-close', function (e) {
@@ -335,42 +376,6 @@ $(document).ready(function () {
         renderMain({
             url: url,
             addToHistory: true
-        });
-    });
-    $doc.on('click', '.project-start', function (e) {
-        e.preventDefault();
-        let $t = $(this);
-        let id = $t.attr('data-id');
-        let title = $t.attr('data-title');
-        let permalink = $t.attr('data-permalink');
-        $t.addClass('not-active');
-        showPreloader();
-        $.ajax({
-            type: 'POST',
-            url: adminAjax,
-            data: {
-                action: 'starting_project',
-                project_id: id,
-            },
-        }).done(function (r) {
-            $doc.find('.timer-project span').text(title);
-            $doc.find('.timer-project').attr('href', permalink);
-            if (r) {
-                if (isJsonString(r)) {
-                    let res = JSON.parse(r);
-                    if (res.msg !== '' && res.msg !== undefined) {
-                        showMassage(res.msg);
-                    }
-                    if (res.type === 'success') {
-                        if (!$doc.find('.header-timer').hasClass('active')) {
-                            $doc.find('.header-timer').trigger('click');
-                        }
-                    }
-                } else {
-                    showMassage(r);
-                }
-                hidePreloader();
-            }
         });
     });
     $doc.on('click', 'a[href^="http"]', function (e) {
@@ -589,11 +594,6 @@ document.addEventListener('visibilitychange', function () {
         setNotificationsNumber();
     }
 });
-
-export function validateTime(time) {
-    var timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    return timeRegex.test(time);
-}
 
 window.onpopstate = (event) => {
     renderMain({

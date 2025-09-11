@@ -28,10 +28,6 @@ function the_profile(): void {
 	$BOT_USERNAME          = carbon_get_theme_option( 'telegram_bot_name' );
 	$BOT_TOKEN             = carbon_get_theme_option( 'telegram_token' );
 	$REDIRECT_URI          = $url;
-    if($user_id == 4){
-        var_dump(get_next_work_timestamp($user_id));
-        var_dump(is_working_hours($user_id));
-    }
 	require_once ABSPATH . 'wp-admin/includes/image.php';
 	require_once ABSPATH . 'wp-admin/includes/file.php';
 	require_once ABSPATH . 'wp-admin/includes/media.php';
@@ -48,20 +44,32 @@ function the_profile(): void {
                     </div>
                 </div>
                 <div class="profile-head-position">
-					<?php echo $position ?: 'Посада'; ?>
+					<?php echo $position ?: 'Співробітник у Web-Mosaica'; ?>
                 </div>
                 <div class="profile-head-contacts">
                     <div class="profile-head-contacts__item">
                         <div class="icon"><?php _s( _i( 'tel' ) ) ?></div>
-                        <div class="profile-tel">
-							<?php echo $user_tel ?: 'Телефон відсутній'; ?>
-                        </div>
+						<?php if ( $user_tel ): ?>
+                            <a href="tel:<?php echo esc_attr( $user_tel ); ?>" class="profile-tel">
+								<?php echo esc_html( $user_tel ); ?>
+                            </a>
+						<?php else: ?>
+                            <div class="profile-tel">
+                                Телефон відсутній
+                            </div>
+						<?php endif; ?>
                     </div>
                     <div class="profile-head-contacts__item">
                         <div class="icon"><?php _s( _i( 'email' ) ) ?></div>
-                        <div class="profile-email">
-							<?php echo $user_email ?: 'Пошта відсутня'; ?>
-                        </div>
+						<?php if ( $user_tel ): ?>
+                            <a href="mailto:<?php echo esc_attr( $user_email ); ?>" class="profile-email">
+								<?php echo esc_html( $user_email ); ?>
+                            </a>
+						<?php else: ?>
+                            <div class="profile-email">
+                                Пошта відсутня
+                            </div>
+						<?php endif; ?>
                     </div>
                 </div>
                 <div class="profile-head-controls">
@@ -126,9 +134,6 @@ function the_profile(): void {
                             </option>
                             <option value="https://crmwm.web-mosaica.top/projects/">
                                 Задачі
-                            </option>
-                            <option value="https://crmwm.web-mosaica.top/?route=users">
-                                Люди
                             </option>
                         </select>
                     </label>
@@ -200,11 +205,13 @@ function the_profile(): void {
                 <div class="row">
                     <label class="form-group form-group--half">
                         <span class="form-group__title">Початок роботи телеграм сповіщень</span>
-                        <input type="time" name="telegram_start" value="<?php echo carbon_get_user_meta($user_id, 'telegram_start') ?: "09:00:00" ?>">
+                        <input type="time" name="telegram_start"
+                               value="<?php echo carbon_get_user_meta( $user_id, 'telegram_start' ) ?: "09:00:00" ?>">
                     </label>
                     <label class="form-group form-group--half">
                         <span class="form-group__title">Закінчення роботи телеграм сповіщень</span>
-                        <input type="time" name="telegram_finish" required="" value="<?php echo carbon_get_user_meta($user_id, 'telegram_finish') ?: "19:00:00" ?>">
+                        <input type="time" name="telegram_finish" required=""
+                               value="<?php echo carbon_get_user_meta( $user_id, 'telegram_finish' ) ?: "19:00:00" ?>">
                     </label>
                 </div>
             </form>

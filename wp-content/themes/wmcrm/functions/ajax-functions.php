@@ -48,11 +48,16 @@ function login_user() {
 add_action( 'wp_ajax_nopriv_new_comment', 'new_comment' );
 add_action( 'wp_ajax_new_comment', 'new_comment' );
 function new_comment() {
+	$nonce = filter_input( INPUT_POST, 'true_nonce' );
+	if ( ! $nonce || ! wp_verify_nonce( $nonce, 'new_comment' ) ) {
+		crm_send_error( 'Error request nonce' );
+	}
 	$res                = array();
 	$user_id            = get_current_user_id();
-	$text               = $_POST['text'] ?? '';
-	$project_id         = $_POST['project_id'] ?? '';
-	$update_comment_id  = $_POST['comment_id'] ?? '';
+	$text               = filter_input( INPUT_POST, 'text' ) ?: '';
+	$project_id         = filter_input( INPUT_POST, 'project_id', FILTER_SANITIZE_NUMBER_INT ) ?: 0;
+	$update_comment_id  = filter_input( INPUT_POST, 'comment_id', FILTER_SANITIZE_NUMBER_INT ) ?: 0;
+	$parent_comment_id  = filter_input( INPUT_POST, 'parent_comment_id', FILTER_SANITIZE_NUMBER_INT ) ?: 0;
 	$hush_text          = mb_strtolower( trim( $text ), 'UTF-8' );
 	$res['$hush_text']  = $hush_text;
 	$hush_text          = strip_tags( $hush_text, "<img>" );
@@ -114,7 +119,10 @@ function new_comment() {
 				}
 			} else {
 				$post_data['post_author'] = $user_id;
-				$comment_id               = wp_insert_post( $post_data, true );
+				if ( $parent_comment_id ) {
+					$post_data['post_parent'] = $parent_comment_id;
+				}
+				$comment_id = wp_insert_post( $post_data, true );
 			}
 			if ( ! is_wp_error( $comment_id ) ) {
 				carbon_set_post_meta( $comment_id, 'discussion_project_id', $project_id );
@@ -1712,6 +1720,7 @@ function change_project_user() {
 							}
 						}
 					}
+					$res['set_comment_to_users'] = \WMCRM\core\Comment::set_comment_to_users( $comment_id, $responsible_ids );
 				}
 				$res['url'] = get_the_permalink( $project_id );
 			} else {
@@ -2286,6 +2295,34 @@ function get_comment_liked() {
 	];
 	echo json_encode( $res );
 	die();
+}
+
+add_action( 'wp_ajax_next_child_comments', 'next_child_comments' );
+function next_child_comments(): void {
+	$nonce = filter_input( INPUT_GET, 'nonce' );
+	if ( ! $nonce || ! wp_verify_nonce( $nonce, 'next_child_comments' ) ) {
+		crm_send_error( 'Error request nonce' );
+	}
+	$res               = array();
+	$user_id           = get_current_user_id();
+	$parent_comment_id = filter_input( INPUT_GET, 'comment_id', FILTER_SANITIZE_NUMBER_INT ) ?: 0;
+	$next_page         = filter_input( INPUT_GET, 'next_page', FILTER_SANITIZE_NUMBER_INT ) ?: 0;
+	if ( ! get_post( $parent_comment_id ) ) {
+		crm_send_error( 'Error' );
+	}
+	if ( $next_page <= 1 ) {
+		crm_send_error( 'Error' );
+	}
+	ob_start();
+	\WMCRM\core\Comment::the_comment_answers( $parent_comment_id, [
+		'answers_args' => [
+			'paged' => $next_page,
+			'wrap'  => false,
+		]
+	] );
+	$res['html'] = ob_get_contents();
+	ob_end_clean();
+	crm_send_response( $res );
 }
 
 function send_error( $msg ) {

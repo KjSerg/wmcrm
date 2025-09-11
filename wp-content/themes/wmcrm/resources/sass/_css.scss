@@ -1171,10 +1171,8 @@ main.content {
 .row {
   width: 100%;
   display: flex;
-
-  & > *:not(:last-child) {
-    margin-right: 1rem;
-  }
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .window-main .project-item-icon, .project-section-children .project-item-icon {

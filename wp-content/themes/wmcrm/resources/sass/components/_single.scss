@@ -206,6 +206,9 @@
   padding: 2rem;
   margin-bottom: 5px;
   background: #F2F3F9;
+  @media (max-width: 450px) {
+    padding: 2rem 1rem;
+  }
 
   @media (max-width: 450px) {
     padding: 1rem;
@@ -269,6 +272,18 @@
       flex-shrink: 0;
       border-radius: 50%;
     }
+
+    &__name {
+      @media (max-width: 450px) {
+        display: none;
+      }
+    }
+  }
+
+  &__date {
+    @media (max-width: 450px) {
+      display: none;
+    }
   }
 
   &-content {
@@ -280,6 +295,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-grow: 0;
+    flex-shrink: 0;
 
     &:not(:last-child) {
       margin-right: 5px;
@@ -310,6 +327,8 @@
     background-color: #5C6DF9;
     transition: 0.5s ease;
     opacity: 0;
+    flex-grow: 0;
+    flex-shrink: 0;
 
     &:hover {
       opacity: 0.8;
@@ -335,6 +354,9 @@
     border: 1px solid #5C6DF9;
     transition: 0.5s ease;
     margin: 0 4px;
+    flex-grow: 0;
+    flex-shrink: 0;
+
     &-wrapper {
       position: relative;
       display: flex;
@@ -347,6 +369,7 @@
       font-style: normal;
       font-weight: 400;
       line-height: 120%;
+
       &-list {
         position: absolute;
         z-index: 1;
@@ -357,7 +380,8 @@
         max-height: 10rem;
         overflow: auto;
         width: 18rem;
-        &-item{
+
+        &-item {
           align-items: center;
           display: flex;
           padding: 0.5rem;
@@ -368,7 +392,8 @@
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          .avatar{
+
+          .avatar {
             border-radius: 50%;
             overflow: hidden;
             width: 3rem;
@@ -385,7 +410,8 @@
       &:hover {
         .comment-like-wrapper-list {
           pointer-events: auto;
-          &-item{
+
+          &-item {
             opacity: 1;
           }
         }
@@ -416,15 +442,11 @@
   &-copy-link {
     transform: scale(0.5);
     opacity: 0;
+    flex-grow: 0;
+    flex-shrink: 0;
 
     &:hover {
       opacity: 0.8;
-    }
-  }
-
-  &:hover {
-    .comment-change, .comment-remove, .comment-copy-link, .comment-like-wrapper {
-      opacity: 1;
     }
   }
 
@@ -458,6 +480,124 @@
       margin-right: 1rem;
       width: 2rem;
       height: 2rem;
+    }
+  }
+
+  &-form-title {
+    border-bottom: 2px solid #e2e3ee;
+    display: none;
+    padding: 2rem;
+    background: #f2f3f9;
+    color: #686d86;
+    font-size: 1.4rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%;
+  }
+
+  &-answer__link {
+    color: #686d86;
+    font-size: 1.2rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%;
+
+    &:hover {
+      color: #000;
+    }
+  }
+
+  &-remove_answer{
+    display: inline-flex;
+    margin-top: 2rem;
+    background-color: #7BB500;
+    padding: 4px 6px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1.2rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-align: center;
+  }
+
+  &-answers {
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 10px;
+    @media (max-width: 450px) {
+      padding-left: 1rem;
+    }
+
+    &__next-page {
+      padding: 5px 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background: rgba(#f2f3f9, 1);
+      border-bottom-left-radius: 1rem;
+      border-bottom-right-radius: 1rem;
+      color: #686d86;
+      font-size: 1.6rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 150%;
+      text-align: center;
+
+      &:hover {
+        color: #5c6df9;
+        background: rgba(#f2f3f9, 0.8);
+      }
+    }
+
+    &:before {
+      position: absolute;
+      display: block;
+      content: '';
+      height: calc(100% + 5px);
+      top: -5px;
+      left: 0;
+      width: 1px;
+      background-color: #f2f3f9;
+
+    }
+  }
+
+  &-child {
+    position: relative;
+
+    &:before {
+      position: absolute;
+      display: block;
+      content: '';
+      height: 1px;
+      top: 50%;
+      left: -2rem;
+      width: 2rem;
+      background-color: #f2f3f9;
+      @media (max-width: 450px) {
+        width: 1rem;
+        left: -1rem;
+      }
+    }
+
+    &:last-child {
+      border-bottom-left-radius: 1rem;
+      border-bottom-right-radius: 1rem;
+    }
+  }
+
+  &:hover {
+    .comment-change, .comment-remove, .comment-copy-link, .comment-like-wrapper {
+      opacity: 1;
+    }
+  }
+
+  .comment-change, .comment-remove, .comment-copy-link, .comment-like-wrapper {
+
+    @media (max-width: 768px) {
+      opacity: 1;
     }
   }
 }

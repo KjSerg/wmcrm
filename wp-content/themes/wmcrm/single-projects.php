@@ -196,8 +196,14 @@ if ( $children ) {
 }
 ?>
 
-<section class="section section-comments project-section project-section-comments ">
+<section class="section section-comments project-section project-section-comments " id="section-comments">
     <div class="container">
+        <div class="comment-form-title" >
+            Відповідь на коментар:
+            <br>
+            <div class="comment-form-title__text comment-content text"></div>
+            <a class="comment-remove_answer" href="#">відміна</a>
+        </div>
         <form class="project-section-comments-form project-section-wrapper comment-form form-js"
               enctype="multipart/form-data"
               method="post"
@@ -205,7 +211,7 @@ if ( $children ) {
             <input type="hidden" name="action" value="new_comment">
             <input type="hidden" name="project_id" value="<?php echo $id; ?>">
             <input type="hidden" name="comment_id" class="comment-field-id" value="">
-            <input type="hidden" name="parent_comment_id" class="parent-comment-id" value="">
+            <input type="hidden" name="parent_comment_id" class="parent-comment-id" value="0">
             <input type="hidden" name="text" value="" class="value-field">
             <div id="editor" data-project-id="<?php echo $id ?>" class="text editor-field"></div>
             <div class="text-editor-list"><?php the_user_select_list(); ?></div>
@@ -222,6 +228,7 @@ if ( $children ) {
                     >
                 </label>
             </div>
+	        <?php echo wp_nonce_field( 'new_comment', 'true_nonce', true, false ) ?>
         </form>
         <div class="section-comments-content ">
 			<?php

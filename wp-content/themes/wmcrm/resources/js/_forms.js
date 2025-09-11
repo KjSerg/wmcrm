@@ -22,6 +22,8 @@ $doc.ready(function () {
                 contentType: false,
                 data: formData,
             }).done(function (r) {
+                $(document).find('.comment-form-title').slideUp();
+                $(document).find('.parent-comment-id').val(0);
                 const projectID = $form.find('[name="project_id"]').val();
                 if (projectID !== undefined) localStorage.removeItem('comment-for-project-' + projectID);
                 let _r = r || '';
@@ -30,7 +32,7 @@ $doc.ready(function () {
                     if (resetTriggerTest) $form.trigger('reset');
                     $form.find('.form-files-result').html('');
                 }
-                if($form.hasClass('event-window-form')){
+                if ($form.hasClass('event-window-form')) {
                     closeWindow();
                 }
                 if (r) {

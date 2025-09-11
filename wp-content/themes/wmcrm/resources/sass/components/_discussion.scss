@@ -138,6 +138,13 @@
 
     &__text {
       width: 90%;
+      .project-item-performer{
+        display: inline-flex;
+        flex-grow: 0;
+        flex-shrink: 0;
+        margin-left: 0;
+        margin-right: 1rem;
+      }
       @media (max-width: 960px) {
         width: 100%;
       }

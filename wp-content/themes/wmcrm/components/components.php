@@ -168,15 +168,27 @@ function the_user_contacts( $user_id ) {
         <div class="profile-head-contacts">
             <div class="profile-head-contacts__item">
                 <div class="icon"><?php _s( _i( 'tel' ) ) ?></div>
-                <div class="profile-tel">
-					<?php echo $user_tel ?: 'Телефон відсутній'; ?>
-                </div>
+	            <?php if ( $user_tel ): ?>
+                    <a href="tel:<?php echo esc_attr( $user_tel ); ?>" class="profile-tel">
+			            <?php echo esc_html( $user_tel ); ?>
+                    </a>
+	            <?php else: ?>
+                    <div class="profile-tel">
+                        Телефон відсутній
+                    </div>
+	            <?php endif; ?>
             </div>
             <div class="profile-head-contacts__item">
                 <div class="icon"><?php _s( _i( 'email' ) ) ?></div>
-                <div class="profile-email">
-					<?php echo $user_email ?: 'Пошта відсутня'; ?>
-                </div>
+	            <?php if ( $user_tel ): ?>
+                    <a href="mailto:<?php echo esc_attr( $user_email ); ?>" class="profile-email">
+			            <?php echo esc_html( $user_email ); ?>
+                    </a>
+	            <?php else: ?>
+                    <div class="profile-email">
+                        Пошта відсутня
+                    </div>
+	            <?php endif; ?>
             </div>
         </div>
 		<?php

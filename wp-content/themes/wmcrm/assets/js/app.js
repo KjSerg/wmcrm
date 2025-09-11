@@ -22240,6 +22240,7 @@ var Stopwatch = /*#__PURE__*/function () {
     value: function listenEvents() {
       var _this = this;
       var _stopwatches = _this.stopwatches;
+      var $doc = _this.$doc;
       _this.$doc.on('click', '.timer-button-start', function (e) {
         e.preventDefault();
         var $t = $(this);
@@ -22324,6 +22325,41 @@ var Stopwatch = /*#__PURE__*/function () {
           _this.getCurrentData();
         }
       };
+      _this.$doc.on('click', '.project-start', function (e) {
+        e.preventDefault();
+        var $t = $(this);
+        var id = $t.attr('data-id');
+        var title = $t.attr('data-title');
+        var permalink = $t.attr('data-permalink');
+        var $timer = _this.$doc.find('.timer');
+        if (!$timer.hasClass('play')) {
+          _this.$doc.find('.timer-button-start').trigger('click');
+        }
+        $t.addClass('not-active');
+        (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showPreloader)();
+        $.ajax({
+          type: 'POST',
+          url: adminAjax,
+          data: {
+            action: 'starting_project',
+            project_id: id
+          }
+        }).done(function (r) {
+          $doc.find('.timer-project span').text(title);
+          $doc.find('.timer-project').attr('href', permalink);
+          if (r) {
+            if ((0,_helpers__WEBPACK_IMPORTED_MODULE_0__.isJsonString)(r)) {
+              var res = JSON.parse(r);
+              if (res.msg !== '' && res.msg !== undefined) {
+                (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showMassage)(res.msg);
+              }
+            } else {
+              (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.showMassage)(r);
+            }
+            (0,_helpers__WEBPACK_IMPORTED_MODULE_0__.hidePreloader)();
+          }
+        });
+      });
     }
   }, {
     key: "tick",
@@ -22905,6 +22941,8 @@ $doc.ready(function () {
         contentType: false,
         data: formData
       }).done(function (r) {
+        $(document).find('.comment-form-title').slideUp();
+        $(document).find('.parent-comment-id').val(0);
         var projectID = $form.find('[name="project_id"]').val();
         if (projectID !== undefined) localStorage.removeItem('comment-for-project-' + projectID);
         var _r = r || '';
@@ -23579,6 +23617,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var $doc = $(document);
+function validateTime(time) {
+  var timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  return timeRegex.test(time);
+}
 function initTriggers() {
   $doc.on('change', '.trigger-on-select', function (e) {
     var $this = $(this);
@@ -23680,7 +23722,8 @@ $(document).ready(function () {
     e.preventDefault();
     var $t = $(this);
     var url = $t.attr('href');
-    if ($t.hasClass('open-in-modal') && !$t.closest('section').hasClass('project-section-children')) {
+    var test = $t.hasClass('open-in-modal') && !$t.closest('section').hasClass('project-section-children');
+    if (test && $(window).width() > 450) {
       (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.renderMainInModal)({
         url: url
       });
@@ -23689,6 +23732,41 @@ $(document).ready(function () {
     (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.renderMain)({
       url: url,
       addToHistory: true
+    });
+  });
+  $doc.on('click', '.comment-remove_answer', function (e) {
+    e.preventDefault();
+    var $t = $(this);
+    $t.closest('.comment-form-title').slideUp();
+    $doc.find('.parent-comment-id').val(0);
+  });
+  $doc.on('click', '.comment-answers__next-page', function (e) {
+    e.preventDefault();
+    var $t = $(this);
+    var url = $t.attr('href');
+    var $wrapper = $t.closest('.comment-answers');
+    $t.addClass('not-active');
+    if (url === undefined || url === '#') {
+      return;
+    }
+    (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showPreloader)();
+    $.ajax({
+      type: "GET",
+      url: url
+    }).done(function (r) {
+      $t.remove();
+      (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.hidePreloader)();
+      if (r) {
+        if ((0,_helpers__WEBPACK_IMPORTED_MODULE_2__.isJsonString)(r)) {
+          var res = JSON.parse(r);
+          if (res.msg !== undefined) {
+            (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showMassage)(res.msg);
+          }
+          if (res.html !== '' && res.html !== undefined) {
+            $wrapper.append(res.html);
+          }
+        }
+      }
     });
   });
   $doc.on('click', '.window-close', function (e) {
@@ -23886,42 +23964,6 @@ $(document).ready(function () {
     (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.renderMain)({
       url: url,
       addToHistory: true
-    });
-  });
-  $doc.on('click', '.project-start', function (e) {
-    e.preventDefault();
-    var $t = $(this);
-    var id = $t.attr('data-id');
-    var title = $t.attr('data-title');
-    var permalink = $t.attr('data-permalink');
-    $t.addClass('not-active');
-    (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showPreloader)();
-    $.ajax({
-      type: 'POST',
-      url: adminAjax,
-      data: {
-        action: 'starting_project',
-        project_id: id
-      }
-    }).done(function (r) {
-      $doc.find('.timer-project span').text(title);
-      $doc.find('.timer-project').attr('href', permalink);
-      if (r) {
-        if ((0,_helpers__WEBPACK_IMPORTED_MODULE_2__.isJsonString)(r)) {
-          var res = JSON.parse(r);
-          if (res.msg !== '' && res.msg !== undefined) {
-            (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showMassage)(res.msg);
-          }
-          if (res.type === 'success') {
-            if (!$doc.find('.header-timer').hasClass('active')) {
-              $doc.find('.header-timer').trigger('click');
-            }
-          }
-        } else {
-          (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showMassage)(r);
-        }
-        (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.hidePreloader)();
-      }
     });
   });
   $doc.on('click', 'a[href^="http"]', function (e) {
@@ -24139,10 +24181,6 @@ document.addEventListener('visibilitychange', function () {
     (0,_check_notification__WEBPACK_IMPORTED_MODULE_8__.setNotificationsNumber)();
   }
 });
-function validateTime(time) {
-  var timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-  return timeRegex.test(time);
-}
 window.onpopstate = function (event) {
   (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.renderMain)({
     url: document.location
@@ -24662,7 +24700,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _quill__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_quill__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var selectric__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! selectric */ "./node_modules/selectric/public/jquery.selectric.js");
 /* harmony import */ var selectric__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(selectric__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_helpers */ "./resources/js/_helpers.js");
 /* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+
 
 
 var doc = document;
@@ -24725,6 +24765,7 @@ $(document).ready(function () {
     $doc.find('.comment-field-id').val(id);
     $doc.find('.value-field').val(html);
     initQuill(false);
+    $(document).find('.parent-comment-id').val(0);
     if ($this.closest('.window-main').length > 0) {
       $('.window-main').animate({
         scrollTop: $doc.find('#editor').offset().top - ($doc.find('.header').outerHeight() + 50)
@@ -24733,6 +24774,44 @@ $(document).ready(function () {
       $('html,body').animate({
         scrollTop: $doc.find('#editor').offset().top - ($doc.find('.header').outerHeight() + 50)
       }, 400);
+    }
+  });
+  $doc.on('click', '.comment-answer__link', function (e) {
+    e.preventDefault();
+    (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.hidePreloader)();
+    var $t = $(this);
+    var url = $t.attr('href');
+    var text = $t.attr('data-text');
+    var commentID = $t.attr('data-comment-id');
+    var user = $t.attr('data-user');
+    if (commentID === undefined) {
+      (0,_helpers__WEBPACK_IMPORTED_MODULE_2__.showMassage)('Помилка спробуйти ще раз після перезавантаження сторінки!');
+    }
+    if ($(document).find(url).length > 0) {
+      if ($t.closest('.window-main').length === 0) {
+        $('html, body').animate({
+          scrollTop: $(document).find(url).offset().top
+        });
+      } else {
+        $t.closest('.window-main').animate({
+          scrollTop: 0
+        });
+      }
+    }
+    $(document).find('.comment-form-title').slideDown();
+    $(document).find('.comment-form-title__text').text(text);
+    $(document).find('.parent-comment-id').val(commentID);
+    $doc.find('.comment-field-id').val(0);
+    if (user !== undefined && user !== '') {
+      var $editor = $doc.find('#editor');
+      var projectID = $editor.attr('data-project-id');
+      var html = $editor.html().trim();
+      html = '@[' + user + ']@ ' + html;
+      $doc.find('#editor').html(html);
+      $doc.find('.ql-toolbar').remove();
+      $doc.find('#editor').removeClass('ql-container').removeClass('ql-snow');
+      $doc.find('.value-field').val(html);
+      initQuill(false);
     }
   });
   initQuill();

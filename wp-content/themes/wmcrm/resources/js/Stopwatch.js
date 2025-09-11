@@ -63,6 +63,7 @@ export default class Stopwatch {
     listenEvents() {
         const _this = this;
         const _stopwatches = _this.stopwatches;
+        const $doc = _this.$doc;
         _this.$doc.on('click', '.timer-button-start', function (e) {
             e.preventDefault();
             let $t = $(this);
@@ -151,7 +152,41 @@ export default class Stopwatch {
                 _this.getCurrentData();
             }
         };
-
+        _this.$doc.on('click', '.project-start', function (e) {
+            e.preventDefault();
+            let $t = $(this);
+            let id = $t.attr('data-id');
+            let title = $t.attr('data-title');
+            let permalink = $t.attr('data-permalink');
+            let $timer = _this.$doc.find('.timer');
+            if (!$timer.hasClass('play')) {
+                _this.$doc.find('.timer-button-start').trigger('click');
+            }
+            $t.addClass('not-active');
+            showPreloader();
+            $.ajax({
+                type: 'POST',
+                url: adminAjax,
+                data: {
+                    action: 'starting_project',
+                    project_id: id,
+                },
+            }).done(function (r) {
+                $doc.find('.timer-project span').text(title);
+                $doc.find('.timer-project').attr('href', permalink);
+                if (r) {
+                    if (isJsonString(r)) {
+                        let res = JSON.parse(r);
+                        if (res.msg !== '' && res.msg !== undefined) {
+                            showMassage(res.msg);
+                        }
+                    } else {
+                        showMassage(r);
+                    }
+                    hidePreloader();
+                }
+            });
+        });
     }
 
     tick(data) {

@@ -2208,3 +2208,15 @@ function create_like_notice( $comment_id, $user_id ) {
 
 	return wp_insert_post( $post_data, true );
 }
+
+function crm_send_error($msg) {
+	crm_send_response( [
+		'type' => 'error',
+		'msg'  => $msg
+	] );
+}
+
+function crm_send_response( array $response ): void {
+	echo json_encode( $response );
+	wp_die();
+}

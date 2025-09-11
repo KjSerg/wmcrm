@@ -1,5 +1,6 @@
 import Quill from './_quill';
 import 'selectric';
+import {hidePreloader, showMassage} from "./_helpers";
 
 let doc = document;
 let $doc = $(doc);
@@ -64,16 +65,57 @@ $(document).ready(function () {
         $doc.find('.comment-field-id').val(id);
         $doc.find('.value-field').val(html);
         initQuill(false);
-        if($this.closest('.window-main').length > 0){
+        $(document).find('.parent-comment-id').val(0);
+        if ($this.closest('.window-main').length > 0) {
             $('.window-main').animate({
                 scrollTop: $doc.find('#editor').offset().top - ($doc.find('.header').outerHeight() + 50)
             }, 400);
-        }else {
+        } else {
             $('html,body').animate({
                 scrollTop: $doc.find('#editor').offset().top - ($doc.find('.header').outerHeight() + 50)
             }, 400);
         }
     });
+    $doc.on('click', '.comment-answer__link', function (e) {
+        e.preventDefault();
+        hidePreloader();
+        let $t = $(this);
+        let url = $t.attr('href');
+        let text = $t.attr('data-text');
+        let commentID = $t.attr('data-comment-id');
+        let user = $t.attr('data-user');
+        if (commentID === undefined) {
+            showMassage('Помилка спробуйти ще раз після перезавантаження сторінки!');
+        }
+        if ($(document).find(url).length > 0) {
+            if ($t.closest('.window-main').length === 0) {
+                $('html, body').animate({
+                    scrollTop: $(document).find(url).offset().top
+                });
+            } else {
+                $t.closest('.window-main').animate({
+                    scrollTop: 0
+                });
+            }
+        }
+        $(document).find('.comment-form-title').slideDown();
+        $(document).find('.comment-form-title__text').text(text);
+        $(document).find('.parent-comment-id').val(commentID);
+        $doc.find('.comment-field-id').val(0);
+        if (user !== undefined && user !== '') {
+            const $editor = $doc.find('#editor');
+            const projectID = $editor.attr('data-project-id');
+            let html = $editor.html().trim();
+            html = '@[' + user + ']@ ' + html;
+            $doc.find('#editor').html(html);
+            $doc.find('.ql-toolbar').remove();
+            $doc.find('#editor').removeClass('ql-container').removeClass('ql-snow');
+            $doc.find('.value-field').val(html);
+            initQuill(false);
+        }
+
+    });
+
     initQuill();
     initProjectQuill();
 

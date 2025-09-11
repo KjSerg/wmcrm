@@ -101,7 +101,7 @@
 
         font-size: 1.4rem;
       }
-      @media (max-width: 414px) {
+      @media (max-width: 450px) {
         max-width: 100%;
         margin-bottom: 1rem;
         padding-bottom: 1rem;
@@ -127,7 +127,7 @@
         border-right: none;
         margin-bottom: 2rem;
       }
-      @media (max-width: 414px) {
+      @media (max-width: 450px) {
         max-width: 100%;
         margin-bottom: 1rem;
         padding: 0 0 1rem 0;
@@ -141,8 +141,9 @@
       display: flex;
       align-items: center;
       padding: 0 4rem;
-      @media (max-width: 414px) {
+      @media (max-width: 450px) {
         flex-direction: column;
+        align-items: flex-start;
       }
 
       &__item {
@@ -151,13 +152,13 @@
         @media (max-width: 640px) {
           width: calc(50% - 2rem);
         }
-        @media (max-width: 414px) {
+        @media (max-width: 450px) {
           width: 100%;
         }
 
         &:not(:last-child) {
           margin-right: 4rem;
-          @media (max-width: 414px) {
+          @media (max-width: 450px) {
             margin-right: 0;
             margin-bottom: 0.5rem;
           }
