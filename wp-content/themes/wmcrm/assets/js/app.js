@@ -24841,8 +24841,9 @@ $(document).ready(function () {
       $doc.find('#editor').html(html);
       $doc.find('.ql-toolbar').remove();
       $doc.find('#editor').removeClass('ql-container').removeClass('ql-snow');
-      $doc.find('.value-field').val(html);
       initQuill(false);
+      var val = quill.getSemanticHTML();
+      $doc.find('.value-field').val(val);
     }
   });
   initQuill();

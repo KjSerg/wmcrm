@@ -15,7 +15,7 @@ function wmcrm_scripts() {
 
 	wp_enqueue_style( 'wmcrm-app', get_template_directory_uri() . '/assets/css/app.css', array(), '1.0.4.1' );
 
-	wp_enqueue_script( 'wmcrm-app-scripts', get_template_directory_uri() . '/assets/js/app.js', array(), '1.0.7.4', true );
+	wp_enqueue_script( 'wmcrm-app-scripts', get_template_directory_uri() . '/assets/js/app.js', array(), '1.0.7.5', true );
 
 	wp_localize_script( 'ajax-script', 'AJAX', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 }
@@ -44,6 +44,7 @@ get_template_part( 'components/users-page' );
 get_template_part( 'components/Board' );
 get_template_part( 'components/the-board' );
 get_template_part( 'functions/actions-functions' );
+get_template_part( 'functions/pre-get-discussion' );
 
 function custom_logout_and_redirect(): void {
 	$user_id = get_current_user_id();

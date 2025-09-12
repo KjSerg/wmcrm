@@ -1330,16 +1330,25 @@ function set_discussion_query_data(): void {
 	$is_admin = is_current_user_admin();
 	if ( ! $is_admin ) {
 		global $wp_query;
-		$user_id = get_current_user_id();
-		$args    = [];
-		$arr     = array();
+		$arr = [];
 //		if ( $discussion_ids_by_user = get_discussion_ids_by_user( $user_id ) ) {
 //			$arr = $discussion_ids_by_user;
 //		}
 //		if ( $discussion_ids_by_user_projects = get_discussion_ids_by_user_projects( $user_id ) ) {
 //			$arr = array_merge( $discussion_ids_by_user_projects, $arr );
 //		}
-		$arr = get_user_projects_ids( $user_id );
+		$user_id           = get_current_user_id();
+		$args              = [
+			'author__not_in' => [ $user_id ],
+		];
+		$args['tax_query'] = [
+			[
+				'taxonomy' => 'involved_users',
+				'field'    => 'slug',
+				'terms'    => (string) $user_id,
+			],
+		];
+		$arr               = get_user_projects_ids( $user_id );
 		if ( ! empty( $arr ) ) {
 			$args['meta_query'] = [
 				[
@@ -1353,14 +1362,6 @@ function set_discussion_query_data(): void {
 				$args['post__in'] = array( 0 );
 			}
 		}
-		$args['author__not_in'] = [ $user_id ];
-		$args['tax_query']      = [
-			[
-				'taxonomy' => 'involved_users',
-				'field'    => 'slug',
-				'terms'    => (string) $user_id,
-			],
-		];
 		if ( ! empty( $args ) ) {
 			$query = array_merge( $wp_query->query, $args );
 			query_posts( $query );
@@ -2209,7 +2210,7 @@ function create_like_notice( $comment_id, $user_id ) {
 	return wp_insert_post( $post_data, true );
 }
 
-function crm_send_error($msg) {
+function crm_send_error( $msg ) {
 	crm_send_response( [
 		'type' => 'error',
 		'msg'  => $msg

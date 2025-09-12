@@ -433,6 +433,8 @@ class Comment {
 		);
 		$query      = new WP_Query( $query_args );
 		if ( ! $query->have_posts() ) {
+			echo ' <div class="comment-answers" id="comment-answers-' . $comment_id . '">';
+			echo ' </div>';
 			return;
 		}
 		$max_num_pages = $query->max_num_pages;
