@@ -97,6 +97,60 @@ input {
   outline: none;
 }
 
+.wm_logo {
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.4s;
+}
+
+.preload {
+  position: fixed;
+  background: #fff;
+  height: 100vh;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 222;
+}
+
+.preload:after {
+  content: "";
+  position: absolute;
+}
+
+.preload svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1;
+}
+
+.preload-content {
+  max-width: 80vw;
+  max-height: 80vw;
+  width: 56vh;
+  height: 56vh;
+  background: #282A4E;
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  animation: fade 3s;
+  padding-bottom: 2rem;
+}
+
+.preload svg {
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+
 .dialog-window {
   position: fixed;
   display: flex;

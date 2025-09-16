@@ -54,6 +54,7 @@ $msg = absences_action();
 <div class="notifications">
 	<?php echo $msg; ?>
 </div>
+<?php the_preload() ?>
 <header class="header <?php echo ! is_front_page() ? 'header-inner-page' : ''; ?>">
     <div class="container">
         <div class="header-content">
