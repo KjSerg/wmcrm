@@ -5,6 +5,7 @@ import {
     showPreloader,
     openWindow,
     closeWindow,
+    getCurrentDate,
     showMassage,
     isJsonString,
     hidePreloader,
@@ -21,6 +22,7 @@ import './_forms';
 import './_profile';
 import './_notice';
 import Autocomplete from "./Autocomplete";
+import playSound from "./_audio";
 
 let $doc = $(document);
 
@@ -112,6 +114,7 @@ $(document).ready(function () {
     checkingNotifications();
     initTriggers();
     initPlugins();
+    welcomeUncle();
     $doc.on('click', '.project-button-action', function (e) {
         e.preventDefault();
         let $t = $(this);
@@ -589,6 +592,17 @@ $(document).ready(function () {
     const bulkEditor = new BulkEdit();
     const autocomplete = new Autocomplete();
 });
+
+function welcomeUncle() {
+    const storage = localStorage.getItem('uncle-sound-play') || '';
+    if (storage === getCurrentDate()) {
+        return;
+    }
+    const $sound = $(document).find('#uncle-sound');
+    if ($sound.length === 0) return;
+    playSound('uncle-sound');
+    localStorage.setItem('uncle-sound-play', getCurrentDate());
+}
 
 document.addEventListener('visibilitychange', function () {
     if (!document.hidden) {

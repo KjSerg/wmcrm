@@ -21,9 +21,11 @@ $statuses       = array(
 );
 $user_id        = get_current_user_id();
 $is_vlad        = $user_id == 7;
+$is_uncle       = $user_id == 2;
+$is_architect   = $user_id == 4;
 $gif            = $assets . 'img/loading.gif';
-if($is_vlad) {
-	$gif            = $assets . 'img/forvlad.gif';
+if ( $is_vlad ) {
+	$gif = $assets . 'img/forvlad.gif';
 }
 ?>
 
@@ -39,6 +41,11 @@ if($is_vlad) {
 
     <audio id="pause-sound" autoplay type="audio/mp3" muted
            src="<?php echo $assets ?>/sounds/pause.mp3"></audio>
+	<?php ?>
+	<?php if ( $is_uncle || $is_architect ) {
+		echo '<audio id="uncle-sound" autoplay type="audio/mp3" muted
+           src="' . $assets . '/sounds/forvadim.mp3"></audio>';
+	} ?>
 </div>
 
 <?php if ( $is_admin ): ?>
